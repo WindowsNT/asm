@@ -10,7 +10,6 @@ macro break64
 
 Start64:
 
-    break64
 	xor r8d,r8d
 	mov rsp,stack64_end  
 	push rax
