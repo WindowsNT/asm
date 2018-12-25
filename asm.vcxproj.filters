@@ -81,5 +81,8 @@
     <None Include="page32.asm">
       <Filter>32 bit code</Filter>
     </None>
+    <None Include="bochsrc_nd.bxrc">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>

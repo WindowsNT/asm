@@ -14,5 +14,5 @@ d32 dd 0
 SEGMENT PAGE32 USE32
 ORG 0
 
-Page32Null dd 8192 DUP (0)
+Page32Null dd 20000 DUP (0)
 

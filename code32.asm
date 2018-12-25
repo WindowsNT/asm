@@ -32,7 +32,7 @@ Start32:
 	mov ebx,[ds:d32]
 
 ; --------------------------------------- Interrupt Test ---------------------------------------
-;	int 0;
+	int 0;
 
 ; --------------------------------------- LLDT ---------------------------------------
 	mov ax,ldt_idx
@@ -65,11 +65,12 @@ Start32:
 	mov eax, cr0 ; Read CR0.
 	and eax,7FFFFFFFh; Set PE=0
 	mov cr0, eax ; Write CR0.
-	jmp Back32
+;	jmp ToBack16
 
 ; --------------------------------------- Prepare Long Mode ---------------------------------------
-;    call InitPageTable642
-; Enable PAE
+    call InitPageTable642
+   
+    ; Enable PAE
     mov eax, cr4
     bts eax, 5
     mov cr4, eax
@@ -128,6 +129,7 @@ Back32:
 	mov cr4, eax
 
 ; --------------------------------------- Back to Real mode ---------------------------------------
+ToBack16:
 ; = Give FS the abs32 segment
 ; To test unreal mode 
 	mov ax,absd32_idx

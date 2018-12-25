@@ -18,18 +18,10 @@ InitPageTable32a:
 	mov ax,page32_idx
 	mov ds,ax
 	mov es,ax
-
  
-	; PageDir32 Clear
+	; Tables Clear
 	mov edi,ebp
-	mov ecx,1024
-	xor eax,eax
-	rep stosd
- 
-	; PageTables32 Clear
-	mov edi,ebp
-	add edi,4096
-	mov ecx,1024
+	mov ecx,2048
 	xor eax,eax
 	rep stosd
  
