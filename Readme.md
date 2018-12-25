@@ -14,5 +14,6 @@ At the moment, the first part is implemented (Real/Protected/Long mode). More to
 2. In Project Properties -> Debugger, put the BOCHSDBG.EXE path to command to run
 
 Build and run, it will automatically start bochs with the included FreeDOS image. It will create a CD-ROM as R: and you can run it.
+You have also a VMWare configuration to test
 
 
