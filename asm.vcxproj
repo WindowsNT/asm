@@ -108,6 +108,7 @@
     <None Include="stack32.asm" />
     <None Include="stack64.asm" />
     <None Include="struct.asm" />
+    <None Include="vm.vmx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

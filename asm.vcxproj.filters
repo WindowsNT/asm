@@ -75,5 +75,8 @@
     <None Include="iso.ps1">
       <Filter>Configuration</Filter>
     </None>
+    <None Include="vm.vmx">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>
