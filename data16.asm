@@ -15,6 +15,7 @@ StartSipiAddrSeg dw 0
 ProcedureStart dd 0
 IntCompleted db 0
 FromThread1 db 0 
+FromThread2 db 0 
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF
@@ -26,6 +27,7 @@ pm1 db "Protected mode test, OK",0dh,0ah,"$"
 lm1 db "Long mode test, OK",0dh,0ah,"$"
 cpuf db "CPU Found",0dh,0ah,"$"
 thr1 db "Thread 1 executed, OK",0dh,0ah,"$"
+thr2 db "Thread 2 executed, OK",0dh,0ah,"$"
 
 a20off db "Restoring A20",0dh,0ah,"$"
 

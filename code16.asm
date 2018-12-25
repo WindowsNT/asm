@@ -104,6 +104,7 @@ push cs
 call DumpMadt
 
 qlock16 mut_1
+qlock16 mut_1
 
 xor eax,eax
 mov ax,DATA16
@@ -116,7 +117,20 @@ mov ebx,1
 call far CODE16:SendSIPIf
 push cs
 call IntCompletedFunction
-;unlock16 mut_1
+
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+mov [ds:IntCompleted],0
+mov [ds:StartSipiAddrOfs],Thread16_2
+mov [ds:StartSipiAddrSeg],CODE16
+mov ax,2
+mov ebx,2
+call far CODE16:SendSIPIf
+push cs
+call IntCompletedFunction
+
+wait16 mut_1
 wait16 mut_1
 
 
@@ -213,6 +227,16 @@ mov dx,thr1
 mov ax,0900h
 int 21h
 fail_3:
+
+; Thread test
+mov ax,DATA16
+mov gs,ax
+cmp [gs:FromThread2],1
+jnz fail_3p
+mov dx,thr2
+mov ax,0900h
+int 21h
+fail_3p:
 
 ; PM mode test
 mov ax,DATA32

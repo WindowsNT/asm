@@ -22,3 +22,14 @@ Thread16:
 	cli
 	hlt
 		
+
+Thread16_2:
+
+	cli
+	mov ax,DATA16
+	mov ds,ax
+	mov [FromThread2],1
+	qunlock16 mut_1
+	cli
+	hlt
+		

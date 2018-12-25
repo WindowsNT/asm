@@ -37,7 +37,7 @@ macro qlock16 trg,del = -1
 	MOV DI,DATA16
 	MOV DS,DI
 	MOV DI,trg
-	mov byte  [ds:di],0xFE
+	dec byte [ds:di]
 	pop ecx
 	pop di
 	pop ds
@@ -50,7 +50,10 @@ macro qunlock16 trg
 	MOV DI,DATA16
 	MOV DS,DI
 	MOV DI,trg
-	mov byte [ds:di],0xFF
+	cmp byte [ds:di],0xFF
+	jz .unlk
+	inc byte [ds:di]
+	.unlk:
 	pop di
 	pop ds
 	}
