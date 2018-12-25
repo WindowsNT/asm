@@ -7,7 +7,8 @@ Articles:
 * Multicore DOS: https://www.codeproject.com/Articles/889245/Deep-inside-CPU-Raw-multicore-programming
 * DMMI: https://www.codeproject.com/Articles/894522/Teh-Low-Level-M-ss-DOS-Multicore-Mode-Interface
 
-At the moment, the first part is implemented (Real/Protected/Long mode). More to follow
+At the moment, the first part is implemented (Real/Protected/Long mode) and the third part (test SIPI multicore, working on VMWare only)
+More to follow soon.
 
 ## Instructions
 1. Edit build.bat to specify flat assembler (FASM) path.

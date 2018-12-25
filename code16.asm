@@ -82,27 +82,38 @@ call EnterUnreal
 sti
 
 ; --------------------------------------- ACPI findings ---------------------------------------
+mov ax,DATA16
+mov ds,ax
+push cs
+call GetMyApic16f
+mov [ds:MainCPUAPIC],bl
+push cs
+call FillACPI
+cmp eax,0xFFFFFFFF
+jnz .coo
+jmp .noacpi
+.coo:
+mov eax,'APIC'
+push cs
+call FindACPITable
+cmp eax,0xFFFFFFFF
+jnz .coo2
+jmp .noacpi
+.coo2:
+push cs
+call DumpMadt
 
-;push cs
-;call GetMyApic16f
-;mov [ds:MainCPUAPIC],bl
-;push cs
-;call FillACPI
-;mov eax,'APIC'
-;push cs
-;call FindACPITable
-;push cs
-;call DumpMadt
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+mov [ds:IntCompleted],0
+mov [ds:StartSipiAddrOfs],Thread16
+mov [ds:StartSipiAddrSeg],CODE16
+mov ax,1
+mov ebx,1
+call far CODE16:SendSIPIf
 
-;xor eax,eax
-;mov ax,DATA16
-;	mov ds,ax
-;	mov [ds:IntCompleted],0
-;	mov [ds:StartSipiAddrOfs],Thread16
-;	mov [ds:StartSipiAddrSeg],CODE16
-;	mov ax,1
-;	mov ebx,1
-;	call far CODE16:SendSIPIf
+.noacpi:
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 mov bx,idt_RM_start
@@ -160,15 +171,41 @@ int 10h
 cmp [ds:a20enabled],1
 jnz SkipA20Disable
 call DisableA20
+SkipA20Disable:
+
+; Test Real
 mov ax,0900h
 mov dx,a20off
 int 21h
-SkipA20Disable:
+
+; NumCpus
+xor cx,cx
+mov cl,[ds:numcpus]
+.cpul:
+cmp cx,0
+je .endr
+dec cx
+mov ax,0900h
+mov dx,cpuf
+int 21h
+jmp .cpul
+.endr:
 
 ; Real mode test
 mov ax,0900h
 mov dx,rm1
 int 21h
+
+
+; Thread test
+mov ax,DATA16
+mov gs,ax
+cmp [gs:FromThread1],1
+jnz fail_3
+mov dx,thr1
+mov ax,0900h
+int 21h
+fail_3:
 
 ; PM mode test
 mov ax,DATA32

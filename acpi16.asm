@@ -175,6 +175,7 @@ DumpMadt: ; EAX
 		mov al,[fs:edi + 3]; APIC id
 		mov byte [ds:si + 4],al
 			
+
 		.no0:
 			
 		add edi,ebx
