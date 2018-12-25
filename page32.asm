@@ -9,29 +9,38 @@ InitPageTable32a:
 	pushad
 	push ds
 	push es
+	
+	mov ax,data16_idx
+	push gs
+	mov gs,ax
+	mov ebp,[gs:PhysicalPagingOffset32]
+	pop gs
 	mov ax,page32_idx
 	mov ds,ax
 	mov es,ax
+
  
 	; PageDir32 Clear
-	mov edi,PageDir32
+	mov edi,ebp
 	mov ecx,1024
 	xor eax,eax
 	rep stosd
  
 	; PageTables32 Clear
-	mov edi,PageTables32
+	mov edi,ebp
+	add edi,4096
 	mov ecx,1024
 	xor eax,eax
 	rep stosd
  
 	; PageDir32 points to PageTables32
 	; Create 1024 entries
-	mov edi,PageDir32
+	mov edi,ebp
 	xor ecx,ecx
 	LoopPageDir1:
 	xor eax,eax
-	mov eax,PageTables32
+	mov eax,ebp
+	add eax,4096
 	shr eax,12 ; Get rid of lower 12 bits (4096 alignment)
 	mov ebx,ecx
 	add eax,ebx
@@ -44,7 +53,8 @@ InitPageTable32a:
  
  
 	; PageTables32 create 1024 entries
-	mov edi,PageTables32
+	mov edi,ebp
+	add edi,4096
 	xor ecx,ecx
 	LoopPageTables1:
  
@@ -110,5 +120,7 @@ InitPageTable642:
     pop ds
     popad 
 ret
+
+
 
 

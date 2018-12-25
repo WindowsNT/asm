@@ -4,7 +4,6 @@ ORG 0h
 
 Start64:
 
-	xchg bx,bx ; BOCHS magic breakpoint
 	xor r8d,r8d
 	mov rsp,stack64_end  
 	push rax

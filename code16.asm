@@ -1,13 +1,17 @@
 SEGMENT CODE16 USE16
 ORG 0h
 
+macro break16
+{
+	xchg bx,bx
+}
+
 ; --------------------------------------- This is where the application starts ---------------------------------------
 start16:
 
 ; --------------------------------------- Initialization of our segments ---------------------------------------
 cli
 
-xchg bx,bx ; BOCHS magic breakpoint
 
 mov ax,DATA16
 mov ds,ax
@@ -28,6 +32,24 @@ mov fs,bx
 mov dword [fs:PutLinearStart64],eax
 pop fs
 
+
+; --------------------------------------- Protected Mode Find Page Entry  ---------------------------------------
+xor ecx,ecx
+LoopPMR:
+xor eax,eax
+mov ax,PAGE32
+shl eax,4
+add eax,Page32Null
+add eax,ecx
+mov ebx,eax
+shr eax,12
+shl eax,12
+cmp eax,ebx
+jz LoopPRMFound
+inc ecx
+jmp LoopPMR
+LoopPRMFound:
+mov [PhysicalPagingOffset32],eax
 
 ; --------------------------------------- Real mode test ---------------------------------------
 mov ax,0900h

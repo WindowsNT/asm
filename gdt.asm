@@ -27,19 +27,11 @@ GDTInit:
 	gdt_initialize CODE16,code16_descriptor
 	gdt_initialize DATA16,data16_descriptor
 	gdt_initialize STACK16,stack16_descriptor
-	
-	  xor eax,eax
-      mov     ax,0       ; get 32-bit page segment into AX  = NOT PAGE32 = because it is assumed to be at 0!
-      shl     eax,4           ; make a physical address
-      xor     ebx,ebx
-      mov     ebx,PageDir32
-      add     ebx,eax
-      mov     [ds:PhysicalPagingOffset32],ebx
-      mov     [ds:page32_descriptor.b0_15],ax ; store it in the dscr
-      shr     eax,8
-      mov     [ds:page32_descriptor.b16_23],ah
 
-
+    ; Paging segment, we 've found it already	
+	xor eax,eax
+    mov [ds:page32_descriptor.b0_15],ax
+    mov [ds:page32_descriptor.b16_23],ah
 
 
 	; 64 segments

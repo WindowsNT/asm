@@ -12,9 +12,7 @@ d32 dd 0
 
 ; --------------------------------------- 32 bit Page Segment ---------------------------------------
 SEGMENT PAGE32 USE32
+ORG 0
 
-ORG PMODEPAGEORGBASE 
-
-PageDir32 dd 1024 DUP (?)
-PageTables32 dd 1024 DUP (?)
+Page32Null dd 8192 DUP (0)
 

@@ -2,6 +2,12 @@
 SEGMENT CODE32 USE32
 ORG 0h
 
+macro break32
+{
+	xchg bx,bx
+}
+
+
 ; --------------------------------------- One interrupt definition ---------------------------------------
 intr00:
 	IRETD
@@ -38,7 +44,12 @@ Start32:
 
 ; --------------------------------------- Page Tests---------------------------------------
 	call InitPageTable32a
-	mov edx,PageDir32
+	mov ax,data16_idx
+	push gs
+	mov gs,ax
+	mov edx,[gs:PhysicalPagingOffset32]
+	pop gs
+
 	mov CR3,edx
 	mov eax,cr4
 	bts eax,4
@@ -54,10 +65,10 @@ Start32:
 	mov eax, cr0 ; Read CR0.
 	and eax,7FFFFFFFh; Set PE=0
 	mov cr0, eax ; Write CR0.
+	jmp Back32
 
 ; --------------------------------------- Prepare Long Mode ---------------------------------------
-    call InitPageTable642
-	xchg bx,bx ; BOCHS magic breakpoint
+;    call InitPageTable642
 ; Enable PAE
     mov eax, cr4
     bts eax, 5
