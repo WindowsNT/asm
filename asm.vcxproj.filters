@@ -84,5 +84,11 @@
     <None Include="bochsrc_nd.bxrc">
       <Filter>Configuration</Filter>
     </None>
+    <None Include="acpi.asm">
+      <Filter>16 bit code</Filter>
+    </None>
+    <None Include="startvbox.bat">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>

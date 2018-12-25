@@ -9,6 +9,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bochs|DOS = Bochs|DOS
 		BochsNoDebug|DOS = BochsNoDebug|DOS
+		VirtualBox|DOS = VirtualBox|DOS
 		VMWare|DOS = VMWare|DOS
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -16,6 +17,8 @@ Global
 		{68FEA001-C33A-4EBC-A70F-9788736975B5}.Bochs|DOS.Build.0 = DOS|x64
 		{68FEA001-C33A-4EBC-A70F-9788736975B5}.BochsNoDebug|DOS.ActiveCfg = BochsNoDebug|x64
 		{68FEA001-C33A-4EBC-A70F-9788736975B5}.BochsNoDebug|DOS.Build.0 = BochsNoDebug|x64
+		{68FEA001-C33A-4EBC-A70F-9788736975B5}.VirtualBox|DOS.ActiveCfg = VirtualBox|x64
+		{68FEA001-C33A-4EBC-A70F-9788736975B5}.VirtualBox|DOS.Build.0 = VirtualBox|x64
 		{68FEA001-C33A-4EBC-A70F-9788736975B5}.VMWare|DOS.ActiveCfg = VMWare|x64
 		{68FEA001-C33A-4EBC-A70F-9788736975B5}.VMWare|DOS.Build.0 = VMWare|x64
 	EndGlobalSection

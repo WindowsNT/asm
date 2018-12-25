@@ -11,9 +11,9 @@ At the moment, the first part is implemented (Real/Protected/Long mode). More to
 
 ## Instructions
 1. Put flat assembler (https://flatassembler.net/) to the path, or edit build.bat to include a path.
-2. In Project Properties -> Debugger, configure bochs/vmware path as needed.
+2. In Project Properties -> Debugger, configure bochs/vmware path as needed, also edit startvbox.bat
 
-Build and run, it will automatically start bochs/vmware with the included FreeDOS image. 
+Build and run, it will automatically start bochs/vmware/virtualbox with the included FreeDOS image. 
 It will create a CD-ROM as D: and you can run it.
 
 

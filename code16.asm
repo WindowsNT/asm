@@ -6,6 +6,9 @@ macro break16
 	xchg bx,bx
 }
 
+INCLUDE 'acpi.asm'
+
+
 ; --------------------------------------- This is where the application starts ---------------------------------------
 start16:
 
@@ -116,9 +119,12 @@ sti
 mov ax,3
 int 10h
 
+; Real mode test
 mov ax,0900h
 mov dx,rm1
 int 21h
+
+; PM mode test
 mov ax,DATA32
 mov gs,ax
 cmp [gs:d32],1
@@ -127,6 +133,8 @@ mov dx,pm1
 mov ax,0900h
 int 21h
 fail_1:
+
+; Long mode test
 mov ax,DATA64
 mov gs,ax
 cmp [gs:d64],1

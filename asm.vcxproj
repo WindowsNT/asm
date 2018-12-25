@@ -9,6 +9,10 @@
       <Configuration>DOS</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="VirtualBox|x64">
+      <Configuration>VirtualBox</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="VMWare|x64">
       <Configuration>VMWare</Configuration>
       <Platform>x64</Platform>
@@ -42,6 +46,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -54,6 +65,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -100,30 +114,50 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">build.bat</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">build.bat</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">build.bat</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">build.bat</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">entry.exe</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">entry.exe</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">entry.exe</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">entry.exe</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">false</LinkObjects>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">true</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">true</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">true</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">true</TreatOutputAsContent>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">*.asm</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">*.asm</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">*.asm</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">*.asm</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="a20.asm">
       <FileType>Document</FileType>
     </None>
+    <None Include="acpi.asm" />
     <None Include="bochsrc.bxrc" />
     <None Include="bochsrc_nd.bxrc" />
     <None Include="build.bat" />
@@ -141,6 +175,7 @@
     <None Include="stack16.asm" />
     <None Include="stack32.asm" />
     <None Include="stack64.asm" />
+    <None Include="startvbox.bat" />
     <None Include="struct.asm" />
     <None Include="vm.vmx" />
   </ItemGroup>
