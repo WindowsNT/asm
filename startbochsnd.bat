@@ -1,0 +1,1 @@
+g:\bochs2\bochs.exe -q -f "%1"

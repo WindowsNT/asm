@@ -90,5 +90,14 @@
     <None Include="startvbox.bat">
       <Filter>Configuration</Filter>
     </None>
+    <None Include="startvmware.bat">
+      <Filter>Configuration</Filter>
+    </None>
+    <None Include="startbochs.bat">
+      <Filter>Configuration</Filter>
+    </None>
+    <None Include="startbochsnd.bat">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>

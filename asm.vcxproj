@@ -175,7 +175,10 @@
     <None Include="stack16.asm" />
     <None Include="stack32.asm" />
     <None Include="stack64.asm" />
+    <None Include="startbochs.bat" />
+    <None Include="startbochsnd.bat" />
     <None Include="startvbox.bat" />
+    <None Include="startvmware.bat" />
     <None Include="struct.asm" />
     <None Include="vm.vmx" />
   </ItemGroup>
