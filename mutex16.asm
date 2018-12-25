@@ -29,6 +29,43 @@ macro unlock16 trg
 	pop ds
 	}
 
+macro qlock16 trg,del = -1
+	{
+	push ds
+	push di
+	push ecx
+	MOV DI,DATA16
+	MOV DS,DI
+	MOV DI,trg
+	mov byte  [ds:di],0xFE
+	pop ecx
+	pop di
+	pop ds
+	}
+
+macro qunlock16 trg
+	{
+	push ds
+	push di
+	MOV DI,DATA16
+	MOV DS,DI
+	MOV DI,trg
+	mov byte [ds:di],0xFF
+	pop di
+	pop ds
+	}
+
+macro wait16 trg
+	{
+	push ds
+	push di
+	MOV DI,DATA16
+	MOV DS,DI
+	MOV DI,trg
+	call far CODE16:MutexWait16f
+	pop di
+	pop ds
+	}
 
 ;-------------------------------------------------------------------------------------------
 ; Function MutexLock16f : DS:DI Mutex to lock
@@ -94,4 +131,12 @@ MutexFree16f: ; DS:DI mutex to lock
 	POPAD
 	RETF
 
+MutexWait16f:
+			.Loop1:		
+			CMP byte [ds:di],0xff
+			JZ .OutLoop1
+			pause 
+			JMP .Loop1
+			.OutLoop1:
+			retf
 

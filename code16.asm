@@ -7,8 +7,8 @@ macro break16
 }
 
 INCLUDE 'unreal.asm'
-INCLUDE 'thread16.asm'
 INCLUDE 'acpi16.asm'
+INCLUDE 'thread16.asm'
 
 
 ; --------------------------------------- This is where the application starts ---------------------------------------
@@ -103,6 +103,8 @@ jmp .noacpi
 push cs
 call DumpMadt
 
+qlock16 mut_1
+
 xor eax,eax
 mov ax,DATA16
 mov ds,ax
@@ -112,6 +114,11 @@ mov [ds:StartSipiAddrSeg],CODE16
 mov ax,1
 mov ebx,1
 call far CODE16:SendSIPIf
+push cs
+call IntCompletedFunction
+;unlock16 mut_1
+wait16 mut_1
+
 
 .noacpi:
 

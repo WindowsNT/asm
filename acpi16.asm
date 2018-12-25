@@ -330,7 +330,7 @@ SendIPI16: ; EBX = CPU INDEX, ECX = IPI
 	MOV [FS:EDI],ECX
 	; Verify it got delivered
 	.Verify:
-	; PAUSE
+	 PAUSE
 	MOV EAX,[FS:EDI];
 	SHR EAX,12
 	TEST EAX,1
@@ -362,4 +362,25 @@ SendEOI16:
 	MOV dword [FS:EDI],0
 	POP DS
 	POP EDI
+RETF
+
+; 
+IntCompletedFunction:
+	push ax
+	push ds
+	mov ax,DATA16
+	mov ds,ax
+	.iii:
+		jecxz .liii
+		cmp ecx,-1
+		jz .nliii
+		dec ecx
+		.nliii:
+		pause
+		cmp [ds:IntCompleted],1
+		jnz .iii
+	.liii:
+	pop ds
+	pop ax
+	.endiii:
 RETF
