@@ -4,55 +4,43 @@
     <Filter Include="Configuration">
       <UniqueIdentifier>{f5fc6a1f-afcd-4e0e-999a-4740cb3500c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Stack">
-      <UniqueIdentifier>{a554207f-bb3e-495f-aef3-454868ee91b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{f2ee1441-75fc-48c0-baec-44f7ad5f153f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code">
+    <Filter Include="32 bit code">
+      <UniqueIdentifier>{05819406-8f59-4c3a-a88d-6638e01bd070}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="16 bit code">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="64 bit code">
+      <UniqueIdentifier>{1f5ef5e6-1cd9-452e-b6d1-e803a1a2e812}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
-      <Filter>Code</Filter>
+      <Filter>16 bit code</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="code16.asm">
-      <Filter>Code</Filter>
+      <Filter>16 bit code</Filter>
     </None>
     <None Include="a20.asm">
-      <Filter>Code</Filter>
+      <Filter>16 bit code</Filter>
     </None>
     <None Include="gdt.asm">
-      <Filter>Code</Filter>
-    </None>
-    <None Include="code32.asm">
-      <Filter>Code</Filter>
+      <Filter>16 bit code</Filter>
     </None>
     <None Include="idt.asm">
-      <Filter>Code</Filter>
+      <Filter>16 bit code</Filter>
     </None>
     <None Include="bochsrc.bxrc">
       <Filter>Configuration</Filter>
     </None>
     <None Include="build.bat">
       <Filter>Configuration</Filter>
-    </None>
-    <None Include="code64.asm">
-      <Filter>Code</Filter>
-    </None>
-    <None Include="stack16.asm">
-      <Filter>Stack</Filter>
-    </None>
-    <None Include="stack32.asm">
-      <Filter>Stack</Filter>
-    </None>
-    <None Include="stack64.asm">
-      <Filter>Stack</Filter>
     </None>
     <None Include="data16.asm">
       <Filter>Data</Filter>
@@ -66,9 +54,6 @@
     <None Include="struct.asm">
       <Filter>Data</Filter>
     </None>
-    <None Include="page.asm">
-      <Filter>Code</Filter>
-    </None>
     <None Include="Readme.md">
       <Filter>Configuration</Filter>
     </None>
@@ -77,6 +62,24 @@
     </None>
     <None Include="vm.vmx">
       <Filter>Configuration</Filter>
+    </None>
+    <None Include="code32.asm">
+      <Filter>32 bit code</Filter>
+    </None>
+    <None Include="code64.asm">
+      <Filter>64 bit code</Filter>
+    </None>
+    <None Include="stack16.asm">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="stack32.asm">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="stack64.asm">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="page32.asm">
+      <Filter>32 bit code</Filter>
     </None>
   </ItemGroup>
 </Project>

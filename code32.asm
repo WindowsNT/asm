@@ -6,7 +6,7 @@ ORG 0h
 intr00:
 	IRETD
 
-INCLUDE 'page.asm'
+INCLUDE 'page32.asm'
 
 ; --------------------------------------- Entry Point ---------------------------------------
 Start32:
@@ -48,17 +48,12 @@ Start32:
 	mov cr0, eax
 	; Paging is now enabled
 	nop
-	; Try loading DS with another segment while in paging
-	push ds
-	mov ax,vmx32_idx
-	mov ds,ax
-	pop ds
+	nop
+	nop
 	; Disable Paging
 	mov eax, cr0 ; Read CR0.
 	and eax,7FFFFFFFh; Set PE=0
 	mov cr0, eax ; Write CR0.
-
-
 
 ; --------------------------------------- Prepare Long Mode ---------------------------------------
     call InitPageTable642
