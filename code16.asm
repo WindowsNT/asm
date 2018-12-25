@@ -51,6 +51,25 @@ jmp LoopPMR
 LoopPRMFound:
 mov [PhysicalPagingOffset32],eax
 
+; --------------------------------------- Long Mode Find Page Entry  ---------------------------------------
+xor ecx,ecx
+LoopPMR2:
+xor eax,eax
+mov ax,PAGE64
+shl eax,4
+add eax,Page64Null
+add eax,ecx
+mov ebx,eax
+shr eax,12
+shl eax,12
+cmp eax,ebx
+jz LoopPRMFound2
+inc ecx
+jmp LoopPMR2
+LoopPRMFound2:
+mov [PhysicalPagingOffset64],eax
+
+
 ; --------------------------------------- Real mode test ---------------------------------------
 mov ax,0900h
 mov dx,rm1

@@ -76,7 +76,11 @@ Start32:
     mov cr4, eax
     
 	; Load new page table
-    mov edx,LONGPAGEORGBASE
+   	mov ax,data16_idx
+	push gs
+	mov gs,ax
+	mov edx,[gs:PhysicalPagingOffset64]
+	pop gs
     mov cr3,edx
     
 	; Enable Long Mode

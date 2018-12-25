@@ -32,6 +32,9 @@ GDTInit:
 	xor eax,eax
     mov [ds:page32_descriptor.b0_15],ax
     mov [ds:page32_descriptor.b16_23],ah
+	xor eax,eax
+    mov [ds:page64_descriptor.b0_15],ax
+    mov [ds:page64_descriptor.b16_23],ah
 
 
 	; 64 segments

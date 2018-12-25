@@ -72,41 +72,50 @@ InitPageTable642:
     pushad
     push ds
     push es
+
+	mov ax,data16_idx
+	push gs
+	mov gs,ax
+	mov esi,[gs:PhysicalPagingOffset64]
+	pop gs
+
     mov ax,page64_idx
     mov ds,ax
     mov es,ax
     xor     eax, eax
-    mov     edi,LONGPAGEORGBASE
+    mov     edi,esi
     mov     ecx,03000h
     rep     stosb
 
     ;top level page table
-    mov     eax, LONGPAGEORGBASE + 0x1000
+    mov     eax, esi
+	add eax,0x1000
     or              eax,3
-    mov     [LONGPAGEORGBASE],eax
-    mov     eax, LONGPAGEORGBASE + 0x2000
+    mov     [esi],eax
+    mov     eax, esi
+	add eax,0x2000
     or              eax,3
-    mov     [LONGPAGEORGBASE + 0x1000],eax
+    mov     [esi + 0x1000],eax
 
     ;2MB pages to identity map the first 16MB ram
     mov     eax,1
     shl             eax,7
     or              eax,3
-    mov     [LONGPAGEORGBASE + 0x2000],eax
+    mov     [esi + 0x2000],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2008],eax
+    mov     [esi + 0x2008],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2010],eax
+    mov     [esi + 0x2010],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2018],eax
+    mov     [esi + 0x2018],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2020],eax
+    mov     [esi + 0x2020],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2028],eax
+    mov     [esi + 0x2028],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2030],eax
+    mov     [esi + 0x2030],eax
     add     eax,0x200000
-    mov     [LONGPAGEORGBASE + 0x2038],eax
+    mov     [esi + 0x2038],eax
 
     pop es
     pop ds
