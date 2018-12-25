@@ -1,11 +1,23 @@
 SEGMENT DATA16 USE16
 
+; --------------------------------------- 16 bit data ---------------------------------------
+a20enabled db 0
+numcpus db 0
+somecpu A_CPU 0,0,0,0
+cpusstructize = $-(somecpu)
+CpusOfs:
+cpus db cpusstructize*64 dup(0)
+MainCPUAPIC db 0
+LocalApic dd 0xFEE00000
+XsdtAddress dq 0
 
 
 ; --------------------------------------- Messages ---------------------------------------
 rm1 db "Real mode test, OK",0dh,0ah,"$"
 pm1 db "Protected mode test, OK",0dh,0ah,"$"
 lm1 db "Long mode test, OK",0dh,0ah,"$"
+
+a20off db "Restoring A20",0dh,0ah,"$"
 
 ; --------------------------------------- GDT ---------------------------------------
 gdt_start dw gdt_size
@@ -46,6 +58,14 @@ tssd32_idx      =       70h             ; TSS descriptor
 vmx32_idx       =       78h             ; offset of 32-bit code  segment in GDT
 data32_ldt_idx  =       04h             ; offset of 32-bit data  segment in LDT
 
+
+; And For Quick Unreal
+gdt_startUNR dw gdt_sizeUNR
+gdt_ptrUNR dd 0
+dummy_descriptorUNR GDT_STR 0,0,0,0,0,0
+code16_descriptorUNR  GDT_STR 0ffffh,0,0,9ah,0,0
+data32_descriptorUNR  GDT_STR 0ffffh,0,0,92h,0cfh,0
+gdt_sizeUNR = $-(dummy_descriptorUNR)
 
 
 ; --------------------------------------- IDT ---------------------------------------

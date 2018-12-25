@@ -25,7 +25,8 @@ Start32:
 	mov     ax,data16_idx
 	mov     gs,ax
 	mov     fs,ax
-
+	;jmp ToBack16
+	
 ; --------------------------------------- Data stuff ---------------------------------------
 	mov eax,1
 	mov [ds:d32],eax

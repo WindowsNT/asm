@@ -1,4 +1,21 @@
-; --------------------------------------- Structure Definitions ---------------------------------------
+; --------------------------------------- Macro and Structure Definitions ---------------------------------------
+
+macro linear reg,trg,seg = DATA16
+	{
+;	xor reg,reg
+	mov reg,seg
+	shl reg,4
+	add reg,trg
+	}
+
+struc A_CPU a,b,c,d
+        {
+        .acpi   dd a
+        .apic   dd b
+        .flags  dd c
+		.handle dd d
+        }
+
 
 struc GDT_STR s0_15,b0_15,b16_23,flags,access,b24_31
         {

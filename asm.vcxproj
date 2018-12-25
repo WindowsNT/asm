@@ -157,7 +157,7 @@
     <None Include="a20.asm">
       <FileType>Document</FileType>
     </None>
-    <None Include="acpi.asm" />
+    <None Include="acpi16.asm" />
     <None Include="asmtest.vbox" />
     <None Include="bochsrc.bxrc" />
     <None Include="bochsrc_nd.bxrc" />
@@ -181,6 +181,7 @@
     <None Include="startvbox.bat" />
     <None Include="startvmware.bat" />
     <None Include="struct.asm" />
+    <None Include="unreal.asm" />
     <None Include="vm.vmx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

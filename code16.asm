@@ -6,7 +6,8 @@ macro break16
 	xchg bx,bx
 }
 
-INCLUDE 'acpi.asm'
+INCLUDE 'unreal.asm'
+INCLUDE 'acpi16.asm'
 
 
 ; --------------------------------------- This is where the application starts ---------------------------------------
@@ -23,6 +24,7 @@ mov ax,STACK16
 mov sp,stack16_end
 mov ss,ax
 sti
+
 
 ; --------------------------------------- Prepare Long Mode  ---------------------------------------
 xor eax,eax
@@ -72,18 +74,48 @@ jmp LoopPMR2
 LoopPRMFound2:
 mov [PhysicalPagingOffset64],eax
 
+; --------------------------------------- Quick Unreal ---------------------------------------
+push cs
+cli
+call EnterUnreal
+sti
+
+; --------------------------------------- ACPI findings ---------------------------------------
+
+;break16
+;push cs
+;call GetMyApic16f
+;mov [ds:MainCPUAPIC],bl
+;break16
+;push cs
+;call FillACPI
+;mov eax,'APIC'
+;break16
+;push cs
+;call FindACPITable
+;break16
+;push cs
+;call DumpMadt
+;break16
 
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 mov bx,idt_RM_start
 sidt [bx]
+mov [ds:a20enabled],0
+call CheckA20
+jc A20AlreadyOn
 call EnableA20
+mov [ds:a20enabled],1
+A20AlreadyOn:
+
 call GDTInit
 call IDTInit
 cli
 mov bx,gdt_start
 lgdt [bx]
 mov bx,idt_PM_start
+
 ; = NO DEBUG HERE =
 lidt [bx]
 mov eax,cr0
@@ -118,6 +150,15 @@ sti
 ; Restore screen (long mode bug)
 mov ax,3
 int 10h
+
+; A20 off if enabled
+cmp [ds:a20enabled],1
+jnz SkipA20Disable
+call DisableA20
+mov ax,0900h
+mov dx,a20off
+int 21h
+SkipA20Disable:
 
 ; Real mode test
 mov ax,0900h
