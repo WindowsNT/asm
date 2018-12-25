@@ -171,6 +171,7 @@
     <None Include="gdt.asm" />
     <None Include="idt.asm" />
     <None Include="iso.ps1" />
+    <None Include="mutex16.asm" />
     <None Include="page32.asm" />
     <None Include="Readme.md" />
     <None Include="stack16.asm" />

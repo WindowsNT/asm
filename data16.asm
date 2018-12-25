@@ -11,6 +11,9 @@ MainCPUAPIC db 0
 LocalApic dd 0xFEE00000
 XsdtAddress dq 0
 
+; --------------------------------------- 16 bit mutexes ---------------------------------------
+mut_ipi db 0xFF
+
 
 ; --------------------------------------- Messages ---------------------------------------
 rm1 db "Real mode test, OK",0dh,0ah,"$"

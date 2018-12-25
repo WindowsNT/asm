@@ -1,6 +1,9 @@
 ; --------------------------------------- 16 bit APIC functions ---------------------------------------
 USE16
 
+include 'mutex16.asm'
+
+
 ; Returns APIC in EBX
 ; implemented as FAR to allow calling from elsewhere
 GetMyApic16f:
@@ -181,4 +184,77 @@ DumpMadt: ; EAX
 	.end:
 		
 	popad
+RETF
+
+
+
+;-------------------------------------------------------------------------------------------
+; Function SendIPI16 : Sends IPI. EBX = CPU Index, ECX = IPI
+;-------------------------------------------------------------------------------------------		
+SendIPI16: ; EBX = CPU INDEX, ECX = IPI
+	PUSHAD
+	; Lock Mutex	
+	lock16 mut_ipi
+
+		
+	; Write it to 0x310
+	; EBX is CPU INDEX
+	; MAKE IT APIC ID
+	xor eax,eax
+	mov ax,cpusstructize
+	mul bx
+	add ax,cpus
+	mov di,ax
+	add di,4
+	mov bl,[ds:di]
+	MOV EDI,[DS:LocalApic]
+	ADD EDI,0x310
+	MOV EDX,[FS:EDI]
+	AND EDX,0xFFFFFF
+	XOR EAX,EAX
+	MOV AL,BL
+	SHL EAX,24
+	OR EDX,EAX
+	MOV [FS:EDI],EDX
+		
+		
+	; Write it to 0x300
+;		MOV EDI,0xFEE00000
+	MOV EDI,[DS:LocalApic]
+	ADD EDI,0x300
+	MOV [FS:EDI],ECX
+	; Verify it got delivered
+	.Verify:
+	PAUSE
+	MOV EAX,[FS:EDI];
+	SHR EAX,12
+	TEST EAX,1
+	JNZ .Verify
+	; Write it to 0xB0 (EOI)
+;		MOV EDI,0xFEE00000
+;		MOV EDI,[DS:LocalApic]
+;		ADD EDI,0xB0
+;		MOV dword [FS:EDI],0
+		
+	; Release Mutex
+	unlock16 mut_ipi
+	POPAD
+RETF
+
+
+;-------------------------------------------------------------------------------------------
+; Function SendEOI16 : Sends EOI
+;-------------------------------------------------------------------------------------------		
+SendEOI16: 
+	PUSH EDI
+	PUSH DS
+	mov di,DATA16
+	mov ds,di
+	; Write it to 0xB0 (EOI)
+;		MOV EDI,0xFEE00000
+	MOV EDI,[DS:LocalApic]
+	ADD EDI,0xB0
+	MOV dword [FS:EDI],0
+	POP DS
+	POP EDI
 RETF

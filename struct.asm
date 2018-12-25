@@ -8,6 +8,26 @@ macro linear reg,trg,seg = DATA16
 	add reg,trg
 	}
 
+macro pushadxeax
+	{
+	push ebx
+	push ecx
+	push edx
+	push esi
+	push edi
+	push ebp
+	}
+	
+macro popadxeax
+	{
+	pop ebp
+	pop edi
+	pop esi
+	pop edx
+	pop ecx
+	pop ebx
+	}
+
 struc A_CPU a,b,c,d
         {
         .acpi   dd a
