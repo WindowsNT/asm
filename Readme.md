@@ -11,7 +11,8 @@ At the moment, the first part is implemented (Real/Protected/Long mode). More to
 
 ## Instructions
 1. Edit build.bat to specify flat assembler (FASM) path.
-2. Edit startbochs.bat, startbochsnd.bat, startvmware.bat and startvbox.bat to locate the executables of these applications.
+2. Edit startbochs.bat, startvmware.bat and startvbox.bat to locate the executables of these applications. Bochs is included
+in the repository.
 
 Build and run, it will automatically start bochs/vmware/virtualbox with the included FreeDOS image. 
 It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default it is automatically run (autoexec.bat)
