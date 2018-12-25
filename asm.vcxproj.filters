@@ -99,5 +99,8 @@
     <None Include="startbochsnd.bat">
       <Filter>Configuration</Filter>
     </None>
+    <None Include="asmtest.vbox">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>

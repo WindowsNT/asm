@@ -158,6 +158,7 @@
       <FileType>Document</FileType>
     </None>
     <None Include="acpi.asm" />
+    <None Include="asmtest.vbox" />
     <None Include="bochsrc.bxrc" />
     <None Include="bochsrc_nd.bxrc" />
     <None Include="build.bat" />
