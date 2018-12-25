@@ -28,3 +28,4 @@ struc IDT_STR64 o0_15,se0_15,zb,flags,o16_31,o32_63,zr
 		.zr      dd zr
         }
 
+		

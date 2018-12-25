@@ -83,10 +83,14 @@
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</TreatOutputAsContent>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">*.asm</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">*.asm</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="a20.asm" />
+    <None Include="a20.asm">
+      <FileType>Document</FileType>
+    </None>
     <None Include="bochsrc.bxrc" />
     <None Include="build.bat" />
     <None Include="code16.asm" />
@@ -98,6 +102,7 @@
     <None Include="gdt.asm" />
     <None Include="idt.asm" />
     <None Include="page.asm" />
+    <None Include="Readme.md" />
     <None Include="stack16.asm" />
     <None Include="stack32.asm" />
     <None Include="stack64.asm" />

@@ -69,5 +69,8 @@
     <None Include="page.asm">
       <Filter>Code</Filter>
     </None>
+    <None Include="Readme.md">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>
