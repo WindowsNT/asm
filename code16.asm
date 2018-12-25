@@ -7,6 +7,7 @@ macro break16
 }
 
 INCLUDE 'unreal.asm'
+INCLUDE 'thread16.asm'
 INCLUDE 'acpi16.asm'
 
 
@@ -82,21 +83,26 @@ sti
 
 ; --------------------------------------- ACPI findings ---------------------------------------
 
-;break16
 ;push cs
 ;call GetMyApic16f
 ;mov [ds:MainCPUAPIC],bl
-;break16
 ;push cs
 ;call FillACPI
 ;mov eax,'APIC'
-;break16
 ;push cs
 ;call FindACPITable
-;break16
 ;push cs
 ;call DumpMadt
-;break16
+
+;	xor eax,eax
+;	mov ax,DATA16
+;	mov ds,ax
+;	mov [ds:IntCompleted],0
+;	mov [ds:StartSipiAddrOfs],Thread16
+;	mov [ds:StartSipiAddrSeg],CODE16
+;	mov ax,1
+;	mov ebx,1
+;	call far CODE16:SendSIPIf
 
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------

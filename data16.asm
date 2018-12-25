@@ -10,6 +10,10 @@ cpus db cpusstructize*64 dup(0)
 MainCPUAPIC db 0
 LocalApic dd 0xFEE00000
 XsdtAddress dq 0
+StartSipiAddrOfs dw 0
+StartSipiAddrSeg dw 0
+ProcedureStart dd 0
+IntCompleted db 0
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF

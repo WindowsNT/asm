@@ -108,5 +108,8 @@
     <None Include="mutex16.asm">
       <Filter>16 bit code</Filter>
     </None>
+    <None Include="thread16.asm">
+      <Filter>16 bit code</Filter>
+    </None>
   </ItemGroup>
 </Project>

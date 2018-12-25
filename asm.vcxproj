@@ -182,6 +182,7 @@
     <None Include="startvbox.bat" />
     <None Include="startvmware.bat" />
     <None Include="struct.asm" />
+    <None Include="thread16.asm" />
     <None Include="unreal.asm" />
     <None Include="vm.vmx" />
   </ItemGroup>
