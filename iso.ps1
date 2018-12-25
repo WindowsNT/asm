@@ -6,7 +6,7 @@ function New-IsoFile
     [parameter(Position=1,Mandatory=$true,ValueFromPipeline=$true, ParameterSetName='Source')]$Source,  
     [parameter(Position=2)][string]$Path = "$env:temp\$((Get-Date).ToString('yyyyMMdd-HHmmss.ffff')).iso",  
     [ValidateScript({Test-Path -LiteralPath $_ -PathType Leaf})][string]$BootFile = $null, 
-    [ValidateSet('CDR','CDRW','DVDRAM','DVDPLUSR','DVDPLUSRW','DVDPLUSR_DUALLAYER','DVDDASHR','DVDDASHRW','DVDDASHR_DUALLAYER','DISK','DVDPLUSRW_DUALLAYER','BDR','BDRE')][string] $Media = 'DVDPLUSRW_DUALLAYER', 
+    [ValidateSet('CDR','CDRW','DVDRAM','DVDPLUSR','DVDPLUSRW','DVDPLUSR_DUALLAYER','DVDDASHR','DVDDASHRW','DVDDASHR_DUALLAYER','DISK','DVDPLUSRW_DUALLAYER','BDR','BDRE')][string] $Media = 'CDR', 
     [string]$Title = (Get-Date).ToString("yyyyMMdd-HHmmss.ffff"),  
     [switch]$Force, 
     [parameter(ParameterSetName='Clipboard')][switch]$FromClipboard 
@@ -46,15 +46,15 @@ public class ISOFile
   
     $MediaType = @('UNKNOWN','CDROM','CDR','CDRW','DVDROM','DVDRAM','DVDPLUSR','DVDPLUSRW','DVDPLUSR_DUALLAYER','DVDDASHR','DVDDASHRW','DVDDASHR_DUALLAYER','DISK','DVDPLUSRW_DUALLAYER','HDDVDROM','HDDVDR','HDDVDRAM','BDROM','BDR','BDRE') 
   
-    Write-Verbose -Message "Selected media type is $Media with value $($MediaType.IndexOf($Media))"
+    Write "Selected media type is $Media with value $($MediaType.IndexOf($Media))"
     ($Image = New-Object -com IMAPI2FS.MsftFileSystemImage -Property @{VolumeName=$Title}).ChooseImageDefaultsForMediaType($MediaType.IndexOf($Media)) 
    
-    if (!($Target = New-Item -Path $Path -ItemType File -Force:$Force -ErrorAction SilentlyContinue)) { Write-Error -Message "Cannot create file $Path. Use -Force parameter to overwrite if the target file already exists."; break } 
+    if (!($Target = New-Item -Path $Path -ItemType File -Force:$Force -ErrorAction SilentlyContinue)) { Write "Cannot create file $Path. Use -Force parameter to overwrite if the target file already exists."; break } 
   }  
   
   Process { 
     if($FromClipboard) { 
-      if($PSVersionTable.PSVersion.Major -lt 5) { Write-Error -Message 'The -FromClipboard parameter is only supported on PowerShell v5 or higher'; break } 
+      if($PSVersionTable.PSVersion.Major -lt 5) { Write 'The -FromClipboard parameter is only supported on PowerShell v5 or higher'; break } 
       $Source = Get-Clipboard -Format FileDropList 
     } 
   
@@ -64,8 +64,8 @@ public class ISOFile
       } 
   
       if($item) { 
-        Write-Verbose -Message "Adding item to the target image: $($item.FullName)"
-        try { $Image.Root.AddTree($item.FullName, $true) } catch { Write-Error -Message ($_.Exception.Message.Trim() + ' Try a different media type.') } 
+        Write "Adding item to the target image: $($item.FullName)"
+        try { $Image.Root.AddTree($item.FullName, $true) } catch { Write  ($_.Exception.Message.Trim() + ' Try a different media type.') } 
       } 
     } 
   } 
@@ -74,7 +74,7 @@ public class ISOFile
     if ($Boot) { $Image.BootImageOptions=$Boot }  
     $Result = $Image.CreateResultImage()  
     [ISOFile]::Create($Target.FullName,$Result.ImageStream,$Result.BlockSize,$Result.TotalBlocks) 
-    Write-Verbose -Message "Target image ($($Target.FullName)) has been created"
+    Write "Target image ($($Target.FullName)) has been created"
     $Target
   } 
 } 

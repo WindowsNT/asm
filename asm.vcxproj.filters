@@ -72,5 +72,8 @@
     <None Include="Readme.md">
       <Filter>Configuration</Filter>
     </None>
+    <None Include="iso.ps1">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>
