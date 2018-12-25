@@ -7,7 +7,7 @@ start16:
 ; --------------------------------------- Initialization of our segments ---------------------------------------
 cli
 
-;xchg bx,bx ; BOCHS magic breakpoint
+xchg bx,bx ; BOCHS magic breakpoint
 
 mov ax,DATA16
 mov ds,ax
