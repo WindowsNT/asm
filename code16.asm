@@ -70,10 +70,6 @@ LoopPRMFound2:
 mov [PhysicalPagingOffset64],eax
 
 
-; --------------------------------------- Real mode test ---------------------------------------
-mov ax,0900h
-mov dx,rm1
-int 21h
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 mov bx,idt_RM_start
@@ -116,6 +112,13 @@ sti
 ; = END NO DEBUG HERE =
 
 ; --------------------------------------- Tests ---------------------------------------
+; Restore screen (long mode bug)
+mov ax,3
+int 10h
+
+mov ax,0900h
+mov dx,rm1
+int 21h
 mov ax,DATA32
 mov gs,ax
 cmp [gs:d32],1
@@ -124,6 +127,14 @@ mov dx,pm1
 mov ax,0900h
 int 21h
 fail_1:
+mov ax,DATA64
+mov gs,ax
+cmp [gs:d64],1
+jnz fail_2
+mov dx,lm1
+mov ax,0900h
+int 21h
+fail_2:
 
 ; --------------------------------------- Bye! ---------------------------------------
 mov ax,4c00h

@@ -5,6 +5,7 @@ SEGMENT DATA16 USE16
 ; --------------------------------------- Messages ---------------------------------------
 rm1 db "Real mode test, OK",0dh,0ah,"$"
 pm1 db "Protected mode test, OK",0dh,0ah,"$"
+lm1 db "Long mode test, OK",0dh,0ah,"$"
 
 ; --------------------------------------- GDT ---------------------------------------
 gdt_start dw gdt_size
