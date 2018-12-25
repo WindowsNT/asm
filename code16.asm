@@ -94,8 +94,8 @@ sti
 ;push cs
 ;call DumpMadt
 
-;	xor eax,eax
-;	mov ax,DATA16
+;xor eax,eax
+;mov ax,DATA16
 ;	mov ds,ax
 ;	mov [ds:IntCompleted],0
 ;	mov [ds:StartSipiAddrOfs],Thread16
@@ -103,7 +103,6 @@ sti
 ;	mov ax,1
 ;	mov ebx,1
 ;	call far CODE16:SendSIPIf
-
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 mov bx,idt_RM_start

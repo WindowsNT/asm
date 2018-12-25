@@ -81,9 +81,6 @@
     <None Include="page32.asm">
       <Filter>32 bit code</Filter>
     </None>
-    <None Include="bochsrc_nd.bxrc">
-      <Filter>Configuration</Filter>
-    </None>
     <None Include="startvbox.bat">
       <Filter>Configuration</Filter>
     </None>
@@ -91,9 +88,6 @@
       <Filter>Configuration</Filter>
     </None>
     <None Include="startbochs.bat">
-      <Filter>Configuration</Filter>
-    </None>
-    <None Include="startbochsnd.bat">
       <Filter>Configuration</Filter>
     </None>
     <None Include="asmtest.vbox">

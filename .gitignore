@@ -7,7 +7,6 @@
 *.userosscache
 *.sln.docstates
 *.iso
-*.exe
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -263,3 +262,4 @@ __pycache__/
 *.pyc
 /Dos622.img
 /Logs
+/CD

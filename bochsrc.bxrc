@@ -27,12 +27,14 @@ optramimage3: file=none
 optramimage4: file=none
 pci: enabled=1, chipset=i440fx
 vga: extension=vbe, update_freq=5, realtime=1
-cpu: count=1, ips=4000000, model=bx_generic, reset_on_triple_fault=1, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0
+cpu: count=2:2:2, ips=4000000, quantum=16, model=bx_generic, reset_on_triple_fault=1, cpuid_limit_winnt=0, ignore_bad_msrs=1, mwait_is_nop=0
 cpuid: level=6, stepping=3, model=3, family=6, vendor_string="GenuineIntel", brand_string="              Intel(R) Pentium(R) 4 CPU        "
 cpuid: mmx=1, apic=x2apic, simd=ssse3, sse4a=0, misaligned_sse=0, sep=1, movbe=0, adx=0
 cpuid: aes=1, sha=0, xsave=0, xsaveopt=0, x86_64=1, 1g_pages=1, pcid=0, fsgsbase=0
 cpuid: smep=0, smap=0, mwait=1, vmx=1
 print_timestamps: enabled=0
+debugger_log: -
+magic_break: enabled=1
 port_e9_hack: enabled=0
 private_colormap: enabled=0
 clock: sync=none, time0=local, rtc_sync=0
@@ -54,4 +56,3 @@ com1: enabled=1, mode=null
 com2: enabled=0
 com3: enabled=0
 com4: enabled=0
-magic_break: enabled=1
