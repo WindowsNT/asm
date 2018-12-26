@@ -324,7 +324,9 @@ RETF
 SendIPI16: ; EBX = CPU INDEX, ECX = IPI
 	PUSHAD
 	; Lock Mutex		
-	qlock16 mut_ipi
+	mov ax,mut_ipi
+	push cs
+	call qwaitlock16
 
 		
 	; Write it to 0x310

@@ -33,15 +33,13 @@ macro qunlock16 trg
 	pop ds
 	}
 
-macro qwait16 trg
-	{
-	local .Loop1
-	local .OutLoop1
+qwait16:
+	; ax = target mutex in data16
 	push ds
 	push di
 	MOV DI,DATA16
 	MOV DS,DI
-	MOV DI,trg
+	MOV DI,ax
 
 	.Loop1:		
 	CMP byte [ds:di],0xff
@@ -52,6 +50,34 @@ macro qwait16 trg
 	
 	pop di
 	pop ds
-	}
+retf
 
 
+qwaitlock16:
+	; ax = target mutex in data16
+	push bx
+	push ds
+	push di
+	MOV DI,DATA16
+	MOV DS,DI
+	MOV DI,ax
+
+	.Loop1:		
+	CMP byte [ds:di],0xff
+	JZ .OutLoop1
+	pause 
+	JMP .Loop1
+	.OutLoop1:
+	
+	; Lock is free, can we grab it?
+	mov bl,0xfe
+	MOV AL,0xFF
+	LOCK CMPXCHG [DS:DI],bl
+	JNZ .Loop1 ; Write failed
+
+	.OutLoop2: ; Lock Acquired
+
+	pop di
+	pop ds
+	pop bx
+retf
