@@ -390,23 +390,3 @@ SendEOI16:
 	POP EDI
 RETF
 
-; 
-IntCompletedFunction:
-	push ax
-	push ds
-	mov ax,DATA16
-	mov ds,ax
-	.iii:
-		jecxz .liii
-		cmp ecx,-1
-		jz .nliii
-		dec ecx
-		.nliii:
-		pause
-		cmp [ds:IntCompleted],1
-		jnz .iii
-	.liii:
-	pop ds
-	pop ax
-	.endiii:
-RETF

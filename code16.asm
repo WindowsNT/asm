@@ -103,7 +103,7 @@ cli
 call EnterUnreal
 sti
 
-; --------------------------------------- ACPI findings ---------------------------------------
+; --------------------------------------- Find ACPI  ---------------------------------------
 if TEST_MULTI > 0 
 
 mov ax,DATA16
@@ -144,42 +144,10 @@ jmp .noacpi
 .coo2:
 push cs
 call DumpMadt
-
-
-
-qlock16 mut_1
-qlock16 mut_1
-
-xor eax,eax
-mov ax,DATA16
-mov ds,ax
-mov [ds:IntCompleted],0
-linear eax,Thread16_1,CODE16
-mov ebx,1
-call far CODE16:SendSIPIf
-push cs
-call IntCompletedFunction
-
-xor eax,eax
-mov ax,DATA16
-mov ds,ax
-mov [ds:IntCompleted],0
-linear eax,Thread16_2,CODE16
-mov ebx,2
-call far CODE16:SendSIPIf
-push cs
-call IntCompletedFunction
-
-mov ax,mut_1
-push cs
-call qwait16
-mov ax,mut_1
-push cs
-call qwait16
+.noacpi:
 
 end if
 
-.noacpi:
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 
@@ -231,6 +199,43 @@ if TEST_LONG > 0
 mov ax,3
 int 10h
 end if
+
+
+
+
+; --------------------------------------- ACPI tests ---------------------------------------
+if TEST_MULTI > 0 
+
+xor ecx,ecx
+
+qlock16 mut_1
+qlock16 mut_1
+
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+linear eax,Thread16_1,CODE16
+mov ebx,1
+call far CODE16:SendSIPIf
+
+
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+linear eax,Thread16_2,CODE16
+mov ebx,2
+call far CODE16:SendSIPIf
+
+mov ax,mut_1
+push cs
+call qwait16
+mov ax,mut_1
+push cs
+call qwait16
+.noacpi:
+
+end if
+
 
 
 ; --------------------------------------- Tests ---------------------------------------

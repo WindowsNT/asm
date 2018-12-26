@@ -12,7 +12,6 @@ LocalApic dd 0xFEE00000
 RsdtAddress dd 0
 XsdtAddress dq 0
 ProcedureStart dd 0
-IntCompleted db 0
 FromThread1 db 0 
 FromThread2 db 0 
 
