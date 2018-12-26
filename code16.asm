@@ -27,6 +27,7 @@ mov ss,ax
 sti
 
 
+
 ; --------------------------------------- Prepare Long Mode  ---------------------------------------
 xor eax,eax
 mov ax,CODE64
@@ -87,21 +88,36 @@ mov ds,ax
 push cs
 call GetMyApic16f
 mov [ds:MainCPUAPIC],bl
+
 push cs
+
 call FillACPI
 cmp eax,0xFFFFFFFF
 jnz .coo
 jmp .noacpi
 .coo:
+
+cmp eax, 'XSDT'
+jz .ac2
+
+
 mov eax,'APIC'
 push cs
-call FindACPITable
+call FindACPITable1
+jmp .eac
+.ac2:
+mov eax,'APIC'
+push cs
+call FindACPITable2
+.eac:
 cmp eax,0xFFFFFFFF
 jnz .coo2
 jmp .noacpi
 .coo2:
 push cs
 call DumpMadt
+
+
 
 qlock16 mut_1
 qlock16 mut_1
@@ -212,10 +228,39 @@ int 21h
 jmp .cpul
 .endr:
 
+push cs
+call EnterUnreal
 ; Real mode test
 mov ax,0900h
 mov dx,rm1
 int 21h
+
+; Apic test
+cmp dword [ds:RsdtAddress],0
+jz .noa1
+mov ax,0900h
+mov dx,ap1
+int 21h
+mov edi, [ds:RsdtAddress]
+push cs
+call DumpAll
+mov ax,0900h
+mov dx,crlf
+int 21h
+.noa1:
+
+cmp dword [ds:XsdtAddress],0
+jz .noa2
+mov ax,0900h
+mov dx,ap2
+int 21h
+mov edi, dword [ds:XsdtAddress]
+push cs
+call DumpAll
+mov ax,0900h
+mov dx,crlf
+int 21h
+.noa2:
 
 
 ; Thread test

@@ -9,6 +9,7 @@ CpusOfs:
 cpus db cpusstructize*64 dup(0)
 MainCPUAPIC db 0
 LocalApic dd 0xFEE00000
+RsdtAddress dd 0
 XsdtAddress dq 0
 StartSipiAddrOfs dw 0
 StartSipiAddrSeg dw 0
@@ -25,11 +26,17 @@ mut_1 db 0xFF
 rm1 db "Real mode test, OK",0dh,0ah,"$"
 pm1 db "Protected mode test, OK",0dh,0ah,"$"
 lm1 db "Long mode test, OK",0dh,0ah,"$"
+ap1 db "Apic 1 found",0dh,0ah,"$"
+ap2 db "Apic 2 found",0dh,0ah,"$"
+
 cpuf db "CPU Found",0dh,0ah,"$"
 thr1 db "Thread 1 executed, OK",0dh,0ah,"$"
 thr2 db "Thread 2 executed, OK",0dh,0ah,"$"
 
 a20off db "Restoring A20",0dh,0ah,"$"
+
+crlf db 0dh,0ah,"$"
+
 
 ; --------------------------------------- GDT ---------------------------------------
 gdt_start dw gdt_size

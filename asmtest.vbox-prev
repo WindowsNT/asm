@@ -6,13 +6,13 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.15-windows">
-  <Machine uuid="{a436033c-67f8-4e9f-b0fe-0a7efbadb84d}" name="asmtest" OSType="Other_64" snapshotFolder="Snapshots" lastStateChange="2018-12-25T22:12:02Z">
+  <Machine uuid="{a436033c-67f8-4e9f-b0fe-0a7efbadb84d}" name="asmtest" OSType="Other_64" snapshotFolder="Snapshots" lastStateChange="2018-12-26T12:56:47Z">
     <MediaRegistry>
       <DVDImages>
-        <Image uuid="{e6514449-af13-4958-9628-33af9ee8fa81}" location="F:/TOOLS/ASM/full2/d.iso"/>
+        <Image uuid="{e6514449-af13-4958-9628-33af9ee8fa81}" location="d.iso"/>
       </DVDImages>
       <FloppyImages>
-        <Image uuid="{3633dce4-e06c-456b-9a07-c48367a1e1a2}" location="F:/TOOLS/ASM/full2/a.img"/>
+        <Image uuid="{3633dce4-e06c-456b-9a07-c48367a1e1a2}" location="a.img"/>
       </FloppyImages>
     </MediaRegistry>
     <ExtraData>
@@ -20,7 +20,7 @@
       <ExtraDataItem name="GUI/LastNormalWindowPosition" value="363,108,720,442"/>
     </ExtraData>
     <Hardware>
-      <CPU>
+      <CPU count="3">
         <PAE enabled="true"/>
         <LongMode enabled="true"/>
         <HardwareVirtExLargePages enabled="true"/>
@@ -45,7 +45,7 @@
       </Network>
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="false"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="en_US" timestamp="1545755934256737600" flags=""/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="en_US" timestamp="1545827366476354900" flags=""/>
       </GuestProperties>
     </Hardware>
     <StorageControllers>

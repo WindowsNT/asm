@@ -44,7 +44,7 @@ ChecksumValid:
 
 
 FillACPI:
-	PUSHAD
+	pushadxeax
 	push es
 	mov es,[fs:040eh]
 	xor edi,edi
@@ -64,9 +64,9 @@ FillACPI:
 	jnz .s
 	jmp .found
 	.noACPI:
-	POPAD
+	popadxeax
 	mov EAX,0xFFFFFFFF
-	RETF
+RETF
 	.found:
 	; Found at EDI
 	sub edi,8
@@ -85,7 +85,7 @@ FillACPI:
 	mov eax,[fs:edi]
 	cmp eax, 'XSDT'			; Valid?
 	jnz .noACPI2
-	POPAD
+popadxeax
 RETF
 	.noACPI2:
 	mov edi,esi
@@ -100,28 +100,70 @@ RETF
 	mov eax,[fs:edi]
 	cmp eax, 'RSDT'			; Valid?
 	jnz .noACPI
-	POPAD
+
+	mov edi,dword [ds:XsdtAddress]
+	mov dword [ds:XsdtAddress],0
+	mov dword [ds:RsdtAddress],edi
+
+popadxeax
 RETF
-		
+
 ;-------------------------------------------------------------------------------------------
-; Function FindACPITable : Finds EAX Table
+; Function FindACPITable1 : Finds EAX Table from rsdt
 ;-------------------------------------------------------------------------------------------		
-FindACPITable:
+FindACPITable1:
 	; EAX = sig
 	push edi
 	push ebx
 	push edx
-	mov edi,dword [ds:XsdtAddress]
+	mov edi,dword [ds:RsdtAddress]
+	cmp edi,0
+	jz .fail
 	.l1:
 	mov ebx,[fs:edi]
 	mov edx,[fs:edi + 4]
 	cmp edx,0
 	jnz .ok1
+	.fail:
 	mov EAX,0xFFFFFFFF
 	pop edx
 	pop ebx
 	pop edi
-	RETF
+	RETF 
+	.ok1:
+	cmp ebx,eax
+	jz .f1
+	add edi,edx
+	jmp .l1
+	.f1:
+	mov eax,edi
+	pop edx
+	pop ebx
+	pop edi
+RETF
+		
+;-------------------------------------------------------------------------------------------
+; Function FindACPITable2 : Finds EAX Table from xsdt
+;-------------------------------------------------------------------------------------------		
+FindACPITable2:
+	; EAX = sig
+	push edi
+	push ebx
+	push edx
+	mov edi,dword [ds:XsdtAddress]
+	cmp edi,0
+	jz .fail
+	.l1:
+	mov ebx,[fs:edi]
+	mov edx,[fs:edi + 4]
+	cmp edx,0
+	jnz .ok1
+	.fail:
+	mov EAX,0xFFFFFFFF
+	pop edx
+	pop ebx
+	pop edi
+	RETF 
 	.ok1:
 	cmp ebx,eax
 	jz .f1
@@ -185,6 +227,78 @@ DumpMadt: ; EAX
 	.end:
 		
 	popad
+RETF
+
+
+;-------------------------------------------------------------------------------------------
+; Function DumpAll ; edi = xsdt or rsdt
+;-------------------------------------------------------------------------------------------		
+DumpAll:
+RETF 
+
+
+	push eax
+	push edx
+	cmp edi,0
+	jz .fail
+	.l1:
+	mov eax,[fs:edi]
+	mov edx,[fs:edi + 4]
+	cmp edx,0
+	jnz .ok1
+
+	.fail:
+	pop edx
+	pop eax
+RETF 
+
+	.ok1:
+	; eax to show
+	push edx
+	mov edx,eax
+	cmp dl,'A'
+	jl .fail 
+	cmp dl,'Z'
+	jg .fail
+	mov ah,2
+	int 21h
+
+	shr edx,8
+	cmp dl,'A'
+	jl .fail 
+	cmp dl,'Z'
+	jg .fail
+	mov ah,2
+	int 21h
+	
+	shr edx,8
+	cmp dl,'A'
+	jl .fail 
+	cmp dl,'Z'
+	jg .fail
+	mov ah,2
+	int 21h
+
+	shr edx,8
+	cmp dl,'A'
+	jl .fail 
+	cmp dl,'Z'
+	jg .fail
+	mov ah,2
+	int 21h
+	
+	mov dl,' ';
+	mov ah,2
+	int 21h
+
+
+	pop edx
+
+	add edi,edx
+	jmp .l1
+
+	pop edx
+	pop eax
 RETF
 
 ;-------------------------------------------------------------------------------------------
