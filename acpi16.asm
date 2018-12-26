@@ -324,7 +324,7 @@ RETF
 SendIPI16: ; EBX = CPU INDEX, ECX = IPI
 	PUSHAD
 	; Lock Mutex		
-	lock16 mut_ipi
+	qlock16 mut_ipi
 
 		
 	; Write it to 0x310
@@ -366,7 +366,7 @@ SendIPI16: ; EBX = CPU INDEX, ECX = IPI
     MOV dword [FS:EDI],0
 		
 	; Release Mutex
-	unlock16 mut_ipi
+	qunlock16 mut_ipi
 	POPAD
 RETF
 

@@ -163,8 +163,8 @@ call far CODE16:SendSIPIf
 push cs
 call IntCompletedFunction
 
-wait16 mut_1
-wait16 mut_1
+qwait16 mut_1
+qwait16 mut_1
 
 end if
 
