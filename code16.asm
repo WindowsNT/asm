@@ -25,6 +25,8 @@ mov ax,STACK16
 mov sp,stack16_end
 mov ss,ax
 sti
+mov bx,idt_RM_start
+sidt [bx] 
 
 
 
@@ -143,9 +145,7 @@ xor eax,eax
 mov ax,DATA16
 mov ds,ax
 mov [ds:IntCompleted],0
-mov [ds:StartSipiAddrOfs],Thread16
-mov [ds:StartSipiAddrSeg],CODE16
-mov ax,1
+linear eax,Thread16_1,CODE16
 mov ebx,1
 call far CODE16:SendSIPIf
 push cs
@@ -155,9 +155,7 @@ xor eax,eax
 mov ax,DATA16
 mov ds,ax
 mov [ds:IntCompleted],0
-mov [ds:StartSipiAddrOfs],Thread16_2
-mov [ds:StartSipiAddrSeg],CODE16
-mov ax,2
+linear eax,Thread16_2,CODE16
 mov ebx,2
 call far CODE16:SendSIPIf
 push cs
@@ -171,8 +169,7 @@ end if
 .noacpi:
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
-mov bx,idt_RM_start
-sidt [bx]
+
 mov [ds:a20enabled],0
 call CheckA20
 jc A20AlreadyOn

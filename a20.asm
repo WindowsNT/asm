@@ -17,6 +17,17 @@ EnableA20:
 	out 60h,al
 ret
 
+
+EnableA20f:
+	call WaitKBC
+	mov al,0d1h
+	out 64h,al
+	call WaitKBC
+	mov al,0dfh
+	out 60h,al
+retf
+
+
 DisableA20:
 	call WaitKBC
 	mov al,0d1h

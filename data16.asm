@@ -11,8 +11,6 @@ MainCPUAPIC db 0
 LocalApic dd 0xFEE00000
 RsdtAddress dd 0
 XsdtAddress dq 0
-StartSipiAddrOfs dw 0
-StartSipiAddrSeg dw 0
 ProcedureStart dd 0
 IntCompleted db 0
 FromThread1 db 0 
@@ -30,6 +28,7 @@ ap1 db "Apic 1 found",0dh,0ah,"$"
 ap2 db "Apic 2 found",0dh,0ah,"$"
 
 cpuf db "CPU Found",0dh,0ah,"$"
+thrm db "Message fro  thread",0dh,0ah,"$"
 thr1 db "Thread 1 executed, OK",0dh,0ah,"$"
 thr2 db "Thread 2 executed, OK",0dh,0ah,"$"
 

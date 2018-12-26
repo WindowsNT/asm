@@ -254,53 +254,12 @@ RETF
 
 
 
-;-------------------------------------------------------------------------------------------
-; Function SipiStart : IPI Starts here
-;-------------------------------------------------------------------------------------------
-	SipiStart:
-	db 4096 dup (144) ; // fill NOPs
-		
-		
-		
-	; Load IDT
-	CLI
-	mov di,DATA16
-	mov ds,di
-	lidt fword [ds:idt_RM_start]
-
-	mov ax,STACK16S
-	mov ss,ax
-	mov sp,stack16s_end
-		
-	; A20
-	call FAR CODE16:EnableA20
-
-	; Quick Enter Unrel		
-	call FAR CODE16:EnterUnreal
-
-	; Spurious, APIC		
-	MOV EDI,[DS:LocalApic]
-	ADD EDI,0x0F0
-	MOV EDX,[FS:EDI]
-	OR EDX,0x1FF
-	push dword 0
-	pop fs
-	MOV [FS:EDI],EDX
-
-	MOV EDI,[DS:LocalApic]
-	ADD EDI,0x0B0
-	MOV dword [FS:EDI],0
-
-	; JMP to starting address
-	mov di,StartSipiAddrOfs
-	jmp far [ds:di]
-
 
 
 
 
 ;-------------------------------------------------------------------------------------------
-; Function SendSIPIf : Sends SIPI. EBX = CPU Index
+; Function SendSIPIf : Sends SIPI. EBX = CPU Index, EAX = linear
 ;-------------------------------------------------------------------------------------------		
 SendSIPIf:
 	PUSHAD
@@ -316,7 +275,6 @@ SendSIPIf:
 	OR EDX,0x1FF
 	MOV [FS:EDI],EDX
 	; Vector
-	linear eax,SipiStart,CODE16
 	.L1:
 	MOV ECX,EAX
 	TEST EAX,0xFFF
