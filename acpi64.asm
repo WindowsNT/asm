@@ -18,7 +18,7 @@ SendSIPI64:
 	PUSH RSI
 	PUSH RDI
 		
-break64
+
 	linear ECX,LocalApic
 	; Spurious
 	MOV EDI,[ECX]

@@ -81,13 +81,13 @@ Thread16_4:
 	thread16header STACK16T4,stack16t4_end
 
 	mov [FromThread4],1
-    sti 
-	mov dx,thrm3
-	mov ax,0900h
-	int 21h
-	cli
+ ;   sti 
+	;mov dx,thrm3
+	;mov ax,0900h
+	;int 21h
+	;cli
 
-	qunlock16 mut_1
+;	qunlock16 mut_1
 	cli
 	hlt
-		
+	hlt	

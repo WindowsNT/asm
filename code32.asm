@@ -92,8 +92,12 @@ end if
 ; --------------------------------------- Prepare Long Mode ---------------------------------------
 if TEST_LONG > 0 
     
+if TEST_LM_SIPI > 0 
+	call InitPageTable643 ; 1gb pages, map entire 4gb
+else
 	call InitPageTable642
-   
+end if
+
     ; Enable PAE
     mov eax, cr4
     bts eax, 5
