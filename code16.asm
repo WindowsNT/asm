@@ -97,7 +97,6 @@ jnz .coo
 jmp .noacpi
 .coo:
 
-break16
 cmp eax, 'XSDT'
 jz .ac2
 
@@ -249,6 +248,7 @@ mov dx,ap1
 int 21h
 mov edi, [ds:RsdtAddress]
 push cs
+mov ecx,4
 call DumpAll
 mov ax,0900h
 mov dx,crlf
@@ -261,6 +261,7 @@ mov ax,0900h
 mov dx,ap2
 int 21h
 mov edi, dword [ds:XsdtAddress]
+mov ecx,8
 push cs
 call DumpAll
 mov ax,0900h

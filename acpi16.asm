@@ -140,8 +140,6 @@ RETF
 	mov eax,0ffffffffh
 RETF
 
-		
-
 	
 ;-------------------------------------------------------------------------------------------
 ; Function DumpMadt : Fills from  EAX MADT
@@ -201,56 +199,54 @@ RETF
 ; Function DumpAll ; edi = xsdt or rsdt
 ;-------------------------------------------------------------------------------------------		
 DumpAll:
-RETF 
 
-
-	push eax
-	push edx
 	cmp edi,0
-	jz .fail
-	.l1:
-	mov eax,[fs:edi]
-	mov edx,[fs:edi + 4]
-	cmp edx,0
-	jnz .ok1
+	jz .f
 
-	.fail:
-	pop edx
-	pop eax
-RETF 
+	; len, must be more than 36
+	mov ebx,[fs:edi + 4]
+	cmp ebx,36
+	jle .f
+	sub ebx,36 
+	xor edx,edx
 
-	.ok1:
-	; eax to show
+	.loop:
+	cmp edx,ebx
+	jz .f
+	mov esi,[fs:edi + 36 + edx]
+	mov eax,[fs:esi]
+
+		; eax to show
 	push edx
 	mov edx,eax
 	cmp dl,'A'
-	jl .fail 
+	jl .f 
 	cmp dl,'Z'
-	jg .fail
+	jg .f
 	mov ah,2
 	int 21h
 
 	shr edx,8
 	cmp dl,'A'
-	jl .fail 
+	jl .f
 	cmp dl,'Z'
-	jg .fail
+	jg .f
 	mov ah,2
 	int 21h
 	
 	shr edx,8
 	cmp dl,'A'
-	jl .fail 
+	jl .f 
 	cmp dl,'Z'
-	jg .fail
+	jg .f
 	mov ah,2
 	int 21h
 
 	shr edx,8
 	cmp dl,'A'
-	jl .fail 
+	jl .f 
 	cmp dl,'Z'
-	jg .fail
+	jg .f
 	mov ah,2
 	int 21h
 	
@@ -261,12 +257,12 @@ RETF
 
 	pop edx
 
-	add edi,edx
-	jmp .l1
-
-	pop edx
-	pop eax
+	add edx,ecx
+	jmp .loop
+	.f:
 RETF
+
+
 
 ;-------------------------------------------------------------------------------------------
 ; Function SipiStart : IPI Starts here
