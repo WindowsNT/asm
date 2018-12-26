@@ -18,6 +18,14 @@ in the repository.
 Build and run, it will automatically start bochs/vmware/virtualbox with the included FreeDOS image. 
 It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default it is automatically run (autoexec.bat)
 
+## Tests performed
+1. Real mode test
+2. Protected mode test with or without paging
+3. Long mode test with paging and PAE
+4. Real mode thread calling
+5. Real mode thread called from protected mode
+
+
 
 
 
