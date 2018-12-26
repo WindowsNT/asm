@@ -219,41 +219,24 @@ DumpAll:
 		; eax to show
 	push edx
 	mov edx,eax
-	cmp dl,'A'
-	jl .f 
-	cmp dl,'Z'
-	jg .f
 	mov ah,2
 	int 21h
 
 	shr edx,8
-	cmp dl,'A'
-	jl .f
-	cmp dl,'Z'
-	jg .f
 	mov ah,2
 	int 21h
 	
 	shr edx,8
-	cmp dl,'A'
-	jl .f 
-	cmp dl,'Z'
-	jg .f
 	mov ah,2
 	int 21h
 
 	shr edx,8
-	cmp dl,'A'
-	jl .f 
-	cmp dl,'Z'
-	jg .f
 	mov ah,2
 	int 21h
 	
 	mov dl,' ';
 	mov ah,2
 	int 21h
-
 
 	pop edx
 
