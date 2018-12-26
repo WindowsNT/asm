@@ -28,6 +28,8 @@ sti
 mov bx,idt_RM_start
 sidt [bx] 
 
+mov ax,3
+int 10h
 
 
 ; --------------------------------------- Prepare Long Mode  ---------------------------------------

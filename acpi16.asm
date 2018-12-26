@@ -349,7 +349,6 @@ SendIPI16: ; EBX = CPU INDEX, ECX = IPI
 		
 		
 	; Write it to 0x300
-;		MOV EDI,0xFEE00000
 	MOV EDI,[DS:LocalApic]
 	ADD EDI,0x300
 	MOV [FS:EDI],ECX
@@ -361,10 +360,10 @@ SendIPI16: ; EBX = CPU INDEX, ECX = IPI
 	TEST EAX,1
 	JNZ .Verify
 	; Write it to 0xB0 (EOI)
-;		MOV EDI,0xFEE00000
-;		MOV EDI,[DS:LocalApic]
-;		ADD EDI,0xB0
-;		MOV dword [FS:EDI],0
+ 
+	MOV EDI,[DS:LocalApic]
+	ADD EDI,0xB0
+    MOV dword [FS:EDI],0
 		
 	; Release Mutex
 	unlock16 mut_ipi
