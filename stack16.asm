@@ -28,3 +28,7 @@ SEGMENT STACK16T3 USE16
 ORG 0
 sseg16t3 dw 2048 dup (?)
 stack16t3_end:
+SEGMENT STACK16T4 USE16
+ORG 0
+sseg16t4 dw 2048 dup (?)
+stack16t4_end:

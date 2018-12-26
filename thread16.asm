@@ -62,11 +62,27 @@ Thread16_2:
 		
 Thread16_3:
 
-	thread16header STACK16T2,stack16t3_end
+	thread16header STACK16T3,stack16t3_end
 
 	mov [FromThread3],1
     sti 
 	mov dx,thrm2
+	mov ax,0900h
+	int 21h
+	cli
+
+	qunlock16 mut_1
+	cli
+	hlt
+		
+		
+Thread16_4:
+
+	thread16header STACK16T4,stack16t4_end
+
+	mov [FromThread4],1
+    sti 
+	mov dx,thrm3
 	mov ax,0900h
 	int 21h
 	cli

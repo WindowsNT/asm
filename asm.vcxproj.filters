@@ -114,6 +114,12 @@
     <None Include="mutex32.asm">
       <Filter>32 bit code</Filter>
     </None>
+    <None Include="mutex64.asm">
+      <Filter>64 bit code</Filter>
+    </None>
+    <None Include="acpi64.asm">
+      <Filter>64 bit code</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dos32.asm">

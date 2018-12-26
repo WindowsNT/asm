@@ -8,6 +8,8 @@ macro break64
 	xchg bx,bx
 }
 
+include 'acpi64.asm'
+
 Start64:
 
 	xor r8d,r8d
@@ -22,6 +24,23 @@ Start64:
 	shl rax,4
 	add rax,d64
 	mov byte [rax],1
+
+; --------------------------------------- SIPI to real mode test ---------------------------------------
+if TEST_LM_SIPI > 0 
+
+qlock64 mut_1
+
+linear eax,Thread16_4,CODE16
+mov rbx,1
+call SendSIPI64
+
+mov ax,mut_1
+call qwait64
+
+
+end if
+
+
 
 	; Back to Compatibility Mode
 	push code32_idx

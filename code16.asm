@@ -325,6 +325,16 @@ mov ax,0900h
 int 21h
 fail_31:
 
+; Thread 3
+mov ax,DATA16
+mov gs,ax
+cmp [gs:FromThread4],1
+jnz fail_32
+mov dx,thr4
+mov ax,0900h
+int 21h
+fail_32:
+
 end if
 
 ; PM mode test

@@ -1,30 +1,32 @@
-; --------------------------------------- 32 bit APIC functions ---------------------------------------
-USE32
+; --------------------------------------- 64 bit APIC functions ---------------------------------------
+USE64
 
-include 'mutex32.asm'
+
+include 'mutex64.asm'
 
 
 
 
 ;-------------------------------------------------------------------------------------------
-; Function SendSIPI32f : Sends SIPI. EBX = CPU Index, EAX = linear
+; Function SendSIPI64 : Sends SIPI. EBX = CPU Index, EAX = linear
 ;-------------------------------------------------------------------------------------------		
-SendSIPI32f:
-	PUSHAD
-	PUSH DS
-	PUSH ES
-	mov cx,page32_idx ; This is a base-0 segment, so "linear" for EDI positioning
-	mov es,cx
-	mov cx,data16_idx
-	mov ds,cx
+SendSIPI64:
+	PUSH RAX
+	PUSH RBX
+	PUSH RCX
+	PUSH RDX
+	PUSH RSI
+	PUSH RDI
 		
-	XOR ECX,ECX
+break64
+	linear ECX,LocalApic
 	; Spurious
-	MOV EDI,[DS:LocalApic]
+	MOV EDI,[ECX]
 	ADD EDI,0x0F0
-	MOV EDX,[ES:EDI]
+	MOV EDX,[EDI]
 	OR EDX,0x1FF
-	MOV [ES:EDI],EDX
+	MOV [EDI],EDX
+
 	; Vector
 	.L1:
 	MOV ECX,EAX
@@ -38,35 +40,41 @@ SendSIPI32f:
 	; Init
 	MOV ECX,0x04500
 	OR ECX,ESI
-	push cs
-	call SendIPI32
+	call SendIPI64
 
 	; SIPI 1
 	MOV ECX,0x05600
 	OR ECX,ESI
-	push cs
-	call SendIPI32
+	call SendIPI64
 
 	; SIPI 2
 	MOV ECX,0x05600
 	OR ECX,ESI
-	push cs
-	call SendIPI32
-	POP ES
-	POP DS
-	POPAD
-RETF
+	call SendIPI64
+
+	POP RDI
+	POP RSI
+	POP RDX
+	POP RCX
+	POP RBX
+	POP RAX
+RET
 
 
 ;-------------------------------------------------------------------------------------------
-; Function SendIPI32 : Sends IPI. EBX = CPU Index, ECX = IPI
+; Function SendIPI64 : Sends IPI. EBX = CPU Index, ECX = IPI
 ;-------------------------------------------------------------------------------------------		
-SendIPI32: ; EBX = CPU INDEX, ECX = IPI
-	PUSHAD
+SendIPI64: ; EBX = CPU INDEX, ECX = IPI
+	PUSH RAX
+	PUSH RBX
+	PUSH RCX
+	PUSH RDX
+	PUSH RSI
+	PUSH RDI
+
 	; Lock Mutex		
 	mov ax,mut_ipi
-	push cs
-	call qwaitlock32
+	call qwaitlock64
 
 	; Write it to 0x310
 	; EBX is CPU INDEX
@@ -75,40 +83,49 @@ SendIPI32: ; EBX = CPU INDEX, ECX = IPI
 	mov ax,cpusstructize
 	mul bx
 	add ax,cpus
+	xor rdi,rdi
 	mov di,ax
 	add di,4
-	mov bl,[ds:di]
-	MOV EDI,[DS:LocalApic]
+	linear esi,edi
+	mov bl,[esi]
+	linear ecx,LocalApic
+	MOV EDI,[ecx]
 	ADD EDI,0x310
-	MOV EDX,[ES:EDI]
+	MOV EDX,[EDI]
 	AND EDX,0xFFFFFF
 	XOR EAX,EAX
 	MOV AL,BL
 	SHL EAX,24
 	OR EDX,EAX
-	MOV [ES:EDI],EDX
+	MOV [EDI],EDX
 		
 		
 	; Write it to 0x300
-	MOV EDI,[DS:LocalApic]
+	MOV EDI,[ecx]
 	ADD EDI,0x300
-	MOV [ES:EDI],ECX
+	MOV [EDI],ECX
 	; Verify it got delivered
 	.Verify:
 	 PAUSE
-	MOV EAX,[ES:EDI];
+	MOV EAX,[EDI];
 	SHR EAX,12
 	TEST EAX,1
 	JNZ .Verify
 	; Write it to 0xB0 (EOI)
  
-	MOV EDI,[DS:LocalApic]
+	MOV EDI,[ecx]
 	ADD EDI,0xB0
-    MOV dword [ES:EDI],0
+    MOV dword [EDI],0
 		
 	; Release Mutex
-	qunlock32 mut_ipi
-	POPAD
-RETF
+	qunlock64 mut_ipi
+
+	POP RDI
+	POP RSI
+	POP RDX
+	POP RCX
+	POP RBX
+	POP RAX
+RET
 
 
