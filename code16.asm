@@ -97,18 +97,24 @@ jnz .coo
 jmp .noacpi
 .coo:
 
+break16
 cmp eax, 'XSDT'
 jz .ac2
 
-
 mov eax,'APIC'
 push cs
-call FindACPITable1
+mov ecx,4
+mov edi,[RsdtAddress]
+call FindACPITableX
 jmp .eac
+
 .ac2:
 mov eax,'APIC'
 push cs
-call FindACPITable2
+mov ecx,8
+mov edi,dword [XsdtAddress]
+call FindACPITableX
+
 .eac:
 cmp eax,0xFFFFFFFF
 jnz .coo2

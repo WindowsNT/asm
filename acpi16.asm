@@ -42,7 +42,9 @@ ChecksumValid:
 	POP ECX
 	RETF
 
-
+;-------------------------------------------------------------------------------------------
+; Function FillACPI : Finds RDSP, and then RDST or XDST
+;-------------------------------------------------------------------------------------------	
 FillACPI:
 	pushadxeax
 	push es
@@ -108,73 +110,38 @@ RETF
 popadxeax
 RETF
 
+
 ;-------------------------------------------------------------------------------------------
-; Function FindACPITable1 : Finds EAX Table from rsdt
+; Function FindACPITableX : Finds EAX Table,  edi is rsdt/xsdt address and ecx is 4 or 8
 ;-------------------------------------------------------------------------------------------		
-FindACPITable1:
-	; EAX = sig
-	push edi
-	push ebx
-	push edx
-	mov edi,dword [ds:RsdtAddress]
+FindACPITableX:
 	cmp edi,0
-	jz .fail
-	.l1:
-	mov ebx,[fs:edi]
-	mov edx,[fs:edi + 4]
-	cmp edx,0
-	jnz .ok1
-	.fail:
-	mov EAX,0xFFFFFFFF
-	pop edx
-	pop ebx
-	pop edi
-	RETF 
-	.ok1:
-	cmp ebx,eax
-	jz .f1
-	add edi,edx
-	jmp .l1
-	.f1:
-	mov eax,edi
-	pop edx
-	pop ebx
-	pop edi
+	jz .f
+
+	; len, must be more than 36
+	mov ebx,[fs:edi + 4]
+	cmp ebx,36
+	jle .f
+	sub ebx,36 
+	xor edx,edx
+
+	.loop:
+	cmp edx,ebx
+	jz .f
+	mov esi,[fs:edi + 36 + edx]
+	cmp eax,[fs:esi]
+	jnz .c
+	mov eax,esi
 RETF
+	.c:
+	add edx,ecx
+	jmp .loop
+	.f:
+	mov eax,0ffffffffh
+RETF
+
 		
-;-------------------------------------------------------------------------------------------
-; Function FindACPITable2 : Finds EAX Table from xsdt
-;-------------------------------------------------------------------------------------------		
-FindACPITable2:
-	; EAX = sig
-	push edi
-	push ebx
-	push edx
-	mov edi,dword [ds:XsdtAddress]
-	cmp edi,0
-	jz .fail
-	.l1:
-	mov ebx,[fs:edi]
-	mov edx,[fs:edi + 4]
-	cmp edx,0
-	jnz .ok1
-	.fail:
-	mov EAX,0xFFFFFFFF
-	pop edx
-	pop ebx
-	pop edi
-	RETF 
-	.ok1:
-	cmp ebx,eax
-	jz .f1
-	add edi,edx
-	jmp .l1
-	.f1:
-	mov eax,edi
-	pop edx
-	pop ebx
-	pop edi
-RETF
+
 	
 ;-------------------------------------------------------------------------------------------
 ; Function DumpMadt : Fills from  EAX MADT
