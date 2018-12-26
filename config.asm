@@ -1,0 +1,2 @@
+TEST_LONG = 1
+TEST_MULTI = 1

@@ -164,6 +164,7 @@
     <None Include="code16.asm" />
     <None Include="code32.asm" />
     <None Include="code64.asm" />
+    <None Include="config.asm" />
     <None Include="data16.asm" />
     <None Include="data32.asm" />
     <None Include="data64.asm" />

@@ -69,7 +69,9 @@ Start32:
 ;	jmp ToBack16
 
 ; --------------------------------------- Prepare Long Mode ---------------------------------------
-    call InitPageTable642
+if TEST_LONG > 0 
+    
+	call InitPageTable642
    
     ; Enable PAE
     mov eax, cr4
@@ -103,6 +105,9 @@ Start32:
     db 0eah
     PutLinearStart64 dd 0
     dw code64_idx
+else
+    jmp ToBack16
+end if 
 
 ; --------------------------------------- Back from Long Mode ---------------------------------------
 Back32:

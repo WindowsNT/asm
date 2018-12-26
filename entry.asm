@@ -1,5 +1,6 @@
 FORMAT MZ
 
+INCLUDE 'config.asm'
 INCLUDE 'struct.asm'
 INCLUDE 'data16.asm'
 INCLUDE 'data32.asm'

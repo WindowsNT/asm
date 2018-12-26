@@ -29,6 +29,9 @@ sti
 
 
 ; --------------------------------------- Prepare Long Mode  ---------------------------------------
+
+if TEST_LONG > 0 
+
 xor eax,eax
 mov ax,CODE64
 shl eax,4
@@ -38,6 +41,9 @@ mov bx,CODE32
 mov fs,bx
 mov dword [fs:PutLinearStart64],eax
 pop fs
+
+end if
+
 
 
 ; --------------------------------------- Protected Mode Find Page Entry  ---------------------------------------
@@ -59,6 +65,8 @@ LoopPRMFound:
 mov [PhysicalPagingOffset32],eax
 
 ; --------------------------------------- Long Mode Find Page Entry  ---------------------------------------
+if TEST_LONG > 0 
+
 xor ecx,ecx
 LoopPMR2:
 xor eax,eax
@@ -76,6 +84,8 @@ jmp LoopPMR2
 LoopPRMFound2:
 mov [PhysicalPagingOffset64],eax
 
+end if
+
 ; --------------------------------------- Quick Unreal ---------------------------------------
 push cs
 cli
@@ -83,6 +93,8 @@ call EnterUnreal
 sti
 
 ; --------------------------------------- ACPI findings ---------------------------------------
+if TEST_MULTI > 0 
+
 mov ax,DATA16
 mov ds,ax
 push cs
@@ -154,6 +166,7 @@ call IntCompletedFunction
 wait16 mut_1
 wait16 mut_1
 
+end if
 
 .noacpi:
 
@@ -205,9 +218,13 @@ sti
 ; = END NO DEBUG HERE =
 
 ; --------------------------------------- Tests ---------------------------------------
+if TEST_LONG > 0 
+
 ; Restore screen (long mode bug)
 mov ax,3
 int 10h
+
+end if
 
 ; A20 off if enabled
 cmp [ds:a20enabled],1
@@ -219,6 +236,8 @@ SkipA20Disable:
 mov ax,0900h
 mov dx,a20off
 int 21h
+
+if TEST_MULTI > 0 
 
 ; NumCpus
 xor cx,cx
@@ -233,12 +252,16 @@ int 21h
 jmp .cpul
 .endr:
 
+end if
+
 push cs
 call EnterUnreal
 ; Real mode test
 mov ax,0900h
 mov dx,rm1
 int 21h
+
+if TEST_MULTI > 0 
 
 ; Apic test
 cmp dword [ds:RsdtAddress],0
@@ -290,6 +313,8 @@ mov ax,0900h
 int 21h
 fail_3p:
 
+end if
+
 ; PM mode test
 mov ax,DATA32
 mov gs,ax
@@ -300,6 +325,8 @@ mov ax,0900h
 int 21h
 fail_1:
 
+if TEST_LONG > 0 
+
 ; Long mode test
 mov ax,DATA64
 mov gs,ax
@@ -309,6 +336,8 @@ mov dx,lm1
 mov ax,0900h
 int 21h
 fail_2:
+
+end if
 
 ; --------------------------------------- Bye! ---------------------------------------
 mov ax,4c00h
