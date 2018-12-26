@@ -2,6 +2,7 @@ USE16
 
 ; Leaves FS in unreal mode
 EnterUnreal:
+    cli
 	PUSHAD
 	MOV AX,DATA16	
 	MOV FS,AX

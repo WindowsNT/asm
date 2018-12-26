@@ -28,8 +28,15 @@ sti
 mov bx,idt_RM_start
 sidt [bx] 
 
-mov ax,3
-int 10h
+
+; --------------------------------------- A20 line  ---------------------------------------
+
+mov [ds:a20enabled],0
+call CheckA20
+jc A20AlreadyOn
+call EnableA20
+mov [ds:a20enabled],1
+A20AlreadyOn:
 
 
 ; --------------------------------------- Prepare Long Mode  ---------------------------------------
@@ -176,13 +183,6 @@ end if
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 
-mov [ds:a20enabled],0
-call CheckA20
-jc A20AlreadyOn
-call EnableA20
-mov [ds:a20enabled],1
-A20AlreadyOn:
-
 call GDTInit
 call IDTInit
 cli
@@ -220,25 +220,22 @@ lidt    [di]
 sti
 ; = END NO DEBUG HERE =
 
-; --------------------------------------- Tests ---------------------------------------
-if TEST_LONG > 0 
+; --------------------------------------- Quick Unreal ---------------------------------------
+push cs
+cli
+call EnterUnreal
+sti
 
+if TEST_LONG > 0 
 ; Restore screen (long mode bug)
 mov ax,3
 int 10h
-
 end if
 
-; A20 off if enabled
-cmp [ds:a20enabled],1
-jnz SkipA20Disable
-call DisableA20
-SkipA20Disable:
 
-; Test Real
-mov ax,0900h
-mov dx,a20off
-int 21h
+; --------------------------------------- Tests ---------------------------------------
+
+
 
 if TEST_MULTI > 0 
 
@@ -341,6 +338,19 @@ int 21h
 fail_2:
 
 end if
+
+
+; A20 off if enabled
+
+cmp [ds:a20enabled],1
+jnz SkipA20Disable
+
+mov ax,0900h
+mov dx,a20off
+int 21h
+
+call DisableA20
+SkipA20Disable:
 
 ; --------------------------------------- Bye! ---------------------------------------
 mov ax,4c00h

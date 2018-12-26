@@ -185,6 +185,11 @@
     <None Include="unreal.asm" />
     <None Include="vm.vmx" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dos32.asm">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -109,4 +109,9 @@
       <Filter>Configuration</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dos32.asm">
+      <Filter>32 bit code</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

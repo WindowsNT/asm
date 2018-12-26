@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.15-windows">
-  <Machine uuid="{a436033c-67f8-4e9f-b0fe-0a7efbadb84d}" name="asmtest" OSType="Other_64" snapshotFolder="Snapshots" lastStateChange="2018-12-26T15:24:46Z">
+  <Machine uuid="{a436033c-67f8-4e9f-b0fe-0a7efbadb84d}" name="asmtest" OSType="Other_64" snapshotFolder="Snapshots" lastStateChange="2018-12-26T16:07:12Z">
     <MediaRegistry>
       <DVDImages>
         <Image uuid="{e6514449-af13-4958-9628-33af9ee8fa81}" location="d.iso"/>
