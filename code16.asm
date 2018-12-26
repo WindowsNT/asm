@@ -262,7 +262,7 @@ mov dx,ap2
 int 21h
 mov edi, dword [ds:XsdtAddress]
 mov ecx,8
-push cs
+push cs 
 call DumpAll
 mov ax,0900h
 mov dx,crlf

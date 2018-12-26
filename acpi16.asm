@@ -200,6 +200,7 @@ RETF
 ;-------------------------------------------------------------------------------------------		
 DumpAll:
 
+mov ebp, 32 ; max count
 	cmp edi,0
 	jz .f
 
@@ -241,6 +242,11 @@ DumpAll:
 	pop edx
 
 	add edx,ecx
+
+	dec ebp
+	cmp ebp, 0
+	jz .f
+
 	jmp .loop
 	.f:
 RETF
