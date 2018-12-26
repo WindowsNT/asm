@@ -12,6 +12,7 @@ macro break32
 intr00:
 	IRETD
 
+INCLUDE 'acpi32.asm'
 INCLUDE 'page32.asm'
 
 ; --------------------------------------- Entry Point ---------------------------------------
@@ -34,6 +35,26 @@ Start32:
 
 ; --------------------------------------- Interrupt Test ---------------------------------------
 	int 0;
+
+; --------------------------------------- SIPI to real mode test ---------------------------------------
+if TEST_PM_SIPI > 0 
+
+qlock32 mut_1
+
+xor eax,eax
+mov ax,data16_idx
+mov ds,ax
+linear eax,Thread16_3,CODE16
+mov ebx,1
+push cs
+call SendSIPI32f
+
+mov ax,mut_1
+push cs
+call qwait32
+
+
+end if
 
 ; --------------------------------------- LLDT ---------------------------------------
 	mov ax,ldt_idx

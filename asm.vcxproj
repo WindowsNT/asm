@@ -158,6 +158,7 @@
       <FileType>Document</FileType>
     </None>
     <None Include="acpi16.asm" />
+    <None Include="acpi32.asm" />
     <None Include="asmtest.vbox" />
     <None Include="bochsrc.bxrc" />
     <None Include="build.bat" />
@@ -172,6 +173,7 @@
     <None Include="idt.asm" />
     <None Include="iso.ps1" />
     <None Include="mutex16.asm" />
+    <None Include="mutex32.asm" />
     <None Include="page32.asm" />
     <None Include="Readme.md" />
     <None Include="stack16.asm" />

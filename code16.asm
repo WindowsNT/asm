@@ -206,7 +206,6 @@ end if
 ; --------------------------------------- ACPI tests ---------------------------------------
 if TEST_MULTI > 0 
 
-xor ecx,ecx
 
 qlock16 mut_1
 qlock16 mut_1
@@ -217,7 +216,6 @@ mov ds,ax
 linear eax,Thread16_1,CODE16
 mov ebx,1
 call far CODE16:SendSIPIf
-
 
 xor eax,eax
 mov ax,DATA16
@@ -232,7 +230,6 @@ call qwait16
 mov ax,mut_1
 push cs
 call qwait16
-.noacpi:
 
 end if
 
@@ -317,6 +314,16 @@ mov dx,thr2
 mov ax,0900h
 int 21h
 fail_3p:
+
+; Thread 3
+mov ax,DATA16
+mov gs,ax
+cmp [gs:FromThread3],1
+jnz fail_31
+mov dx,thr3
+mov ax,0900h
+int 21h
+fail_31:
 
 end if
 

@@ -373,20 +373,3 @@ SendIPI16: ; EBX = CPU INDEX, ECX = IPI
 RETF
 
 
-;-------------------------------------------------------------------------------------------
-; Function SendEOI16 : Sends EOI
-;-------------------------------------------------------------------------------------------		
-SendEOI16: 
-	PUSH EDI
-	PUSH DS
-	mov di,DATA16
-	mov ds,di
-	; Write it to 0xB0 (EOI)
-;		MOV EDI,0xFEE00000
-	MOV EDI,[DS:LocalApic]
-	ADD EDI,0xB0
-	MOV dword [FS:EDI],0
-	POP DS
-	POP EDI
-RETF
-

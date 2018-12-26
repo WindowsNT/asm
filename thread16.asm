@@ -51,7 +51,22 @@ Thread16_2:
 
 	mov [FromThread2],1
     sti 
-	mov dx,thrm
+	mov dx,thrm1
+	mov ax,0900h
+	int 21h
+	cli
+
+	qunlock16 mut_1
+	cli
+	hlt
+		
+Thread16_3:
+
+	thread16header STACK16T2,stack16t3_end
+
+	mov [FromThread3],1
+    sti 
+	mov dx,thrm2
 	mov ax,0900h
 	int 21h
 	cli
