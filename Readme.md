@@ -24,7 +24,7 @@ It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default i
 3. Long mode test with paging and PAE
 4. Real mode thread calling
 5. Real mode thread called from protected mode
-
+6. Real mode thread called from long mode
 
 
 

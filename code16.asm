@@ -205,6 +205,7 @@ end if
 
 ; --------------------------------------- ACPI tests ---------------------------------------
 if TEST_MULTI > 0 
+if TEST_RM_SIPI > 0 
 
 
 qlock16 mut_1
@@ -231,6 +232,7 @@ mov ax,mut_1
 push cs
 call qwait16
 
+end if
 end if
 
 

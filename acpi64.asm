@@ -11,7 +11,6 @@ include 'mutex64.asm'
 ; Function SendSIPI64 : Sends SIPI. RBX = CPU Index, EAX = linear
 ;-------------------------------------------------------------------------------------------		
 SendSIPI64:
-break64
 	PUSH RAX
 	PUSH RBX
 	PUSH RCX
@@ -20,9 +19,11 @@ break64
 	PUSH RDI
 		
 		
-	linear rcx,LocalApic
+	linear edi,LocalApic
+	mov ecx,[edi]
+
 	; Spurious
-	MOV EDI,[rCX]
+	MOV EDI,[RCX]
 	ADD EDI,0x0F0
 	MOV EDX,[EDI]
 	OR EDX,0x1FF
@@ -66,7 +67,8 @@ RET
 ; Function SendIPI64 : Sends IPI. EBX = CPU Index, ECX = IPI
 ;-------------------------------------------------------------------------------------------		
 SendIPI64: ; EBX = CPU INDEX, ECX = IPI
-	PUSH RAX
+
+PUSH RAX
 	PUSH RBX
 	PUSH RCX
 	PUSH RDX
@@ -90,8 +92,9 @@ SendIPI64: ; EBX = CPU INDEX, ECX = IPI
 	add di,4
 	linear esi,edi
 	mov bl,[esi]
-	linear ecx,LocalApic
-	MOV EDI,[ecx]
+
+	linear edi,LocalApic
+	mov edi,[edi]
 	ADD EDI,0x310
 	MOV EDX,[EDI]
 	AND EDX,0xFFFFFF
@@ -103,9 +106,12 @@ SendIPI64: ; EBX = CPU INDEX, ECX = IPI
 		
 		
 	; Write it to 0x300
-	MOV EDI,[ecx]
+	linear edi,LocalApic
+	mov edi,[edi]
 	ADD EDI,0x300
 	MOV [EDI],ECX
+
+
 	; Verify it got delivered
 	.Verify:
 	 PAUSE
