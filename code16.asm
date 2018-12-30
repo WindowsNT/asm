@@ -219,7 +219,6 @@ if TEST_RM_SIPI > 0
 
 qlock16 mut_1
 qlock16 mut_1
-qlock16 mut_1
 
 xor eax,eax
 mov ax,DATA16
@@ -235,17 +234,7 @@ linear eax,Thread16_2,CODE16
 mov ebx,2
 call far CODE16:SendSIPIf
 
-xor eax,eax
-mov ax,DATA16
-mov ds,ax
-linear eax,Thread16_2,CODE16
-mov ebx,3
-call far CODE16:SendSIPIf
 
-
-mov ax,mut_1
-push cs
-call qwait16
 mov ax,mut_1
 push cs
 call qwait16
