@@ -78,7 +78,9 @@ Thread16_3:
 		
 Thread16_4:
 
+	break16
 	thread16header STACK16T4,stack16t4_end
+	break16
 
 	mov [FromThread4],1
  ;   sti 

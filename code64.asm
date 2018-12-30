@@ -13,7 +13,7 @@ include 'acpi64.asm'
 Start64:
 
 	xor r8d,r8d
-	mov rsp,stack64_end  
+	linear rsp,stack64_end  
 	push rax
 	mov rax,0
 	pop rax
@@ -28,14 +28,14 @@ Start64:
 ; --------------------------------------- SIPI to real mode test ---------------------------------------
 if TEST_LM_SIPI > 0 
 
-qlock64 mut_1
+;qlock64 mut_1
 
-linear eax,Thread16_4,CODE16
+linear rax,Thread16_4,CODE16
 mov rbx,1
 call SendSIPI64
-
-mov ax,mut_1
-call qwait64
+	
+;mov rax,mut_1
+;call qwait64
 
 
 end if

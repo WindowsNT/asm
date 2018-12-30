@@ -195,9 +195,9 @@ call EnterUnreal
 sti
 
 if TEST_LONG > 0 
-; Restore screen (long mode bug)
-mov ax,3
-int 10h
+; Restore screen (long mode bug) -- Fixed :)
+;mov ax,3
+;int 10h
 end if
 
 

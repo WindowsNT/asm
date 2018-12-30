@@ -3,18 +3,18 @@ USE64
 macro qlock64 trg
 	{
 	push rcx
-	linear ecx,trg
-	dec byte [ecx]
+	linear rcx,trg
+	dec byte [rcx]
 	pop rcx
 	}
 
 macro qunlock64 trg
 	{
 	push rcx
-	linear ecx,trg
-	cmp byte [ecx],0xFF
+	linear rcx,trg
+	cmp byte [rcx],0xFF
 	jz .unlk
-	inc byte [ecx]
+	inc byte [rcx]
 	.unlk:
 	pop rcx
 	}
@@ -22,10 +22,10 @@ macro qunlock64 trg
 qwait64:
 	; ax = target mutex in data16
 	push rcx
-	linear ecx,eax
+	linear rcx,rax
 
 	.Loop1:		
-	CMP byte [ecx],0xff
+	CMP byte [rcx],0xff
 	JZ .OutLoop1
 	pause 
 	JMP .Loop1
@@ -36,13 +36,14 @@ ret
 
 
 qwaitlock64:
-	; ax = target mutex in data16
+	; rax = target mutex in data16
 	push rbx
 	push rcx
-	linear ecx,eax
+	linear rcx,rax
 
 	.Loop1:		
-	CMP byte [ecx],0xff
+	mov al,[rcx]
+	CMP al,0xff
 	JZ .OutLoop1
 	pause 
 	JMP .Loop1
@@ -51,7 +52,7 @@ qwaitlock64:
 	; Lock is free, can we grab it?
 	mov bl,0xfe
 	MOV AL,0xFF
-	LOCK CMPXCHG [ecx],bl
+	LOCK CMPXCHG [rcx],bl
 	JNZ .Loop1 ; Write failed
 
 	.OutLoop2: ; Lock Acquired

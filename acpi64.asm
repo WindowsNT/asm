@@ -8,9 +8,10 @@ include 'mutex64.asm'
 
 
 ;-------------------------------------------------------------------------------------------
-; Function SendSIPI64 : Sends SIPI. EBX = CPU Index, EAX = linear
+; Function SendSIPI64 : Sends SIPI. RBX = CPU Index, EAX = linear
 ;-------------------------------------------------------------------------------------------		
 SendSIPI64:
+break64
 	PUSH RAX
 	PUSH RBX
 	PUSH RCX
@@ -18,10 +19,10 @@ SendSIPI64:
 	PUSH RSI
 	PUSH RDI
 		
-
-	linear ECX,LocalApic
+		
+	linear rcx,LocalApic
 	; Spurious
-	MOV EDI,[ECX]
+	MOV EDI,[rCX]
 	ADD EDI,0x0F0
 	MOV EDX,[EDI]
 	OR EDX,0x1FF
@@ -41,7 +42,6 @@ SendSIPI64:
 	MOV ECX,0x04500
 	OR ECX,ESI
 	call SendIPI64
-
 	; SIPI 1
 	MOV ECX,0x05600
 	OR ECX,ESI
@@ -51,6 +51,7 @@ SendSIPI64:
 	MOV ECX,0x05600
 	OR ECX,ESI
 	call SendIPI64
+
 
 	POP RDI
 	POP RSI
@@ -73,6 +74,7 @@ SendIPI64: ; EBX = CPU INDEX, ECX = IPI
 	PUSH RDI
 
 	; Lock Mutex		
+    xor rax,rax
 	mov ax,mut_ipi
 	call qwaitlock64
 
