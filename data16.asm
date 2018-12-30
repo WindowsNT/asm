@@ -1,5 +1,7 @@
 SEGMENT DATA16 USE16
 
+
+
 ; --------------------------------------- 16 bit data ---------------------------------------
 a20enabled db 0
 numcpus db 0
@@ -19,6 +21,11 @@ FromThread4 db 0
 FromThread5 db 0 
 FromThread6 db 0 
 
+; --------------------------------------- VMX tests---------------------------------------
+vmt1 db 0 ; existence
+
+vmm1 db "VMX Test 1 OK",0dh,0ah,"$"
+
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF
 mut_1 db 0xFF
@@ -30,7 +37,7 @@ lm1 db "Long mode test, OK",0dh,0ah,"$"
 ap1 db "Apic 1 found",0dh,0ah,"$"
 ap2 db "Apic 2 found",0dh,0ah,"$"
 
-cpuf db "CPU Found",0dh,0ah,"$"
+cpuf db "CPU $"
 thrm1 db "Message from real mode thread",0dh,0ah,"$"
 thrm2 db "Message from real mode thread called from protected mode",0dh,0ah,"$"
 thrm3 db "Message from real mode thread called from long mode",0dh,0ah,"$"

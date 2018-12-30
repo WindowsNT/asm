@@ -17,6 +17,9 @@
     <Filter Include="64 bit code">
       <UniqueIdentifier>{1f5ef5e6-1cd9-452e-b6d1-e803a1a2e812}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VMX">
+      <UniqueIdentifier>{afcf05b5-c2b1-49a3-8071-f968b4c3965c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
@@ -131,6 +134,9 @@
     </None>
     <None Include="page16.asm">
       <Filter>16 bit code</Filter>
+    </None>
+    <None Include="vmxhost64.asm">
+      <Filter>VMX</Filter>
     </None>
   </ItemGroup>
 </Project>

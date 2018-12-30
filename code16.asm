@@ -40,6 +40,8 @@ macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
 	NOP ; never executed
 }
 
+
+
 ; --------------------------------------- This is where the application starts ---------------------------------------
 start16:
 
@@ -295,6 +297,10 @@ mov dx,cpuf
 int 21h
 jmp .cpul
 .endr:
+mov ax,0900h
+mov dx,crlf
+int 21h
+
 
 end if
 
@@ -399,6 +405,7 @@ fail_36:
 
 end if
 
+
 ; PM mode test
 mov ax,DATA32
 mov gs,ax
@@ -423,6 +430,17 @@ fail_2:
 
 end if
 
+; VMX test
+macro vmxshow vmt,vmm
+{
+	cmp [vmt],1
+	jnz .ffx
+	mov dx,vmm
+	mov ax,0900h
+	int 21h
+	.ffx:
+}
+vmxshow vmt1,vmm1
 
 ; A20 off if enabled
 

@@ -10,6 +10,7 @@ macro break64
 
 include 'acpi64.asm'
 include 'thread64.asm'
+include 'vmxhost64.asm'
 
 Start64:
 
@@ -39,6 +40,13 @@ if TEST_LM_SIPI > 0
 	call qwait64
 
 end if
+
+if TEST_VMX_1 > 0
+; VMX operations
+
+	call VMX_Host
+
+end if 
 
 	; Back to Compatibility Mode
 	push code32_idx

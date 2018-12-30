@@ -191,6 +191,7 @@
     <None Include="thread64.asm" />
     <None Include="unreal.asm" />
     <None Include="vm.vmx" />
+    <None Include="vmxhost64.asm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dos32.asm">
