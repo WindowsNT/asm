@@ -26,6 +26,7 @@ It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default i
 5. Real mode thread called from protected mode
 6. Real mode thread called from long mode
 7. Protected mode thread called from real mode
+8. Long mode thread called from real mode
 
 
 
