@@ -16,6 +16,7 @@ FromThread1 db 0
 FromThread2 db 0 
 FromThread3 db 0 
 FromThread4 db 0 
+FromThread5 db 0 
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF

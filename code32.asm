@@ -7,6 +7,8 @@ macro break32
 	xchg bx,bx
 }
 
+include 'thread32.asm'
+
 
 ; --------------------------------------- One interrupt definition ---------------------------------------
 intr00:

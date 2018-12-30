@@ -120,10 +120,11 @@
     <None Include="acpi64.asm">
       <Filter>64 bit code</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="dos32.asm">
+    <None Include="dos32.asm">
+      <Filter>16 bit code</Filter>
+    </None>
+    <None Include="thread32.asm">
       <Filter>32 bit code</Filter>
-    </ClCompile>
+    </None>
   </ItemGroup>
 </Project>

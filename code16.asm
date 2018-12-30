@@ -11,6 +11,30 @@ INCLUDE 'acpi16.asm'
 INCLUDE 'thread16.asm'
 
 
+macro EnterProtected ofs32 = Start32,codeseg = code32_idx
+{
+	mov ax,DATA16
+	mov ds,ax
+	call GDTInit
+	call IDTInit
+	cli
+	mov bx,gdt_start
+	lgdt [bx]
+	mov bx,idt_PM_start
+
+	; = NO DEBUG HERE =
+	lidt [bx]
+	mov eax,cr0
+	or al,1
+	mov cr0,eax 
+	db  066h  
+	db  0eah 
+	dd  ofs32
+	dw  codeseg
+
+	NOP ; never executed
+}
+
 ; --------------------------------------- This is where the application starts ---------------------------------------
 start16:
 
@@ -151,22 +175,7 @@ end if
 
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 
-call GDTInit
-call IDTInit
-cli
-mov bx,gdt_start
-lgdt [bx]
-mov bx,idt_PM_start
-
-; = NO DEBUG HERE =
-lidt [bx]
-mov eax,cr0
-or al,1
-mov cr0,eax 
-db  066h  
-db  0eah 
-dd  Start32
-dw  code32_idx
+EnterProtected
  
 ; --------------------------------------- Exit ---------------------------------------
 
@@ -210,6 +219,7 @@ if TEST_RM_SIPI > 0
 
 qlock16 mut_1
 qlock16 mut_1
+qlock16 mut_1
 
 xor eax,eax
 mov ax,DATA16
@@ -225,6 +235,17 @@ linear eax,Thread16_2,CODE16
 mov ebx,2
 call far CODE16:SendSIPIf
 
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+linear eax,Thread16_2,CODE16
+mov ebx,3
+call far CODE16:SendSIPIf
+
+
+mov ax,mut_1
+push cs
+call qwait16
 mov ax,mut_1
 push cs
 call qwait16
