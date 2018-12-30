@@ -58,4 +58,4 @@ GDTInit:
 	add ax,dummy_descriptor
 	mov [gdt_ptr],eax
 
-RET
+RETF

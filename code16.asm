@@ -11,12 +11,16 @@ INCLUDE 'acpi16.asm'
 INCLUDE 'thread16.asm'
 
 
-macro EnterProtected ofs32 = Start32,codeseg = code32_idx
+macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
 {
+    mov ax,noinits
+	cmp ax,1
+	jz .noinitg
 	mov ax,DATA16
 	mov ds,ax
-	call GDTInit
-	call IDTInit
+	call far CODE16:GDTInit
+	call far CODE16:IDTInit
+	.noinitg:
 	cli
 	mov bx,gdt_start
 	lgdt [bx]
@@ -219,6 +223,7 @@ if TEST_RM_SIPI > 0
 
 qlock16 mut_1
 qlock16 mut_1
+qlock16 mut_1
 
 xor eax,eax
 mov ax,DATA16
@@ -234,7 +239,18 @@ linear eax,Thread16_2,CODE16
 mov ebx,2
 call far CODE16:SendSIPIf
 
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+linear eax,Thread32_1,CODE32
+mov ebx,3
+call far CODE16:SendSIPIf
 
+
+
+mov ax,mut_1
+push cs
+call qwait16
 mov ax,mut_1
 push cs
 call qwait16
@@ -337,7 +353,7 @@ mov ax,0900h
 int 21h
 fail_31:
 
-; Thread 3
+; Thread 4
 mov ax,DATA16
 mov gs,ax
 cmp [gs:FromThread4],1
@@ -346,6 +362,17 @@ mov dx,thr4
 mov ax,0900h
 int 21h
 fail_32:
+
+; Thread 5
+mov ax,DATA16
+mov gs,ax
+cmp [gs:FromThread5],1
+jnz fail_35
+mov dx,thr5
+mov ax,0900h
+int 21h
+fail_35:
+
 
 end if
 

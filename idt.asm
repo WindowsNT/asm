@@ -47,7 +47,7 @@ IDTInit2:
 
  
 
-ret
+retf
  
 
 
@@ -98,4 +98,4 @@ ret
         add     ax,interruptsall
         mov     [idt_PM_ptr],eax
 
-  RET
+  RETF

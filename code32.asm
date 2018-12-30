@@ -7,7 +7,6 @@ macro break32
 	xchg bx,bx
 }
 
-include 'thread32.asm'
 
 
 ; --------------------------------------- One interrupt definition ---------------------------------------
@@ -16,6 +15,8 @@ intr00:
 
 INCLUDE 'acpi32.asm'
 INCLUDE 'page32.asm'
+include 'thread32.asm'
+
 
 ; --------------------------------------- Entry Point ---------------------------------------
 Start32:

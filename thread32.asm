@@ -5,8 +5,13 @@ macro thread32header ofs,seg
 	USE16 
 	; Remember CPU starts in real mode
 	db 4096 dup (144) ; // fill NOPs
+
+	; Stack
+	mov ax,STACK16T5
+	mov ss,ax
+	mov sp,stack16t5_end
 	
-	CLI
+	
 
 	; A20
 	call FAR CODE16:EnableA20f
@@ -28,14 +33,13 @@ macro thread32header ofs,seg
 	MOV dword [FS:EDI],0
 
 	; Protected
-	EnterProtected ofs,seg
+	EnterProtected ofs,seg,0
 }
 
 
 Thread32_1:
 
 	thread32header Thread32_1a,code32_idx
-	qunlock16 mut_1
 	cli
 	hlt
 	hlt
@@ -43,11 +47,10 @@ Thread32_1:
 
 	USE32
 Thread32_1a:
-	break32
 	mov ax,data16_idx
 	mov ds,ax
 	mov [FromThread5],1
-;	qunlock16 mut_1
+	qunlock32 mut_1
 	cli
 	hlt
 
