@@ -2,9 +2,9 @@ USE16
 
 macro thread32header ofs,seg
 {
+	USE16 
 	; Remember CPU starts in real mode
 	db 4096 dup (144) ; // fill NOPs
-	break16
 	
 	CLI
 
@@ -29,15 +29,13 @@ macro thread32header ofs,seg
 
 	; Protected
 	EnterProtected ofs,seg
-
 }
-
-USE16
 
 
 Thread32_1:
 
-	thread16header Thread32_1a,code32_idx
+	thread32header Thread32_1a,code32_idx
+	qunlock16 mut_1
 	cli
 	hlt
 	hlt
@@ -45,6 +43,7 @@ Thread32_1:
 
 	USE32
 Thread32_1a:
+	break32
 	mov ax,data16_idx
 	mov ds,ax
 	mov [FromThread5],1
