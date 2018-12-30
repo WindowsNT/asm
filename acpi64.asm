@@ -121,9 +121,9 @@ PUSH RAX
 	JNZ .Verify
 	; Write it to 0xB0 (EOI)
  
-	MOV EDI,[ecx]
-	ADD EDI,0xB0
-    MOV dword [EDI],0
+;	MOV EDI,[ecx]
+;	ADD EDI,0xB0
+;    MOV dword [EDI],0
 		
 	; Release Mutex
 	qunlock64 mut_ipi

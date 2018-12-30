@@ -20,6 +20,8 @@ macro thread16header sts,sto
 
 	; Quick Enter Unreal
 	call FAR CODE16:EnterUnreal
+
+
 	; Spurious, APIC		
 	MOV EDI,[DS:LocalApic]
 	ADD EDI,0x0F0
