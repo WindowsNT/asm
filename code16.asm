@@ -255,7 +255,7 @@ xor eax,eax
 mov ax,DATA16
 mov ds,ax
 linear eax,Thread64_1,CODE64
-mov ebx,4
+mov ebx,1 ; Back to 1 core
 call far CODE16:SendSIPIf
 
 
