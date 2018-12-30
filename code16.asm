@@ -7,6 +7,7 @@ macro break16
 }
 
 INCLUDE 'unreal.asm'
+INCLUDE 'page16.asm'
 INCLUDE 'acpi16.asm'
 INCLUDE 'thread16.asm'
 
@@ -80,7 +81,6 @@ mov bx,CODE32
 mov fs,bx
 mov dword [fs:PutLinearStart64],eax
 pop fs
-
 end if
 
 
@@ -123,6 +123,7 @@ jmp LoopPMR2
 LoopPRMFound2:
 mov [PhysicalPagingOffset64],eax
 
+
 end if
 
 ; --------------------------------------- Quick Unreal ---------------------------------------
@@ -130,6 +131,9 @@ push cs
 cli
 call EnterUnreal
 sti
+
+push cs
+call InitPageTableFor64
 
 ; --------------------------------------- Find ACPI  ---------------------------------------
 if TEST_MULTI > 0 
@@ -224,6 +228,7 @@ if TEST_RM_SIPI > 0
 qlock16 mut_1
 qlock16 mut_1
 qlock16 mut_1
+qlock16 mut_1
 
 xor eax,eax
 mov ax,DATA16
@@ -246,8 +251,17 @@ linear eax,Thread32_1,CODE32
 mov ebx,3
 call far CODE16:SendSIPIf
 
+xor eax,eax
+mov ax,DATA16
+mov ds,ax
+linear eax,Thread64_1,CODE64
+mov ebx,4
+call far CODE16:SendSIPIf
 
 
+mov ax,mut_1
+push cs
+call qwait16
 mov ax,mut_1
 push cs
 call qwait16
@@ -373,6 +387,15 @@ mov ax,0900h
 int 21h
 fail_35:
 
+; Thread 6
+mov ax,DATA16
+mov gs,ax
+cmp [gs:FromThread6],1
+jnz fail_36
+mov dx,thr6
+mov ax,0900h
+int 21h
+fail_36:
 
 end if
 

@@ -176,6 +176,7 @@
     <None Include="mutex16.asm" />
     <None Include="mutex32.asm" />
     <None Include="mutex64.asm" />
+    <None Include="page16.asm" />
     <None Include="page32.asm" />
     <None Include="Readme.md" />
     <None Include="stack16.asm" />
@@ -187,6 +188,7 @@
     <None Include="struct.asm" />
     <None Include="thread16.asm" />
     <None Include="thread32.asm" />
+    <None Include="thread64.asm" />
     <None Include="unreal.asm" />
     <None Include="vm.vmx" />
   </ItemGroup>

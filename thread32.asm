@@ -10,8 +10,6 @@ macro thread32header ofs,seg
 	mov ax,STACK16T5
 	mov ss,ax
 	mov sp,stack16t5_end
-	
-	
 
 	; A20
 	call FAR CODE16:EnableA20f

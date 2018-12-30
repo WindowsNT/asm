@@ -17,6 +17,7 @@ FromThread2 db 0
 FromThread3 db 0 
 FromThread4 db 0 
 FromThread5 db 0 
+FromThread6 db 0 
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF
@@ -38,6 +39,7 @@ thr2 db "Thread 2 executed, OK",0dh,0ah,"$"
 thr3 db "Thread 3 real mode executed from protected mode, OK",0dh,0ah,"$"
 thr4 db "Thread 4 real mode executed from long mode, OK",0dh,0ah,"$"
 thr5 db "Thread 5 protected mode executed from real mode, OK",0dh,0ah,"$"
+thr6 db "Thread 6 long mode executed from real mode, OK",0dh,0ah,"$"
 
 a20off db "Restoring A20",0dh,0ah,"$"
 

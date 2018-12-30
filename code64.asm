@@ -9,6 +9,7 @@ macro break64
 }
 
 include 'acpi64.asm'
+include 'thread64.asm'
 
 Start64:
 
