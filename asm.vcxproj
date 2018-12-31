@@ -171,6 +171,8 @@
     <None Include="data32.asm" />
     <None Include="data64.asm" />
     <None Include="gdt.asm" />
+    <None Include="guest16.asm" />
+    <None Include="guest32.asm" />
     <None Include="idt.asm" />
     <None Include="iso.ps1" />
     <None Include="mutex16.asm" />

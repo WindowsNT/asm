@@ -119,3 +119,4 @@ idt_size=$-(interruptsall)
 ; --------------------------------------- PAGE ---------------------------------------
 PhysicalPagingOffset32 dd 0
 PhysicalPagingOffset64 dd 0
+PhysicalEptOffset64 dd 0

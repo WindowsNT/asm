@@ -128,6 +128,29 @@ mov [PhysicalPagingOffset64],eax
 
 end if
 
+; --------------------------------------- VMX EPT Find Page Entry  ---------------------------------------
+if TEST_VMX_1 > 0 
+
+xor ecx,ecx
+LoopPMR5:
+xor eax,eax
+mov ax,VMXPAGE64
+shl eax,4
+add eax,Ept64Null
+add eax,ecx
+mov ebx,eax
+shr eax,12
+shl eax,12
+cmp eax,ebx
+jz LoopPRMFound5
+inc ecx
+jmp LoopPMR5
+LoopPRMFound5:
+mov [PhysicalEptOffset64],eax
+
+
+end if
+
 ; --------------------------------------- Quick Unreal ---------------------------------------
 push cs
 cli

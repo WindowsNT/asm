@@ -138,5 +138,11 @@
     <None Include="vmxhost64.asm">
       <Filter>VMX</Filter>
     </None>
+    <None Include="guest16.asm">
+      <Filter>16 bit code</Filter>
+    </None>
+    <None Include="guest32.asm">
+      <Filter>32 bit code</Filter>
+    </None>
   </ItemGroup>
 </Project>
