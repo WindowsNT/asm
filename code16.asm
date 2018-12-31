@@ -366,65 +366,26 @@ int 21h
 .noa2:
 
 
-; Thread test
-mov ax,DATA16
-mov gs,ax
-cmp [gs:FromThread1],1
-jnz fail_3
-mov dx,thr1
-mov ax,0900h
-int 21h
-fail_3:
+macro thrtest too,msg
+{
+    local .fx
+	mov ax,DATA16
+	mov gs,ax
+	cmp [gs:too],1
+	jnz .fx
+	mov dx,msg
+	mov ax,0900h
+	int 21h
+	.fx:
+}
 
-; Thread test
-mov ax,DATA16
-mov gs,ax
-cmp [gs:FromThread2],1
-jnz fail_3p
-mov dx,thr2
-mov ax,0900h
-int 21h
-fail_3p:
+thrtest FromThread1,thr1
+thrtest FromThread2,thr2
+thrtest FromThread3,thr3
+thrtest FromThread4,thr4
+thrtest FromThread5,thr5
+thrtest FromThread6,thr6
 
-; Thread 3
-mov ax,DATA16
-mov gs,ax
-cmp [gs:FromThread3],1
-jnz fail_31
-mov dx,thr3
-mov ax,0900h
-int 21h
-fail_31:
-
-; Thread 4
-mov ax,DATA16
-mov gs,ax
-cmp [gs:FromThread4],1
-jnz fail_32
-mov dx,thr4
-mov ax,0900h
-int 21h
-fail_32:
-
-; Thread 5
-mov ax,DATA16
-mov gs,ax
-cmp [gs:FromThread5],1
-jnz fail_35
-mov dx,thr5
-mov ax,0900h
-int 21h
-fail_35:
-
-; Thread 6
-mov ax,DATA16
-mov gs,ax
-cmp [gs:FromThread6],1
-jnz fail_36
-mov dx,thr6
-mov ax,0900h
-int 21h
-fail_36:
 
 end if
 
@@ -456,6 +417,7 @@ end if
 ; VMX test
 macro vmxshow vmt,vmm
 {
+    local .ffx
 	cmp [vmt],1
 	jnz .ffx
 	mov dx,vmm
@@ -464,6 +426,7 @@ macro vmxshow vmt,vmm
 	.ffx:
 }
 vmxshow vmt1,vmm1
+vmxshow vmt2,vmm2
 
 ; A20 off if enabled
 

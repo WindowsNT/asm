@@ -232,20 +232,19 @@ VMX_Initialize_Guest2:
 	; cs ss:rip
 	; flags
 
-	;call ReInitPageTable32a
-
 	; CRx
-	mov ebx,0x6800 ; CR0
 
+	mov ebx,0x6800 ; CR0
 	mov eax,0x80000031 ; And the NX bit must be set
 	bts eax,31 ; And Paging bit enabled
 	vmwrite rbx,rax
+
 	mov ebx,0x6802 ; CR3
-
+	xor rax,rax
 	linear rax,PhysicalPagingOffset32,DATA16
-	;	mov eax,PageDir32 ; Paging See through (we set that in PMode tests already)
-
+	mov eax,[rax]
 	vmwrite rbx,rax
+
 	mov ebx,0x6804 ; CR4
 	mov eax,0
 	bts eax,13 ; the 13th bit of CR4 must be set in VMX mode
@@ -288,7 +287,9 @@ VMX_Initialize_Guest2:
 
 	; GDTR,IDTR
 	mov ebx,0x6816 ; GDTR Base
-	mov rax,gdt_ptr
+	;mov rax,gdt_ptr
+	linear rax,gdt_ptr,DATA16
+	add rax,4
 	vmwrite rbx,rax
 	mov ebx,0x4810 ; Limit
 	mov rax,gdt_size
@@ -355,7 +356,6 @@ VMX_Initialize_Guest2:
 	mov ebx,0x6810 ; GS base
 	vmwrite rbx,rax
 
-
 	; LDT (Dummy)
 	xor rax,rax
 	mov ax,ldt_idx
@@ -388,7 +388,7 @@ VMX_Initialize_Guest2:
 
 RET
 
-
+; A real mode guest
 VMX_Initialize_Guest:
 
 	; cr0,cr3,cr4 real mode
@@ -603,7 +603,10 @@ RET
 
 ; ---------------- VMX Host Exit ----------------
 VMX_VMExit:
-	break64
+	nop
+	; Disable
+	call VMX_Disable
+RET
 
 ; ---------------- Host Start ----------------
 VMX_Host:
@@ -624,8 +627,9 @@ RET
 	call VMX_Enable
 
 
-t1 = 0
-if t1 > 0
+if TEST_VMX_2 > 0
+
+    ; Real mode guest (unrestricted)
 
 	; Load the revision
 	linear rdi,VMXRevision,VMXDATA64
@@ -643,11 +647,11 @@ if t1 > 0
 	mov [rdi],ebx ; // Put the revision
   
 	call VMX_InitializeEPT
-	mov rdx,0x2
-	mov rdx,0x49
+	mov rdx,0x82
+	;mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
 	call VMX_Initialize_Host
-	call VMX_Initialize_Guest2
+	call VMX_Initialize_Guest
  
  
 	; The EPT initialization for the guest
@@ -670,23 +674,11 @@ if t1 > 0
 	 vmwrite rbx,rax
 
 	; Launch it!!
-	break64
 	VMLAUNCH
 
-	break64
+end if 
 
-
-end if
-
-
-
-
-
-
-
-
-
-
+    ; Protected mode guest 
 	; Load the revision
 	linear rdi,VMXRevision,VMXDATA64
 	mov ebx,[rdi];
@@ -707,7 +699,7 @@ end if
 	mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
 	call VMX_Initialize_Host
-	call VMX_Initialize_Guest
+	call VMX_Initialize_Guest2
  
 	; The EPT initialization for the guest
 	linear rax,PhysicalEptOffset64,DATA16
@@ -729,26 +721,11 @@ end if
 	vmwrite rbx,rax
 
 	; Launch it!!
- break64
 	VMLAUNCH
- 
- break64
+
 	; If we get here, VMLAUNCH failed
-;	xor rdi,rdi
-;	mov di,DATA16
-;	shl edi,4
-;	add di,VMXResults
-;	add di,12
-;	mov rcx,1
-;	mov [rdi],rcx
-
-
-RET
-
 
 	; Disable
 	call VMX_Disable
-
-
 
 RET

@@ -10,6 +10,7 @@ tssdata db 2048 dup (0) ; for some empty TSS
 d32 dd 0
 
 
+
 ; --------------------------------------- 32 bit Page Segment ---------------------------------------
 SEGMENT PAGE32 USE32
 ORG 0
