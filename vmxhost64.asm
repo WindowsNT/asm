@@ -674,9 +674,10 @@ if TEST_VMX_2 > 0
 	 vmwrite rbx,rax
 
 	; Launch it!!
+	break64
 	VMLAUNCH
 
-end if 
+else
 
     ; Protected mode guest 
 	; Load the revision
@@ -722,6 +723,9 @@ end if
 
 	; Launch it!!
 	VMLAUNCH
+
+end if 
+
 
 	; If we get here, VMLAUNCH failed
 
