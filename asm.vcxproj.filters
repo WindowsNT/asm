@@ -141,5 +141,11 @@
     <None Include="vmxhost64.asm">
       <Filter>64 bit code</Filter>
     </None>
+    <None Include="int16.asm">
+      <Filter>16 bit code</Filter>
+    </None>
+    <None Include="main.asm">
+      <Filter>16 bit code</Filter>
+    </None>
   </ItemGroup>
 </Project>

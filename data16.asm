@@ -20,7 +20,8 @@ FromThread3 db 0
 FromThread4 db 0 
 FromThread5 db 0 
 FromThread6 db 0 
-
+of0s dw 0
+of0o dw 0
 
 ; --------------------------------------- VMX tests---------------------------------------
 vmt1 db 0 ; existence
