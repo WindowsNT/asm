@@ -16,7 +16,10 @@ INCLUDE 'idt.asm'
 INCLUDE 'gdt.asm'
 INCLUDE 'code32.asm'
 INCLUDE 'code64.asm'
+INCLUDE 'int16.asm'
 
+
+SEGMENT ENDS
 
 entry CODE16:start16
 

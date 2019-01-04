@@ -52,5 +52,10 @@ Thread32_1a:
 	cli
 	hlt
 
+Thread32C:
+
+break32
+cli
+hlt
 
 USE32

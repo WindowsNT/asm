@@ -10,8 +10,6 @@ INCLUDE 'unreal.asm'
 INCLUDE 'page16.asm'
 INCLUDE 'acpi16.asm'
 INCLUDE 'thread16.asm'
-INCLUDE 'int16.asm'
-INCLUDE 'main.asm'
 
 
 macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
@@ -208,42 +206,7 @@ call DumpMadt
 end if
 
 
-if USER_CODE > 0 
 
-    mov ax,0x35F0
-	int 0x21
-	mov ax,DATA16
-	mov ds,ax
-	mov [of0s],es
-	mov [of0o],bx
-
-	mov ax,CODE16
-	mov ds,ax
-    mov ax,0x25F0
-	mov dx,int16
-	int 0x21
-	
-		
-	mov ax,DATA16
-	mov ds,ax
-	push cs
-	call  main
-	
-	mov ax,DATA16
-	mov ds,ax
-    mov ax,0x25F0
-	mov dx,[of0o]
-	mov es,[of0s]
-	push es
-	pop ds
-	int 0x21
-	mov ax,DATA16
-	mov ds,ax
-
-	mov ax,0x4C00
-	int 0x21
-
-end if
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 
 EnterProtected
