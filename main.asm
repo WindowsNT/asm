@@ -1,8 +1,4 @@
-FORMAT MZ
-SEGMENT MAIN16 USE16
-ORG 0h
 
-m0 db "DMMI server not installed. Run entry.exe with /r $"
 m1 db "Hello",0xd,0xa,"$";
 mut1 db 0
 
@@ -29,34 +25,11 @@ retf
 
 main:
 
-int 0x20
-
-mov ax,0x35F0
-int 0x21
-xchg bx,bx
-cmp bx,0
-jnz .bp
-mov bx,es
-cmp bx,0
-jnz .bp
-jmp .f
-
-.bp:
 mov ax,0
 int 0xF0
 cmp ax,0xFACE
 jz .y
-
-.f:
-push cs
-pop ds
-mov ax,0x0900
-mov dx,m0
-int 0x21
-
-mov ax,0x4c00
-int 0x21
-
+retf
 
 .y:
 ; dl = num of cpus
@@ -86,7 +59,7 @@ int 0xF0
 push cs
 pop es
 mov dx,rt1
-mov ax,0x0100
+mov ax,0x0101
 mov ebx,1
 int 0xF0
 
@@ -94,17 +67,10 @@ int 0xF0
 push cs
 pop es
 mov dx,rt1
-mov ax,0x0100
+mov ax,0x0101
 mov ebx,2
 int 0xF0
 
-
-; run a p thread
-push cs
-pop es
-mov ax,0x0101
-mov ebx,3
-int 0xF0
 
 ; wait mut
 push cs
@@ -113,6 +79,5 @@ mov di,mut1
 mov ax,0x0504
 int 0xF0
 
-ret
+retf
 
-entry MAIN16:main

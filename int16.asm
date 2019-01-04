@@ -1,11 +1,8 @@
-SEGMENT FO16 USE16
-
 ; --------------------------------------- int 0xF0 real ---------------------------------------
 
 c16o dw 0
 c16s dw 0
 
-c32o dd 0
 
 Thread16C:
 
@@ -21,15 +18,6 @@ Thread16C:
 	mov ax,CODE16
 	mov ds,ax
 	call far dword [c16o]
-	cli
-	hlt
-	hlt
-
-
-;Thread32C:
-
-;	thread32header Thread32C,code32_idx
-
 	cli
 	hlt
 	hlt
@@ -53,37 +41,17 @@ int16:
 	cmp ah,1
 	jnz .n1
 
-	    cmp al,0
-		jnz .n10
-			; BL = CPU
-			; AL = 0 = Unreal mode thread
-			; ES:DX = Run address
+		; BL = CPU
+		; AL = 0 = Unreal mode thread
+		; ES:DX = Run address
 
-			and ebx,0xFF
-			mov ax,CODE16
-			mov ds,ax
-			mov [c16s],es
-			mov [c16o],dx
-			linear eax,Thread16C,CODE16
-			call far CODE16:SendSIPIf
-
-		.n10:
-
-	    cmp al,1
-		jnz .n11
-			; BL = CPU
-			; AL = 1 = Protected mode thread
-			; EDX = Run address linesr
-
-			and ebx,0xFF
-			mov ax,CODE16
-			mov ds,ax
-			mov [c32o],edx
-			linear eax,Thread32C,CODE16
-			call far CODE16:SendSIPIf
-
-		.n11:
-
+		and ebx,0xFF
+		mov ax,CODE16
+		mov ds,ax
+		mov [c16s],es
+		mov [c16o],dx
+		linear eax,Thread16C,CODE16
+		call far CODE16:SendSIPIf
 	IRET
 
 
