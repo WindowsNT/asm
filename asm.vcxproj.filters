@@ -17,6 +17,9 @@
     <Filter Include="64 bit code">
       <UniqueIdentifier>{1f5ef5e6-1cd9-452e-b6d1-e803a1a2e812}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DMMI Client">
+      <UniqueIdentifier>{3d1fb20d-d4c2-4578-9778-ec0c4531a433}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
@@ -146,6 +149,9 @@
     </None>
     <None Include="main.asm">
       <Filter>16 bit code</Filter>
+    </None>
+    <None Include="dmmic.asm">
+      <Filter>DMMI Client</Filter>
     </None>
   </ItemGroup>
 </Project>

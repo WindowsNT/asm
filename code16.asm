@@ -208,8 +208,24 @@ call DumpMadt
 end if
 
 
-if USER_CODE > 0 
+; Resident test /r cmdline
+mov ax,0x6200
+int 0x21
+push ds
+mov ds,bx
+mov al,[0x80]
+cmp al,3
+jnz .nores
 
+mov al,[0x82]
+cmp al,'/'
+jnz .nores
+mov al,[0x83]
+cmp al,'r'
+jnz .nores
+
+; Resident
+    pop ds
     mov ax,0x35F0
 	int 0x21
 	mov ax,DATA16
@@ -222,28 +238,24 @@ if USER_CODE > 0
     mov ax,0x25F0
 	mov dx,int16
 	int 0x21
-	
-		
-	mov ax,DATA16
-	mov ds,ax
-	push cs
-	call  main
-	
-	mov ax,DATA16
-	mov ds,ax
-    mov ax,0x25F0
-	mov dx,[of0o]
-	mov es,[of0s]
-	push es
-	pop ds
-	int 0x21
-	mov ax,DATA16
-	mov ds,ax
 
-	mov ax,0x4C00
+	mov ax,DATA16
+	mov ds,ax
+    mov ax,0x0900
+;	mov dx,resm
+	int 0x21
+	
+	mov dx,ENDS
+	mov ax,0x3100
 	int 0x21
 
-end if
+
+
+.nores:
+pop ds
+
+
+
 ; --------------------------------------- Protected Mode Test ---------------------------------------
 
 EnterProtected

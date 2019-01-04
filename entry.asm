@@ -17,6 +17,7 @@ INCLUDE 'gdt.asm'
 INCLUDE 'code32.asm'
 INCLUDE 'code64.asm'
 
+SEGMENT ENDS 
 
 entry CODE16:start16
 
