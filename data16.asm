@@ -43,8 +43,8 @@ end if
 vmt1 db 0 ; existence
 vmt2 db 0 ; protected mode guest
 
-vmm1 db "VMX Test 1 OK",0dh,0ah,"$"
-vmm2 db "VMX Test 2 OK",0dh,0ah,"$"
+vmm1 db "VMX Exists, OK",0dh,0ah,"$"
+vmm2 db "VMX Launch VM in Protected Mode, OK",0dh,0ah,"$"
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF

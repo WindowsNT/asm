@@ -104,7 +104,7 @@ xor ecx,ecx
 
 if STATIC_PAGE32 = 0
 ; Alloc 32 Pages high, preserve low ram
-mov edx,1024*20
+mov edx,1024*100
 call allochigh
 mov [Paging32InXMSH],cx
 mov [Paging32InXMS],edi
@@ -134,7 +134,7 @@ if TEST_LONG > 0
 
 if STATIC_PAGE64 = 0
 ; Alloc 64 Pages high, preserve low ram
-mov edx,1024*40
+mov edx,1024*100
 call allochigh
 mov [Paging64InXMSH],cx
 mov [Paging64InXMS],edi
