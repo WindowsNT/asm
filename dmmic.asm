@@ -48,6 +48,9 @@ retf
 
 main:
 
+mov ax,0x4c00
+int 0x21
+
 mov ax,0x35F0
 int 0x21
 cmp bx,0

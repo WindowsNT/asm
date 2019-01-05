@@ -229,6 +229,8 @@ jnz .nores
 ; Resident
     pop ds
 
+	mov ax,0x4c00
+int 0x21
 
     mov ax,0x35F0
 	int 0x21
