@@ -179,8 +179,8 @@ VMX_InitializeEPT:
 	mov rbx,rax
  
 	xor rdi,rdi
-	linear rdi,PhysicalEptOffset64,DATA16
-	mov rdi,[rdi]
+	linear rax,PhysicalEptOffset64,DATA16
+	mov edi,[rax]
  
 	; Clear everything
 	push rdi
@@ -574,13 +574,14 @@ VMX_Enable:
 	mov cr0,rax
  
 	; MSR 0x3ah lock bit 0
+break64
 	mov ecx,03ah
 	rdmsr
 	test eax,1
 	jnz .VMX_LB_Enabled
 	or eax,1
-	.VMX_LB_Enabled:
 	wrmsr
+	.VMX_LB_Enabled:
 
 	; Execute the VMXON
 	mov [rdi],ebx ; // Put the revision

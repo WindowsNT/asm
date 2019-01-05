@@ -242,7 +242,7 @@ jnz .nores
 	mov ax,DATA16
 	mov ds,ax
     mov ax,0x0900
-;	mov dx,resm
+	mov dx,resm
 	int 0x21
 	
 	mov dx,ENDS

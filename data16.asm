@@ -52,6 +52,7 @@ thr4 db "Thread 4 real mode executed from long mode, OK",0dh,0ah,"$"
 thr5 db "Thread 5 protected mode executed from real mode, OK",0dh,0ah,"$"
 thr6 db "Thread 6 long mode executed from real mode, OK",0dh,0ah,"$"
 
+resm db "DMMI Server Active",0dh,0ah,"$"
 
 a20off db "Restoring A20",0dh,0ah,"$"
 
