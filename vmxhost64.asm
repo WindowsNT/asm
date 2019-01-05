@@ -574,7 +574,6 @@ VMX_Enable:
 	mov cr0,rax
  
 	; MSR 0x3ah lock bit 0
-break64
 	mov ecx,03ah
 	rdmsr
 	test eax,1
@@ -675,7 +674,6 @@ if TEST_VMX_2 > 0
 	 vmwrite rbx,rax
 
 	; Launch it!!
-	break64
 	VMLAUNCH
 
 else

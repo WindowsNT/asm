@@ -3,7 +3,7 @@ SEGMENT MAIN16 USE16
 ORG 0h
 
 m0 db "DMMI server not installed. Run entry.exe with /r $"
-m1 db "Hello",0xd,0xa,"$";
+m1 db "Hello from thread",0xd,0xa,"$";
 mut1 db 0
 
 rt1:
@@ -29,9 +29,6 @@ retf
 
 main:
 
-; exit atm
-mov ax,0x4c00
-int 0x21
 
 mov ax,0x35F0
 int 0x21
@@ -43,6 +40,7 @@ jnz .bp
 jmp .f
 
 .bp:
+xchg bx,bx
 mov ax,0
 int 0xF0
 cmp ax,0xFACE
@@ -99,13 +97,12 @@ mov ax,0x0100
 mov ebx,2
 int 0xF0
 
-
 ; run a p thread
 push cs
 pop es
 mov ax,0x0101
 mov ebx,3
-int 0xF0
+;int 0xF0
 
 ; wait mut
 push cs
