@@ -79,7 +79,6 @@ int 0x21
 ; dl = num of cpus
 
 ; enter unreal
-xchg bx,bx
 mov ax,0x0900
 int 0xF0
 
