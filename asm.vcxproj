@@ -176,6 +176,7 @@
     <None Include="guest32.asm" />
     <None Include="idt.asm" />
     <None Include="int16.asm" />
+    <None Include="int32.asm" />
     <None Include="iso.ps1" />
     <None Include="mutex16.asm" />
     <None Include="mutex32.asm" />

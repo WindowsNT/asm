@@ -16,6 +16,7 @@ intr00:
 INCLUDE 'acpi32.asm'
 INCLUDE 'page32.asm'
 include 'thread32.asm'
+INCLUDE 'int32.asm'
 
 
 ; --------------------------------------- Entry Point ---------------------------------------
@@ -37,7 +38,7 @@ Start32:
 	mov ebx,[ds:d32]
 
 ; --------------------------------------- Interrupt Test ---------------------------------------
-	int 0;
+	int 0x0;
 
 ; --------------------------------------- SIPI to real mode test ---------------------------------------
 if TEST_PM_SIPI > 0 

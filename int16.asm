@@ -26,8 +26,6 @@ Thread32P:
 	
 	mov ax,code16_idx
 	mov ds,ax
-	mov edx,[c32]
-
 	db  066h  
 	db  09ah 
 	c32 dd  0

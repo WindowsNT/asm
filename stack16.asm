@@ -9,7 +9,7 @@ stack16_end:
 ;-------------------------------------------------------------------------------------------
 SEGMENT STACK16S USE16
 ORG 0
-sseg16s dw 2048 dup (?)
+sseg16s dw 200 dup (?)
 stack16s_end:
 		
 
@@ -18,21 +18,21 @@ stack16s_end:
 ;-------------------------------------------------------------------------------------------
 SEGMENT STACK16T1 USE16
 ORG 0
-sseg16t1 dw 2048 dup (?)
+sseg16t1 dw 200 dup (?)
 stack16t1_end:
 SEGMENT STACK16T2 USE16
 ORG 0
-sseg16t2 dw 2048 dup (?)
+sseg16t2 dw 200 dup (?)
 stack16t2_end:
 SEGMENT STACK16T3 USE16
 ORG 0
-sseg16t3 dw 2048 dup (?)
+sseg16t3 dw 200 dup (?)
 stack16t3_end:
 SEGMENT STACK16T4 USE16
 ORG 0
-sseg16t4 dw 2048 dup (?)
+sseg16t4 dw 200 dup (?)
 stack16t4_end:
 SEGMENT STACK16T5 USE16
 ORG 0
-sseg16t5 dw 2048 dup (?)
+sseg16t5 dw 200 dup (?)
 stack16t5_end:

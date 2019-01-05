@@ -26,7 +26,7 @@ SEGMENT ABSD64 USE64
 SEGMENT PAGE64 USE64
 ORG 0
 
-Page64Null dq 30000 dup (0)
+Page64Null dq 3000 dup (0)
 
 ; 
 ; --------------------------------------- VMX 64 bit EPT ---------------------------------------

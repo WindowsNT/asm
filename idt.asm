@@ -2,11 +2,13 @@
 USE16
 IDTInit2:
 
- ; Base for intr00 -> All vectors point to this
+ ; Base for intr00 -> All vectors point to this, except f0
  xor edx,edx
  mov dx,CODE32
  shl edx,4
  add edx,intr00 ; EDX now contains physical address for handler
+
+
  
  mov cx,255
  xor esi,esi
@@ -14,6 +16,11 @@ IDTInit2:
  Loop1a:
  
  ; 
+ push edx
+ cmp cx, 15
+ jnz .nof0
+ linear edx,int32,CODE32
+  .nof0:
  mov edi,esi
  mov eax,edx
  mov word [edi],ax ; lower
@@ -28,7 +35,7 @@ IDTInit2:
  shr eax,16
  mov word [edi],ax ; upper
  
- 
+ pop edx
  
  
  jcxz EndLoop1a
@@ -53,10 +60,12 @@ retf
 
  IDTInit:
 
+
   ; 00h
-  mov cx,255
+  mov ecx,255
+  xor edi,edi
   mov di,interruptsall
-  
+
   Loop1:
   
   mov bp,8
@@ -65,7 +74,17 @@ retf
   mov bp,ax
   
   xor eax,eax
+
+
+  cmp cx, 15
+  jnz .nof0
+  add eax,int32
+  jmp .cf0
+  .nof0:
+
   add eax,intr00
+  .cf0:
+
   ;  mov [ds:interruptsall[bp].o0_15],ax
   ;shr     eax,16
   ;mov     [ds:interruptsall[bp].o16_31],ax

@@ -150,5 +150,8 @@
     <None Include="dmmic.asm">
       <Filter>DMMI Client</Filter>
     </None>
+    <None Include="int32.asm">
+      <Filter>32 bit code</Filter>
+    </None>
   </ItemGroup>
 </Project>

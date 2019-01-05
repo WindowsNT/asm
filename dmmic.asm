@@ -48,7 +48,6 @@ retf
 
 main:
 
-
 mov ax,0x35F0
 int 0x21
 cmp bx,0
@@ -125,7 +124,7 @@ pop es
 mov ax,0x0101
 mov ebx,3
 linear edx,rt2,T32
-int 0xF0
+;int 0xF0
 
 ; wait mut
 push cs

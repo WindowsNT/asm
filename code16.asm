@@ -49,6 +49,9 @@ start16:
 ; --------------------------------------- Initialization of our segments ---------------------------------------
 cli
 
+mov ax,0x4A00
+mov bx,ENDS
+int 0x21
 
 mov ax,DATA16
 mov ds,ax
@@ -226,8 +229,6 @@ jnz .nores
 ; Resident
     pop ds
 
-	;mov ax,0x4C00
-	;int 0x21
 
     mov ax,0x35F0
 	int 0x21
@@ -249,7 +250,6 @@ jnz .nores
 	int 0x21
 	
 	mov dx,ENDS
-	shr dx,4
 	mov ax,0x3100
 	int 0x21
 
