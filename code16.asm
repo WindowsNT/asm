@@ -6,6 +6,7 @@ macro break16
 	xchg bx,bx
 }
 
+INCLUDE 'himem16.asm'
 INCLUDE 'unreal.asm'
 INCLUDE 'page16.asm'
 INCLUDE 'acpi16.asm'
@@ -63,6 +64,13 @@ sti
 mov bx,idt_RM_start
 sidt [bx] 
 
+; --------------------------------------- HIMEM.SYS test ---------------------------------------
+
+call himemthere
+mov edx,1024
+call allochigh
+mov dx,cx
+call freehigh
 
 ; --------------------------------------- A20 line  ---------------------------------------
 
@@ -93,11 +101,23 @@ end if
 
 ; --------------------------------------- Protected Mode Find Page Entry  ---------------------------------------
 xor ecx,ecx
+
+if STATIC_PAGE32 = 0
+; Alloc 32 Pages high, preserve low ram
+mov edx,1024*20
+call allochigh
+mov [Paging32InXMSH],cx
+mov [Paging32InXMS],edi
+end if
+
 LoopPMR:
 xor eax,eax
-mov ax,PAGE32
-shl eax,4
-add eax,Page32Null
+if STATIC_PAGE32 = 1
+	linear eax,Page32Null,PAGE32
+else
+	mov eax,[Paging32InXMS]
+end if
+
 add eax,ecx
 mov ebx,eax
 shr eax,12
@@ -112,12 +132,23 @@ mov [PhysicalPagingOffset32],eax
 ; --------------------------------------- Long Mode Find Page Entry  ---------------------------------------
 if TEST_LONG > 0 
 
+if STATIC_PAGE64 = 0
+; Alloc 64 Pages high, preserve low ram
+mov edx,1024*40
+call allochigh
+mov [Paging64InXMSH],cx
+mov [Paging64InXMS],edi
+end if
+
+
 xor ecx,ecx
 LoopPMR2:
 xor eax,eax
-mov ax,PAGE64
-shl eax,4
-add eax,Page64Null
+if STATIC_PAGE64 = 1
+	linear eax,Page64Null,PAGE64
+else
+	mov eax,[Paging64InXMS]
+end if 
 add eax,ecx
 mov ebx,eax
 shr eax,12
@@ -135,12 +166,23 @@ end if
 ; --------------------------------------- VMX EPT Find Page Entry  ---------------------------------------
 if TEST_VMX_1 > 0 
 
+if STATIC_PAGEVM = 0
+; Alloc VMX Pages high, preserve low ram
+mov edx,1024*100
+call allochigh
+mov [PagingVMInXMSH],cx
+mov [PagingVMInXMS],edi
+end if
+
 xor ecx,ecx
 LoopPMR5:
 xor eax,eax
-mov ax,VMXPAGE64
-shl eax,4
-add eax,Ept64Null
+
+if STATIC_PAGEVM = 1
+	linear eax,Ept64Null,VMXPAGE64
+else
+	mov eax,[PagingVMInXMS]
+end if 
 add eax,ecx
 mov ebx,eax
 shr eax,12
@@ -230,7 +272,7 @@ jnz .nores
     pop ds
 
 	mov ax,0x4c00
-int 0x21
+	int 0x21
 
     mov ax,0x35F0
 	int 0x21
@@ -285,6 +327,24 @@ mov     di,idt_RM_start
 lidt    [di]
 sti
 ; = END NO DEBUG HERE =
+
+if STATIC_PAGE32 = 0
+; Free Paging 32 bit reserved in XMS
+mov dx,[Paging32InXMSH]
+call freehigh
+end if
+
+if STATIC_PAGE64 = 0
+; Free Paging 64 bit reserved in XMS
+mov dx,[Paging64InXMSH]
+call freehigh
+end if
+
+if STATIC_PAGEVM = 0
+; Free Paging VM bit reserved in XMS
+mov dx,[PagingVMInXMSH]
+call freehigh
+end if
 
 ; --------------------------------------- Quick Unreal ---------------------------------------
 push cs

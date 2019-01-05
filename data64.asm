@@ -22,12 +22,16 @@ TempData db 128 dup(0)
 ; --------------------------------------- 64 bit Data another segment---------------------------------------
 SEGMENT ABSD64 USE64
 
+
+if STATIC_PAGE64 = 1
 ; --------------------------------------- 64 bit Page Directory ---------------------------------------
 SEGMENT PAGE64 USE64
 ORG 0
 
 Page64Null dq 3000 dup (0)
+end if 
 
+if STATIC_PAGEVM = 1
 ; 
 ; --------------------------------------- VMX 64 bit EPT ---------------------------------------
 SEGMENT VMXPAGE64 USE64
@@ -35,10 +39,6 @@ ORG 0
 
 Ept64Null dq 8192 dup (0);
 
-;EPT_PML4T dq 512 dup (0) ; 512 64-bit entries for EPT Top Level Page Directory 
-;EPT_PDPT dq 512 dup (0) ; 512 64-bit entries for EPT Page Directory Pointer Table
-;EPT_PDT dq 512 dup (0) ; 512 64-bit entries for EPT Page Directory Table
-;EPT_PG dq 512 dup (0) ; 512 64-bit entries for EPT Page Table
-
+end if
 
 

@@ -153,5 +153,8 @@
     <None Include="int32.asm">
       <Filter>32 bit code</Filter>
     </None>
+    <None Include="himem16.asm">
+      <Filter>16 bit code</Filter>
+    </None>
   </ItemGroup>
 </Project>
