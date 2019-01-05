@@ -10,8 +10,6 @@ INCLUDE 'unreal.asm'
 INCLUDE 'page16.asm'
 INCLUDE 'acpi16.asm'
 INCLUDE 'thread16.asm'
-INCLUDE 'int16.asm'
-INCLUDE 'main.asm'
 
 
 macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
@@ -43,6 +41,7 @@ macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
 }
 
 
+INCLUDE 'int16.asm'
 
 ; --------------------------------------- This is where the application starts ---------------------------------------
 start16:
@@ -226,6 +225,10 @@ jnz .nores
 
 ; Resident
     pop ds
+
+	;mov ax,0x4C00
+	;int 0x21
+
     mov ax,0x35F0
 	int 0x21
 	mov ax,DATA16
@@ -246,6 +249,7 @@ jnz .nores
 	int 0x21
 	
 	mov dx,ENDS
+	shr dx,4
 	mov ax,0x3100
 	int 0x21
 

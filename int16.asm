@@ -22,6 +22,28 @@ Thread16C:
 	hlt
 	hlt
 
+Thread32P:
+	
+	mov ax,code16_idx
+	mov ds,ax
+	mov edx,[c32]
+
+	db  066h  
+	db  09ah 
+	c32 dd  0
+	dw  vmx32_idx
+
+
+    cli
+	hlt
+	hlt
+
+
+USE16
+Thread32C:
+
+	thread16header STACK16T1,stack16t1_end
+	EnterProtected Thread32P,code16_idx,0
 
 int16:
 
@@ -41,17 +63,37 @@ int16:
 	cmp ah,1
 	jnz .n1
 
-		; BL = CPU
-		; AL = 0 = Unreal mode thread
-		; ES:DX = Run address
+		cmp al,0
+		jnz .n10
+			; BL = CPU
+			; AL = 0 = Unreal mode thread
+			; ES:DX = Run address
 
-		and ebx,0xFF
-		mov ax,CODE16
-		mov ds,ax
-		mov [c16s],es
-		mov [c16o],dx
-		linear eax,Thread16C,CODE16
-		call far CODE16:SendSIPIf
+			and ebx,0xFF
+			mov ax,CODE16
+			mov ds,ax
+			mov [c16s],es
+			mov [c16o],dx
+			linear eax,Thread16C,CODE16
+			call far CODE16:SendSIPIf
+			IRET
+		.n10:
+
+		cmp al,1
+		jnz .n11
+			; BL = CPU
+			; AL = 1 = Protected mode thread
+			; EDX = Linear Address
+
+			and ebx,0xFF
+			mov ax,CODE16
+			mov ds,ax
+			mov [c32],edx
+			linear eax,Thread32C,CODE16
+			call far CODE16:SendSIPIf
+			IRET
+		.n11:
+
 	IRET
 
 
@@ -105,5 +147,26 @@ int16:
 
 
 .n5:
+
+
+	; AX 9, switch to mode
+	cmp ah,9
+	jnz .n9
+
+		; AL 0, unreal
+		cmp al,0
+		jnz .n90
+
+			push cs
+			cli
+			call EnterUnreal
+			sti
+			IRET
+			
+
+		.n90:
+	IRET
+.n9:
+
 
 IRET

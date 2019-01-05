@@ -1,9 +1,27 @@
 FORMAT MZ
+
+macro linear reg,trg,seg
+	{
+	xor reg,reg
+	mov reg,seg
+	shl reg,4
+	add reg,trg
+	}
+
+
+
+SEGMENT T32 USE32
+
+rt2:
+
+retf
+
+
 SEGMENT MAIN16 USE16
 ORG 0h
 
-m0 db "DMMI server not installed. Run entry.exe with /r $"
-m1 db "Hello from thread",0xd,0xa,"$";
+m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
+m1 db "Hello from real mode thread",0xd,0xa,"$";
 mut1 db 0
 
 rt1:
@@ -27,6 +45,7 @@ int 0xF0
 retf
 
 
+
 main:
 
 
@@ -40,7 +59,6 @@ jnz .bp
 jmp .f
 
 .bp:
-xchg bx,bx
 mov ax,0
 int 0xF0
 cmp ax,0xFACE
@@ -59,6 +77,11 @@ int 0x21
 
 .y:
 ; dl = num of cpus
+
+; enter unreal
+xchg bx,bx
+mov ax,0x0900
+int 0xF0
 
 ; init mut
 push cs
@@ -102,7 +125,8 @@ push cs
 pop es
 mov ax,0x0101
 mov ebx,3
-;int 0xF0
+linear edx,rt2,T32
+int 0xF0
 
 ; wait mut
 push cs
@@ -111,6 +135,7 @@ mov di,mut1
 mov ax,0x0504
 int 0xF0
 
-ret
+mov ax,0x4c00
+int 0x21
 
 entry MAIN16:main

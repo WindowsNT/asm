@@ -147,9 +147,6 @@
     <None Include="int16.asm">
       <Filter>16 bit code</Filter>
     </None>
-    <None Include="main.asm">
-      <Filter>16 bit code</Filter>
-    </None>
     <None Include="dmmic.asm">
       <Filter>DMMI Client</Filter>
     </None>
