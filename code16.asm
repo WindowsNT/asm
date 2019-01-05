@@ -271,8 +271,10 @@ jnz .nores
 ; Resident
     pop ds
 
+if RESIDENT = 0
 	mov ax,0x4c00
 	int 0x21
+end if
 
     mov ax,0x35F0
 	int 0x21

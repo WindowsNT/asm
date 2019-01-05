@@ -60,12 +60,16 @@ retf
 
  IDTInit:
 
+  push es
+
+  mov ax,DATA16
+  mov es,ax
 
   ; 00h
   mov ecx,255
   xor edi,edi
   mov di,interruptsall
-
+  
   Loop1:
   
   mov bp,8
@@ -105,6 +109,7 @@ retf
   add di,8
  
   jcxz EndLoop1
+
   dec cx
   jmp Loop1
   EndLoop1:
@@ -117,4 +122,5 @@ retf
         add     ax,interruptsall
         mov     [idt_PM_ptr],eax
 
+		pop es
   RETF

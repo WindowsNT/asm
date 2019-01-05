@@ -1,5 +1,7 @@
 FORMAT MZ
 
+include 'config.asm'
+
 macro linear reg,trg,seg
 	{
 	xor reg,reg
@@ -48,8 +50,10 @@ retf
 
 main:
 
-mov ax,0x4c00
-int 0x21
+if RESIDENT = 0
+	mov ax,0x4c00
+	int 0x21
+end if
 
 mov ax,0x35F0
 int 0x21
@@ -127,7 +131,8 @@ pop es
 mov ax,0x0101
 mov ebx,3
 linear edx,rt2,T32
-;int 0xF0
+xchg bx,bx
+int 0xF0
 
 ; wait mut
 push cs
