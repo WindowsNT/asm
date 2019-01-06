@@ -217,7 +217,6 @@ TempBackRM:
 	db 0xCD
 	inttt db 0
 
-	break16
 	; And again protected
 	; macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
 	EnterProtected  i4BackFromRM,code32_idx
