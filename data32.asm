@@ -10,6 +10,9 @@ tssdata db 2048 dup (0) ; for some empty TSS
 d32 dd 0
 
 
+; --------------------------------------- MOVEMENTS FOR INT0xF0 ---------------------------------------
+From32To16Regs db 64 dup (0)
+
 
 if STATIC_PAGE32 = 1
 ; --------------------------------------- 32 bit Page Segment ---------------------------------------

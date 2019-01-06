@@ -20,8 +20,16 @@ rt2:
 mov ax,0
 int 0xF0
 
+; DOS call
+mov ax,0x0421
+mov bp,0x0900
+xor esi,esi
+mov si,MAIN16
+shl esi,16
+mov dx,m2
+int 0xF0
+
 ; Unlock mutex
-xchg bx,bx
 mov ax,0x0503
 linear edi,mut1,MAIN16
 int 0xF0
@@ -34,6 +42,7 @@ ORG 0h
 
 m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
 m1 db "Hello from real mode thread",0xd,0xa,"$";
+m2 db "Hello from protected mode thread",0xd,0xa,"$";
 mut1 db 0
 
 rt1:

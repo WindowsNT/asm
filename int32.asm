@@ -15,6 +15,57 @@ int32:
 	IRETD
 .n0:
 
+
+	; AH 4, call real mode interrupt
+	; AL = INT NUM
+	; BP = AX VALUE
+	; CX,DX,SI,DI = Normal values
+	; Upper ESI,EDI => DS and ES
+	cmp ah,4
+	jnz nn4
+
+	push ds
+	push eax
+
+	mov ax,data32_idx
+	mov ds,ax
+
+	; Save: AX,BX,CD,DX,SI,DI,DS,ES
+	mov word [From32To16Regs],bp
+	mov word [From32To16Regs + 2],bx
+	mov word [From32To16Regs + 4],cx
+	mov word [From32To16Regs + 6],dx
+	mov word [From32To16Regs + 8],si
+	mov word [From32To16Regs + 10],di
+	mov eax,esi
+	shr eax,16
+	mov word [From32To16Regs + 12],ax
+	mov eax,edi
+	shr eax,16
+	mov word [From32To16Regs + 14],ax
+	pop eax
+	mov byte [From32To16Regs + 16],al ; #intr
+	mov word [From32To16Regs + 18],ss ; save for later
+	mov dword [From32To16Regs + 20],esp ; save for later
+
+	; back to real mode
+    db		066h
+	db      0eah
+	dw      TempBackRM
+	dw		code16_idx
+	i4BackFromRM:
+	mov ax,stack32_idx
+	mov ss,ax
+	mov ax,data32_idx
+	mov ds,ax
+	mov ax,word [From32To16Regs + 18]
+	mov ss,ax
+	mov esp,dword [From32To16Regs + 20]
+	pop ds
+	iretd
+nn4:
+
+
 	; AH 5, mutex functions
 	cmp ah,5
 	jnz .n5
@@ -27,7 +78,7 @@ int32:
 			mov fs,bx
 			mov byte [fs:edi],0xFF
 			pop fs
-		iret
+		iretd
 		.n50:
 
 		; lock mutex
@@ -38,7 +89,7 @@ int32:
 			mov fs,bx
 			dec byte [fs:edi]
 			pop fs
-		iret
+		iretd
 		.n52:
 
 		; unlock mutex
@@ -52,7 +103,7 @@ int32:
 				inc byte [fs:edi]
 			.okl:
 			pop fs
-		iret
+		iretd
 		.n53:
 
 		; wait mutex
@@ -70,10 +121,10 @@ int32:
 			.OutLoop1:
 			pop fs
 
-		iret
+		iretd
 		.n54:
 
-	IRET
+	IRETd
 
 
 .n5:

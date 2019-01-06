@@ -10,6 +10,9 @@ Thread16C:
 
 	mov ax,CODE16
 	mov ds,ax
+	mov     ax,STACK16
+	mov     ss,ax     
+	mov sp,stack16dmmi_end
     mov ax,0x25F0
 	mov dx,int16
 	int 0x21
@@ -24,6 +27,9 @@ Thread16C:
 
 Thread32P:
 	
+	mov     ax,stack32_idx          
+	mov     ss,ax                   
+	mov     esp,stack32dmmi_end  
 	mov ax,code16_idx
 	mov ds,ax
 	db  066h  
@@ -39,7 +45,7 @@ USE16
 Thread32C:
 
 	thread16header STACK16T1,stack16t1_end
-	EnterProtected Thread32P,code16_idx,0
+	EnterProtected Thread32P,code16_idx
 
 int16:
 
@@ -166,3 +172,54 @@ int16:
 
 
 IRET
+
+TempBackRM:
+
+
+	mov     eax,cr0         
+	and     al,not 1        
+	mov     cr0,eax         
+	db      0eah
+	dw      .flush_ipq,CODE16
+	.flush_ipq:
+	mov     ax,STACK16 
+	mov     ss,ax
+	mov     sp,stack16dmmi2_end
+	mov ax, DATA16
+	mov     ds,ax
+	mov     es,ax
+	mov     di,idt_RM_start
+	lidt    [di]
+	sti
+
+	; execute the interrupt
+	mov ax,DATA32
+	mov ds,ax
+	mov bp,word [From32To16Regs]
+	mov bx,word [From32To16Regs + 2]
+	mov cx,word [From32To16Regs + 4]
+	mov dx,word [From32To16Regs + 6]
+	mov si,word [From32To16Regs + 8]
+	mov di,word [From32To16Regs + 10]
+	mov ax, word [From32To16Regs + 12]
+	mov gs,ax ; later DS
+	mov ax, word [From32To16Regs + 14]
+	mov fs,ax ; later ES
+	mov al, byte [From32To16Regs + 16]
+	mov [cs:inttt],al
+	push bp
+	pop ax
+	push gs
+	pop ds
+	push fs
+	pop es
+
+	db 0xCD
+	inttt db 0
+
+	break16
+	; And again protected
+	; macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
+	EnterProtected  i4BackFromRM,code32_idx
+
+
