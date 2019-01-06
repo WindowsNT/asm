@@ -19,6 +19,11 @@ VMXStructureSize dd 0 ; Save structure size here
 ; Temp Data
 TempData db 128 dup(0)
 
+
+
+; --------------------------------------- MOVEMENTS FOR INT0xF0 ---------------------------------------
+From64To16Regs db 64 dup (0)
+
 ; --------------------------------------- 64 bit Data another segment---------------------------------------
 SEGMENT ABSD64 USE64
 

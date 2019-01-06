@@ -261,3 +261,55 @@ TempBackRM:
 	EnterProtected  i4BackFromRM,code32_idx
 
 
+
+TempBackLM:
+
+	mov     eax,cr0         
+	and     al,not 1        
+	mov     cr0,eax         
+	db      0eah
+	dw      .flush_ipq,CODE16
+	.flush_ipq:
+	mov     ax,STACK16 
+	mov     ss,ax
+	mov     sp,stack16dmmi2_end
+	mov ax, DATA16
+	mov     ds,ax
+	mov     es,ax
+	mov     di,idt_RM_start
+	lidt    [di]
+
+	push cs
+	call EnterUnreal
+
+	sti
+
+	; execute the interrupt
+	mov ax,DATA64
+	mov ds,ax
+	mov bp,word [From64To16Regs]
+	mov bx,word [From64To16Regs + 2]
+	mov cx,word [From64To16Regs + 4]
+	mov dx,word [From64To16Regs + 6]
+	mov si,word [From64To16Regs + 8]
+	mov di,word [From64To16Regs + 10]
+	mov ax, word [From64To16Regs + 12]
+	mov gs,ax ; later DS
+	mov ax, word [From64To16Regs + 14]
+	mov fs,ax ; later ES
+	mov al, byte [From64To16Regs + 16]
+	mov [cs:inttt2],al
+	push bp
+	pop ax
+	push gs
+	pop ds
+	push fs
+	pop es
+
+    break16
+	db 0xCD
+	inttt2 db 0
+    break16
+
+	; and again long mode
+	thread64header BackFromExecutingInterruptLM,CODE16

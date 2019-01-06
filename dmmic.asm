@@ -47,13 +47,20 @@ nop
 nop
 nop
 nop
-xchg bx,bx
-nop
 nop
 
 ; Int 0xF0 works also in long mode
 mov ax,0
 int 0xF0
+
+; DOS call
+mov rax,0x0421
+mov rbp,0x0900
+xor rsi,rsi
+mov si,MAIN16
+shl rsi,16
+mov rdx,m2
+;int 0xF0
 
 ; Unlock mutex
 mov ax,0x0503
@@ -72,6 +79,7 @@ ORG 0h
 m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
 m1 db "Hello from real mode thread",0xd,0xa,"$";
 m2 db "Hello from protected mode thread",0xd,0xa,"$";
+m3 db "Hello from long mode thread",0xd,0xa,"$";
 mut1 db 0
 
 rt1:
