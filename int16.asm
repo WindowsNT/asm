@@ -3,6 +3,7 @@
 c16o dw 0
 c16s dw 0
 
+include 'directlong.asm'
 
 Thread16C:
 
@@ -40,12 +41,35 @@ Thread32P:
 	hlt
 	hlt
 
+USE64
+Thread64P:
+
+	linear rsp,stack64dmmi_end,STACK64
+	linear rax,idt_LM_start
+	lidt [rax]
+	mov ax,page64_idx
+	mov ss,ax
+
+	linear rax,retx,CODE16
+	push rax; for returning
+
+	db 0x68; push
+	c64 dd 0 
+	ret
+	retx:
+	cli
+	hlt
+	hlt
+
 
 USE16
 Thread32C:
-
 	thread16header STACK16T1,stack16t1_end
 	EnterProtected Thread32P,code16_idx
+Thread64C:
+	thread64header Thread64P,CODE16
+
+
 
 int16:
 
@@ -95,6 +119,21 @@ int16:
 			call far CODE16:SendSIPIf
 			IRET
 		.n11:
+
+		cmp al,2
+		jnz .n12
+			; BL = CPU
+			; AL = 2 = Long mode thread
+			; EDX = Linear Address
+
+			and ebx,0xFF
+			mov ax,CODE16
+			mov ds,ax
+			mov [c64],edx
+			linear eax,Thread64C,CODE16
+			call far CODE16:SendSIPIf
+			IRET
+		.n12:
 
 	IRET
 

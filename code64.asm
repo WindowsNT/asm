@@ -17,7 +17,7 @@ include 'vmxhost64.asm'
 intr6400:
     nop
 	nop
-	IRET
+	IRETQ
 
 Start64:
 

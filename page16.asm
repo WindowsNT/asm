@@ -11,6 +11,7 @@ InitPageTableFor64:
 	push gs
 	mov ax,DATA16
 	mov gs,ax
+
 	mov esi,[gs:PhysicalPagingOffset64]
 
 	

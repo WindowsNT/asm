@@ -11,7 +11,7 @@ macro linear reg,trg,seg
 	}
 
 
-
+; ---- Protected Mode Thread
 SEGMENT T32 USE32
 
 rt2:
@@ -35,6 +35,35 @@ linear edi,mut1,MAIN16
 int 0xF0
 
 retf
+
+
+
+; ---- Long Mode Thread
+SEGMENT T64 USE64
+
+rt3:
+
+nop
+nop
+nop
+nop
+xchg bx,bx
+nop
+nop
+
+; Int 0xF0 works also in long mode
+mov ax,0
+int 0xF0
+
+; Unlock mutex
+mov ax,0x0503
+linear rdi,mut1,MAIN16
+int 0xF0
+
+
+ret
+
+
 
 
 SEGMENT MAIN16 USE16
@@ -114,7 +143,7 @@ mov di,mut1
 mov ax,0x0500
 int 0xF0
 
-repeat 3
+repeat 4
 	; lock mut 
 	push cs
 	pop es
@@ -139,12 +168,20 @@ mov ax,0x0100
 mov ebx,2
 int 0xF0
 
-; run a p thread
+; run a protected thread
 push cs
 pop es
 mov ax,0x0101
 mov ebx,3
 linear edx,rt2,T32
+int 0xF0
+
+; run a long thread
+push cs
+pop es
+mov ax,0x0102
+mov ebx,4
+linear edx,rt3,T64
 int 0xF0
 
 ; wait mut
