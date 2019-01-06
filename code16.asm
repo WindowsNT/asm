@@ -276,6 +276,35 @@ if RESIDENT = 0
 	int 0x21
 end if
 
+	; Check if there first
+	
+	mov ax,0x35F0
+	int 0x21
+	cmp bx,0
+	jnz .yres
+	mov bx,es
+	cmp bx,0
+	jnz .yres
+	jmp .fres
+
+	.yres:
+	mov ax,0
+	int 0xF0
+	cmp ax,0xFACE
+	jnz .fres
+
+	mov ax,DATA16
+	mov ds,ax
+    mov ax,0x0900
+	mov dx,resm2
+	int 0x21
+	
+	mov ax,0x4C00
+	int 0x21
+	
+
+
+	.fres:
     mov ax,0x35F0
 	int 0x21
 	mov ax,DATA16

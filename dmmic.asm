@@ -131,8 +131,7 @@ pop es
 mov ax,0x0101
 mov ebx,3
 linear edx,rt2,T32
-xchg bx,bx
-int 0xF0
+;int 0xF0
 
 ; wait mut
 push cs
