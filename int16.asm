@@ -306,10 +306,8 @@ TempBackLM:
 	push fs
 	pop es
 
-    break16
 	db 0xCD
 	inttt2 db 0
-    break16
 
 	; and again long mode
-	thread64header BackFromExecutingInterruptLM,CODE16
+	thread64header BackFromExecutingInterruptLM,CODE64
