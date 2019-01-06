@@ -33,6 +33,11 @@ macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
 	mov eax,cr0
 	or al,1
 	mov cr0,eax 
+
+	; gs load with linear data so DMMI knows
+	mov ax,page32_idx
+	mov gs,ax
+
 	db  066h  
 	db  0eah 
 	dd  ofs32

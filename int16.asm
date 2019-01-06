@@ -30,8 +30,6 @@ Thread32P:
 	db  09ah 
 	c32 dd  0
 	dw  vmx32_idx
-
-
     cli
 	hlt
 	hlt
@@ -41,7 +39,7 @@ USE16
 Thread32C:
 
 	thread16header STACK16T1,stack16t1_end
-	EnterProtected Thread32P,code16_idx,1
+	EnterProtected Thread32P,code16_idx,0
 
 int16:
 
