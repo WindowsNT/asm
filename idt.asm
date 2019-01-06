@@ -70,7 +70,7 @@ retf
   xor edi,edi
   mov di,interruptsall
   
-  Loop1:
+  .Loop1:
   
   mov bp,8
   mov ax,cx
@@ -108,11 +108,11 @@ retf
   
   add di,8
  
-  jcxz EndLoop1
+  jcxz .EndLoop1
 
   dec cx
-  jmp Loop1
-  EndLoop1:
+  jmp .Loop1
+  .EndLoop1:
   
 
   ; Set idt ptr
@@ -124,3 +124,64 @@ retf
 
 		pop es
   RETF
+
+
+
+  
+
+ IDTInit64:
+
+  push es
+
+  mov ax,DATA16
+  mov es,ax
+
+  ; 00h
+  mov ecx,0
+  xor edi,edi
+  mov di,interruptsall64
+  
+  .Loop1:
+
+  cmp ecx,0x100
+  jz .End
+
+  linear eax,intr6400,CODE64
+  cmp ecx,0xF0
+  jnz .nof0
+  linear eax,int64,CODE64
+  .nof0:
+
+  ; 0(2) - Low bits offset
+  mov word [di],ax
+  ; 2(2) - Selector
+  mov word [di + 2],code64_idx
+  ; 4(1) - zero
+  mov byte [di + 4],0
+  ; 5(1) - Type + Attributes
+  mov byte [di + 5],0x8E
+  ; 6(2) - Middle offset
+  mov edx,eax
+  shr edx,16
+  mov word [di + 6],dx
+  ; 8(4) High bits
+  mov dword [di + 8],0
+  ; 12(4) zero
+  mov dword [di + 12],0
+
+
+  add di,16
+  inc ecx
+  jmp .Loop1
+
+  
+  .End:
+
+  ; Set idt ptr
+  linear eax,interruptsall64
+  mov     dword [idt_LM_ptr],eax
+  mov     dword [idt_LM_ptr + 4],0
+  
+  pop es
+  RETF
+

@@ -22,6 +22,7 @@ macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
 	mov ds,ax
 	call far CODE16:GDTInit
 	call far CODE16:IDTInit
+	call far CODE16:IDTInit64
 	.noinitg:
 	cli
 	mov bx,gdt_start

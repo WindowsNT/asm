@@ -10,7 +10,14 @@ macro break64
 
 include 'acpi64.asm'
 include 'thread64.asm'
+INCLUDE 'int64.asm'
 include 'vmxhost64.asm'
+
+; --------------------------------------- One interrupt definition ---------------------------------------
+intr6400:
+    nop
+	nop
+	IRET
 
 Start64:
 
@@ -26,6 +33,12 @@ Start64:
 	shl rax,4
 	add rax,d64
 	mov byte [rax],1
+
+
+; --------------------------------------- Interrupt Test ---------------------------------------
+   linear rax,idt_LM_start
+   lidt [rax]
+   int 0x1;
 
 ; --------------------------------------- SIPI to real mode test ---------------------------------------
 if TEST_LM_SIPI > 0 

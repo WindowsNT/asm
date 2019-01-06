@@ -138,6 +138,11 @@ interruptsall rb 256*8
 idt_size=$-(interruptsall)
 
 
+idt_LM_start      dw             idtl_size
+idt_LM_ptr db 0 dup(8)
+interruptsall64 rb 256*16
+idtl_size=$-(interruptsall64)
+
 
 ; --------------------------------------- PAGE ---------------------------------------
 PhysicalPagingOffset32 dd 0
