@@ -149,6 +149,7 @@ CompatFromLongIntF0:
 	mov eax, cr4
 	btc eax, 5
 	mov cr4, eax
+
 ; Go Real
     db		066h
 	db      0eah

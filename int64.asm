@@ -55,6 +55,7 @@ int64:
 
 USE64
 	BackFromExecutingInterruptLM:
+	break64
 	linear rsp,stack64dmmi_end,STACK64
 	linear rax,idt_LM_start
 	lidt [rax]

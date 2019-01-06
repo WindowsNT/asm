@@ -3,7 +3,7 @@ include 'directlong.asm'
 
 Thread64_1:
 
-	thread64header Thread64_1a,CODE64
+	thread64header Thread64_1a,CODE64,labx3,0
 
 	USE64
 Thread64_1a:

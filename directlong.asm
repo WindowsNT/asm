@@ -1,15 +1,16 @@
 
 
-macro thread64header ofs,seg
+macro thread64header ofs,seg,labn,brk
 {
-	local doo
 	local .nbrk
+	local labn
 
 	USE16 
 	; Remember CPU starts in real mode
 	db 4096 dup (144) ; // fill NOPs
 
 	cli
+
 
 
 	; Stack
@@ -32,18 +33,29 @@ macro thread64header ofs,seg
 	mov bx,gdt_start
 	lgdt [bx]
 
-	; Save linear
-	mov eax,seg
-	shl eax,4
-	add eax,ofs
-	linear ebx,doo,seg
-	mov [fs:ebx],eax
-
 
 	; Prepare Paging
 	nop
 	nop
 	call FAR CODE16:InitPageTableFor64
+
+	
+	mov ax,brk
+	cmp ax,1
+	jnz .nbrk
+	break16
+	.nbrk:
+
+
+	; Save linear
+	mov di,labn
+	mov eax,seg
+	shl eax,4
+	add eax,ofs
+	linear ebx,labn,seg
+	mov [fs:ebx],eax
+
+
 
 	; Spurious, APIC		
 	MOV EDI,[DS:LocalApic]
@@ -87,11 +99,14 @@ macro thread64header ofs,seg
 	nop
 	nop
 
+	
+	
+
 	; We are now in Long Mode / Compatibility mode
     ; Jump to an 64-bit segment to enable 64-bit mode
     db 066h
 	db 0eah
-	doo dd 0
+	labn dd 0
     dw code64_idx
 
 	
