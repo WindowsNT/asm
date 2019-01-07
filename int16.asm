@@ -111,6 +111,8 @@ int16:
 			mov ds,ax
 			mov [c16s],es
 			mov [c16o],dx
+			mov [c16sts],gs
+			mov [c16sto],cx
 			linear eax,Thread16C,CODE16
 			call far CODE16:SendSIPIf
 			IRET
