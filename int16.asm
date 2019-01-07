@@ -286,7 +286,6 @@ TempBackRM:
 	push fs
 	pop es
 
-	break16
 	db 0xCD
 	inttt db 0
 
