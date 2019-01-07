@@ -283,14 +283,10 @@ if RESIDENT = 0
 end if
 
 	; Check if there first
-	
 	mov ax,0x35F0
 	int 0x21
-	cmp bx,0
-	jnz .yres
-	mov bx,es
-	cmp bx,0
-	jnz .yres
+	cmp dword [es:bx + 2],'dmmi'
+	jz .yres
 	jmp .fres
 
 	.yres:

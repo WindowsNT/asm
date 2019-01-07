@@ -111,16 +111,12 @@ if RESIDENT = 0
 	int 0x21
 end if
 
+; Check if there first
 mov ax,0x35F0
 int 0x21
-cmp bx,0
-jnz .bp
-mov bx,es
-cmp bx,0
-jnz .bp
-jmp .f
+cmp dword [es:bx + 2],'dmmi'
+jnz .f
 
-.bp:
 mov ax,0
 int 0xF0
 cmp ax,0xFACE

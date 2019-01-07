@@ -3,6 +3,9 @@
 int32:
 
 
+	jmp .ibegin
+	db 'dmmi'
+	.ibegin:
 	; AX 0, find interface
 	cmp ax,0
 	jnz .n0
