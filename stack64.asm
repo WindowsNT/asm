@@ -5,6 +5,9 @@ ORG 0
 stack64         db      1000 dup (?)
 stack64_end:
 
+nop
 
 stack64dmmi         db      1000 dup (?)
 stack64dmmi_end:
+
+nop

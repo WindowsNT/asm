@@ -25,6 +25,9 @@ stx3e:
 stx4 dw 1000 dup(0)
 stx4e:
 
+stx5 dw 1000 dup(0)
+stx5e:
+
 nop
 
 ; ---- Protected Mode Thread
@@ -96,16 +99,17 @@ m2 db "Hello from protected mode thread",0xd,0xa,"$";
 m3 db "Hello from long mode thread",0xd,0xa,"$";
 mut1 db 0
 
+; Real mode thread
 rt1:
-
-
 
 sti
 push cs
-pop ds
+pop si
+shl esi,16
 mov dx,m1
-mov ax,0x0900
-int 0x21
+mov bp,0x0900
+mov ax,0x0421
+int 0xF0
 
 
 ; unlock mut
@@ -210,6 +214,7 @@ mov ebx,4
 linear ecx,stx4e,STACKS
 linear edx,rt3,T64
 int 0xF0
+
 
 ; wait mut
 push cs

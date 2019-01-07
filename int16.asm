@@ -63,9 +63,21 @@ end if
 
 
 USE64
-Thread64P:
 
+if RESIDENT_OWN_LM_STACK > 0
+Thread64P:	
+	; mov rsp,xxxxxxxx
+	;mov rsp,0x0000000012345678
+	db 0x48
+	db 0xC7
+	db 0xC4
+	c64st dd 0 
+else
+    c64st dd 0
+Thread64P:
 	linear rsp,stack64dmmi_end,STACK64
+end if 
+
 	linear rax,idt_LM_start
 	lidt [rax]
 	mov ax,page64_idx
@@ -158,11 +170,13 @@ int16:
 			; BL = CPU
 			; AL = 2 = Long mode thread
 			; EDX = Linear Address
+			; ECX = Linear Stack
 
 			and ebx,0xFF
 			mov ax,CODE16
 			mov ds,ax
 			mov [c64],edx
+			mov [c64st],ecx
 			linear eax,Thread64C,CODE16
 			call far CODE16:SendSIPIf
 			IRET
@@ -221,6 +235,50 @@ int16:
 
 
 .n5:
+
+	; AH 4, call real mode interrupt
+	; AL = INT NUM
+	; BP = AX VALUE
+	; CX,DX,SI,DI = Normal values
+	; Upper ESI,EDI => DS and ES
+	cmp ah,4
+	jnz nr4
+
+	push ds
+	push es
+	push ax
+
+	; Mutex Lock
+	mov ax,mut_i21
+	call far CODE16:qwaitlock16
+	
+	push esi
+	shr esi,16
+	mov ds,si
+	pop esi
+
+	push edi
+	shr edi,16
+	mov es,di
+	pop edi
+	
+	; Interrupt put
+	pop ax
+	mov [cs:inttr],al
+	push ax
+
+	mov ax,bp
+	db 0xCD
+	inttr db 0
+	
+	pop ax
+	pop es
+	pop ds
+
+	; Unlock
+	qunlock16 mut_i21
+	iret
+nr4:
 
 
 	; AX 9, switch to mode

@@ -4,6 +4,7 @@ int64_21:
 
 	mov bp,ax
 	mov ax,0x0421
+	
 
 int64:
 
@@ -36,6 +37,10 @@ int64:
 	push rax
 	linear r8,From64To16Regs,DATA64
 
+	; Mutex Lock
+	mov rax,mut_i21
+	call qwaitlock64
+
 	; Save: AX,BX,CD,DX,SI,DI,DS,ES
 	mov word [r8],bp
 	mov word [r8 + 2],bx
@@ -63,7 +68,6 @@ int64:
 
 USE64
 	BackFromExecutingInterruptLM:
-	linear rsp,stack64dmmi_end,STACK64
 	linear rax,idt_LM_start
 	lidt [rax]
 	mov ax,page64_idx
@@ -71,6 +75,9 @@ USE64
 	linear r8,From64To16Regs,DATA64
 	xor rsp,rsp
 	mov esp,dword [r8 + 20]
+
+	qunlock64 mut_i21
+
 	iretq
 nx4:
 

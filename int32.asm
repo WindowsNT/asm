@@ -38,6 +38,10 @@ int32:
 	mov ax,data32_idx
 	mov ds,ax
 
+	; Mutex Lock
+	mov ax,mut_i21
+	call far code32_idx:qwaitlock32
+
 	; Save: AX,BX,CD,DX,SI,DI,DS,ES
 	mov word [From32To16Regs],bp
 	mov word [From32To16Regs + 2],bx
@@ -70,6 +74,9 @@ int32:
 	mov ss,ax
 	mov esp,dword [From32To16Regs + 20]
 	pop ds
+
+	qunlock32 mut_i21
+
 	iretd
 nn4:
 
