@@ -30,11 +30,13 @@ Thread16C:
 	hlt
 	hlt
 
+	c32st dd 0 
 Thread32P:
 	
 	mov     ax,stack32_idx          
 	mov     ss,ax                   
 	mov     esp,stack32dmmi_end  
+
 	mov ax,code16_idx
 	mov ds,ax
 	db  066h  
@@ -105,6 +107,7 @@ int16:
 			; BL = CPU
 			; AL = 0 = Unreal mode thread
 			; ES:DX = Run address
+			; GS:CX = Stack
 
 			and ebx,0xFF
 			mov ax,CODE16
@@ -123,11 +126,13 @@ int16:
 			; BL = CPU
 			; AL = 1 = Protected mode thread
 			; EDX = Linear Address
+			; ECX = Linear Stack
 
 			and ebx,0xFF
 			mov ax,CODE16
 			mov ds,ax
 			mov [c32],edx
+			mov [c32st],ecx
 			linear eax,Thread32C,CODE16
 			call far CODE16:SendSIPIf
 			IRET

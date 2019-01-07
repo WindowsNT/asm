@@ -13,11 +13,14 @@ macro linear reg,trg,seg
 ; --- Thread Stacks
 SEGMENT STACKS
 
-stx1 dw 200 dup (?)
+stx1 dw 100 dup (?)
 stx1e:
 
-stx2 dw 200 dup(0)
+stx2 dw 100 dup(0)
 stx2e:
+
+stx3 dw 100 dup(0)
+stx3e:
 
 nop
 
@@ -91,6 +94,7 @@ m3 db "Hello from long mode thread",0xd,0xa,"$";
 mut1 db 0
 
 rt1:
+
 
 
 sti
@@ -191,7 +195,7 @@ push cs
 pop es
 mov ax,0x0101
 mov ebx,3
-;linear ecx,stx3e,STACKS
+linear ecx,stx3e,STACKS
 linear edx,rt2,T32
 int 0xF0
 
