@@ -105,6 +105,7 @@ end if
 
 
 
+
 ; --------------------------------------- Protected Mode Find Page Entry  ---------------------------------------
 xor ecx,ecx
 
@@ -211,6 +212,20 @@ sti
 
 push cs
 call InitPageTableFor64
+
+mov ax,CODE16
+mov ds,ax
+linear eax,Thread64P,CODE16
+mov [Thread64Ptr1],eax
+mov ax,CODE64
+mov ds,ax
+linear eax,Thread64_1a,CODE64
+mov [Thread64Ptr2],eax
+mov ax,CODE16
+mov ds,ax
+linear eax,BackFromExecutingInterruptLM,CODE64
+mov [Thread64Ptr3],eax
+
 
 ; --------------------------------------- Find ACPI  ---------------------------------------
 if TEST_MULTI > 0 

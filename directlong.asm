@@ -1,10 +1,7 @@
 
 
-macro thread64header ofs,seg,labn,brk
+macro thread64header
 {
-	local .nbrk
-	local labn
-
 	USE16 
 	; Remember CPU starts in real mode
 	db 4096 dup (144) ; // fill NOPs
@@ -38,23 +35,6 @@ macro thread64header ofs,seg,labn,brk
 	nop
 	nop
 	call FAR CODE16:InitPageTableFor64
-
-	
-	mov ax,brk
-	cmp ax,1
-	jnz .nbrk
-	break16
-	.nbrk:
-
-
-	; Save linear
-	mov di,labn
-	mov eax,seg
-	shl eax,4
-	add eax,ofs
-	linear ebx,labn,seg
-	mov [fs:ebx],eax
-
 
 
 	; Spurious, APIC		
@@ -104,15 +84,5 @@ macro thread64header ofs,seg,labn,brk
 
 	; We are now in Long Mode / Compatibility mode
     ; Jump to an 64-bit segment to enable 64-bit mode
-    db 066h
-	db 0eah
-	labn dd 0
-    dw code64_idx
-
-	
-	qunlock16 mut_1
-	cli
-	hlt 
-	hlt
 
 }

@@ -2,7 +2,6 @@
 
 int64_21:
 
-break64
 	mov bp,ax
 	mov ax,0x0421
 
@@ -64,7 +63,6 @@ int64:
 
 USE64
 	BackFromExecutingInterruptLM:
-	break64
 	linear rsp,stack64dmmi_end,STACK64
 	linear rax,idt_LM_start
 	lidt [rax]
@@ -73,7 +71,6 @@ USE64
 	linear r8,From64To16Regs,DATA64
 	xor rsp,rsp
 	mov esp,dword [r8 + 20]
-
 	iretq
 nx4:
 

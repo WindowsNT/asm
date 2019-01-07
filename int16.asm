@@ -67,7 +67,11 @@ Thread32C:
 	thread16header STACK16T1,stack16t1_end
 	EnterProtected Thread32P,code16_idx
 Thread64C:
-	thread64header Thread64P,CODE16,labx1,0
+	thread64header
+	db 066h
+	db 0eah
+	Thread64Ptr1 dd 0
+	dw code64_idx
 
 
 
@@ -315,4 +319,8 @@ TempBackLM:
 	fdg:
 	; and again long mode
 
-	thread64header BackFromExecutingInterruptLM,CODE64,labx2,1
+	thread64header
+	db 066h
+	db 0eah
+	Thread64Ptr3 dd 0
+	dw code64_idx
