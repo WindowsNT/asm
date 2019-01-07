@@ -57,7 +57,7 @@ mov rax,0x0900
 xor rsi,rsi
 mov si,MAIN16
 shl rsi,16
-mov rdx,m2
+mov rdx,m3
 int 0x21
 
 ; Unlock mutex

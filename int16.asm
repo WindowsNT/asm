@@ -292,6 +292,9 @@ TempBackLM:
 	sti
 
 	; execute the interrupt
+	mov ax,STACK16S
+	mov ss,ax
+	mov esp,stack16dmmi2_end
 	mov ax,DATA64
 	mov ds,ax
 	mov bp,word [From64To16Regs]
@@ -313,7 +316,7 @@ TempBackLM:
 	push fs
 	pop es
 
-	jmp fdg
+	;jmp fdg
 	db 0xCD
 	inttt2 db 0
 	fdg:
