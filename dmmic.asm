@@ -19,6 +19,9 @@ stx1e:
 stx2 dw 200 dup(0)
 stx2e:
 
+stx3 dw 200 dup(0)
+stx3e:
+
 nop
 
 ; ---- Protected Mode Thread
@@ -181,7 +184,7 @@ pop es
 mov dx,rt1
 mov cx,STACKS
 mov gs,cx
-mov cx,stx1e
+mov cx,stx2e
 mov ax,0x0100
 mov ebx,2
 int 0xF0
@@ -191,6 +194,7 @@ push cs
 pop es
 mov ax,0x0101
 mov ebx,3
+linear ecx,stx3e,STACKS
 linear edx,rt2,T32
 int 0xF0
 
