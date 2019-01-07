@@ -19,7 +19,7 @@ stx1e:
 stx2 dw 100 dup(0)
 stx2e:
 
-stx3 dw 100 dup(0)
+stx3 dw 1000 dup(0)
 stx3e:
 
 nop

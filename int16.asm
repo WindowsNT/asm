@@ -30,12 +30,25 @@ Thread16C:
 	hlt
 	hlt
 
+if RESIDENT_OWN_PM_STACK > 0
+
+Thread32P:	
+	mov     ax,page32_idx          
+	mov     ss,ax  
+	; mov esp,xxxxxxxx
+	db 0x66
+	db 0xBC
 	c32st dd 0 
-Thread32P:
-	
+
+else
+
+	c32st dd 0 
+Thread32P:	
 	mov     ax,stack32_idx          
 	mov     ss,ax                   
 	mov     esp,stack32dmmi_end  
+
+end if
 
 	mov ax,code16_idx
 	mov ds,ax
@@ -46,6 +59,8 @@ Thread32P:
     cli
 	hlt
 	hlt
+
+
 
 USE64
 Thread64P:
@@ -271,6 +286,7 @@ TempBackRM:
 	push fs
 	pop es
 
+	break16
 	db 0xCD
 	inttt db 0
 
