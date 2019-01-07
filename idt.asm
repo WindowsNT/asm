@@ -80,22 +80,23 @@ retf
   xor eax,eax
 
 
-  cmp cx, 15
-  jnz .nof0
-  add eax,int32
-  jmp .cf0
-  .nof0:
+  cmp cx, 0x0F
+  jz .yf0
+  cmp cx, 0xDE
+  jz .y21
 
   add eax,intr00
-  .cf0:
+  jmp .ef
 
-  ;  mov [ds:interruptsall[bp].o0_15],ax
-  ;shr     eax,16
-  ;mov     [ds:interruptsall[bp].o16_31],ax
-  ;mov [ds:interruptsall[bp].se0_15],code32_idx
-  ;mov [ds:interruptsall[bp].zb],0
-  ;mov [ds:interruptsall[bp].flags],08Eh ; 10001110 selector
-  
+  .y21:
+  add eax,int32_21
+  jmp .ef
+
+  .yf0:
+  add eax,int32
+  jmp .ef
+
+  .ef:
   mov [di],ax
   shr eax,16
   mov [di + 6],ax
@@ -115,14 +116,14 @@ retf
   .EndLoop1:
   
 
-  ; Set idt ptr
-  xor eax,eax
-        mov     ax,DATA16
-        shl     eax,4
-        add     ax,interruptsall
-        mov     [idt_PM_ptr],eax
+	; Set idt ptr
+	xor eax,eax
+	mov     ax,DATA16
+	shl     eax,4
+	add     ax,interruptsall
+	mov     [idt_PM_ptr],eax
 
-		pop es
+	pop es
   RETF
 
 
@@ -147,10 +148,21 @@ retf
   jz .End
 
   linear eax,intr6400,CODE64
+  
   cmp ecx,0xF0
-  jnz .nof0
+  jz .yf0
+  cmp ecx,0x21
+  jz .y21
+
+  .yf0:
   linear eax,int64,CODE64
-  .nof0:
+  jmp .ef0
+
+  .y21:
+  linear eax,int64_21,CODE64
+  jmp .ef0
+
+  .ef0:
 
   ; 0(2) - Low bits offset
   mov word [di],ax
