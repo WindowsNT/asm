@@ -10,6 +10,16 @@ macro linear reg,trg,seg
 	add reg,trg
 	}
 
+; --- Thread Stacks
+SEGMENT STACKS
+
+stx1 dw 200 dup (?)
+stx1e:
+
+stx2 dw 200 dup(0)
+stx2e:
+
+nop
 
 ; ---- Protected Mode Thread
 SEGMENT T32 USE32
@@ -154,18 +164,24 @@ repeat 4
 	int 0xF0
 end repeat
 
-; run a thread
+; run a real mode thread
 push cs
 pop es
 mov dx,rt1
+mov cx,STACKS
+mov gs,cx
+mov cx,stx1e
 mov ax,0x0100
 mov ebx,1
 int 0xF0
 
-; run a thread
+; run a real mode thread
 push cs
 pop es
 mov dx,rt1
+mov cx,STACKS
+mov gs,cx
+mov cx,stx1e
 mov ax,0x0100
 mov ebx,2
 int 0xF0

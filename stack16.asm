@@ -12,8 +12,6 @@ ORG 0
 sseg16s dw 200 dup (?)
 stack16s_end:
 
-sseg16dmmi dw 100 dup (?)
-stack16dmmi_end:
 		
 sseg16dmmi2 dw 100 dup (?)
 stack16dmmi2_end:

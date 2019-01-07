@@ -2,6 +2,8 @@
 
 c16o dw 0
 c16s dw 0
+c16sts dw 0
+c16sto dw 0
 
 include 'directlong.asm'
 
@@ -11,9 +13,11 @@ Thread16C:
 
 	mov ax,CODE16
 	mov ds,ax
-	mov     ax,STACK16
-	mov     ss,ax     
-	mov sp,stack16dmmi_end
+	mov ax,[c16sts]
+	mov ss,ax
+	mov ax,[c16sto]
+	mov sp,ax
+
     mov ax,0x25F0
 	mov dx,int16
 	int 0x21
