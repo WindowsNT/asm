@@ -40,6 +40,7 @@ Thread32P:
 	db 0xBC
 	c32st dd 0 
 
+
 else
 
 	c32st dd 0 
@@ -267,10 +268,13 @@ int16:
 	mov [cs:inttr],al
 	push ax
 
+	cmp al,0
+	jz skip1
 	mov ax,bp
 	db 0xCD
 	inttr db 0
-	
+	skip1:
+
 	pop ax
 	pop es
 	pop ds
@@ -314,6 +318,7 @@ TempBackRM:
 	.flush_ipq:
 	mov     ax,STACK16 
 	mov     ss,ax
+	xor esp,esp
 	mov     sp,stack16dmmi2_end
 	mov ax, DATA16
 	mov     ds,ax
@@ -337,6 +342,8 @@ TempBackRM:
 	mov fs,ax ; later ES
 	mov al, byte [From32To16Regs + 16]
 	mov [cs:inttt],al
+	cmp al,0
+	jz skip2
 	push bp
 	pop ax
 	push gs
@@ -346,6 +353,7 @@ TempBackRM:
 
 	db 0xCD
 	inttt db 0
+	skip2:
 
 	; And again protected
 	; macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
@@ -378,6 +386,7 @@ TempBackLM:
 	; execute the interrupt
 	mov ax,STACK16S
 	mov ss,ax
+	xor esp,esp
 	mov esp,stack16dmmi2_end
 	mov ax,DATA64
 	mov ds,ax
@@ -393,6 +402,8 @@ TempBackLM:
 	mov fs,ax ; later ES
 	mov al, byte [From64To16Regs + 16]
 	mov [cs:inttt2],al
+	cmp al,0
+	jz skip3
 	push bp
 	pop ax
 	push gs
@@ -400,10 +411,10 @@ TempBackLM:
 	push fs
 	pop es
 
-	;jmp fdg
 	db 0xCD
 	inttt2 db 0
-	fdg:
+	skip3:
+
 	; and again long mode
 
 	thread64header

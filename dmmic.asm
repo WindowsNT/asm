@@ -40,12 +40,13 @@ mov ax,0
 int 0xF0
 
 ; DOS call
-mov ax,0x0900
+mov bp,0x0900
 xor esi,esi
 mov si,MAIN16
 shl esi,16
-mov dx,m2
-int 0x21
+mov dx,m2 
+mov ax,0x421
+int 0xF0
 
 ; Unlock mutex
 mov ax,0x0503
@@ -72,12 +73,13 @@ mov ax,0
 int 0xF0
 
 ; DOS call
-mov rax,0x0900
+mov rbp,0x0900
 xor rsi,rsi
 mov si,MAIN16
 shl rsi,16
 mov rdx,m3
-int 0x21
+mov rax,0x421
+int 0xF0
 
 ; Unlock mutex
 mov ax,0x0503
