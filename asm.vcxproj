@@ -175,6 +175,7 @@
     <None Include="gdt.asm" />
     <None Include="guest16.asm" />
     <None Include="guest32.asm" />
+    <None Include="guest64.asm" />
     <None Include="himem16.asm" />
     <None Include="idt.asm" />
     <None Include="int16.asm" />

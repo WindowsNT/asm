@@ -8,6 +8,7 @@ macro break64
 	xchg bx,bx
 }
 
+include 'guest64.asm'
 include 'acpi64.asm'
 include 'thread64.asm'
 INCLUDE 'int64.asm'
@@ -54,7 +55,7 @@ if TEST_LM_SIPI > 0
 
 end if
 
-if TEST_VMX_1 > 0
+if TEST_VMX > 0
 ; VMX operations
 
 	call VMX_Host

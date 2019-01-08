@@ -224,6 +224,152 @@ VMX_InitializeEPT:
  
 RET
 
+; A Long mode guest
+VMX_Initialize_Guest3:
+	; r10 -> entry
+
+	mov ebx,0x6800 ; CR0
+	mov rax,cr0
+	vmwrite rbx,rax
+	mov ebx,0x6802 ; CR3
+	mov rax,cr3
+	vmwrite rbx,rax
+	mov ebx,0x6804 ; CR4
+	mov rax,cr4
+	vmwrite rbx,rax
+
+	; Flags
+	mov ebx,0x6820 ; RFLAGS
+	mov rax,2
+	vmwrite rbx,rax
+
+	
+	; cs stuff
+	xor rax,rax
+	mov rax,code64_idx
+	mov ebx,0x802 ; CS selector
+	vmwrite rbx,rax
+
+	xor rax,rax
+	mov rax,0xfffff
+	mov ebx,0x4802 ; CS limit
+	vmwrite rbx,rax
+
+	mov rax,0c09fh
+	mov ebx,0x4816 ; CS access
+	vmwrite rbx,rax
+
+	xor rax,rax
+	mov rax,0
+	shl rax,4
+	mov ebx,0x6808 ; CS base
+	vmwrite rbx,rax
+
+	; xchg bx,bx
+	mov ebx,0x681E ; IP
+	xor rax,rax
+	add rax,r10
+	vmwrite rbx,rax
+
+	; GDTR,IDTR
+	mov ebx,0x6816 ; GDTR Base
+	;mov rax,gdt_ptr
+	linear rax,gdt_ptr,DATA16
+	add rax,4
+	vmwrite rbx,rax
+	mov ebx,0x4810 ; Limit
+	mov rax,gdt_size
+	vmwrite rbx,rax
+	mov ebx,0x6818 ; IDTR Base
+	mov rax,idt_LM_ptr
+	vmwrite rbx,rax
+	mov ebx,0x4812 ; Limit
+	mov rax,idtl_size
+	vmwrite rbx,rax
+
+
+	; SEGMENT registers
+
+	; es,ds,fs,gs
+	xor rax,rax
+	mov ax,page64_idx
+	mov ebx,0x800 ; ES selector
+	vmwrite rbx,rax
+	mov ebx,0x804 ; SS selector
+	vmwrite rbx,rax
+	mov ebx,0x806 ; DS selector
+	vmwrite rbx,rax
+	mov ebx,0x808 ; FS selector
+	vmwrite rbx,rax
+	mov ebx,0x80A ; GS selector
+	vmwrite rbx,rax
+	mov rax,0xfffff
+	mov ebx,0x4800 ; ES limit
+	vmwrite rbx,rax
+	mov ebx,0x4804 ; SS limit
+	vmwrite rbx,rax
+	mov ebx,0x4806 ; DS limit
+	vmwrite rbx,rax
+	mov ebx,0x4808 ; FS limit
+	vmwrite rbx,rax
+	mov ebx,0x480A ; GS limit
+	vmwrite rbx,rax
+	mov rax,0c093h
+	mov ebx,0x4814 ; ES access
+	vmwrite rbx,rax
+	mov ebx,0x4818 ; SS access
+	vmwrite rbx,rax
+	mov ebx,0x481A ; DS access
+	vmwrite rbx,rax
+	mov ebx,0x481C ; FS access
+	vmwrite rbx,rax
+	mov ebx,0x481E ; GS access
+	vmwrite rbx,rax
+	mov rax,0
+	shl rax,4
+	mov ebx,0x6806 ; ES base
+	vmwrite rbx,rax
+	mov ebx,0x680A ; SS base
+	vmwrite rbx,rax
+	mov ebx,0x680C ; DS base
+	vmwrite rbx,rax
+	mov ebx,0x680E ; DS base
+	vmwrite rbx,rax
+	mov ebx,0x6810 ; GS base
+	vmwrite rbx,rax
+
+	; LDT (Dummy)
+	xor rax,rax
+	mov ax,ldt_idx
+	mov ebx,0x80C ; LDT selector
+	vmwrite rbx,rax
+	mov rax,0xffffffff
+	mov ebx,0x480C ; LDT limit
+	vmwrite rbx,rax
+	mov rax,0x10000
+	mov ebx,0x4820 ; LDT access
+	vmwrite rbx,rax
+	mov rax,0
+	mov ebx,0x6812 ; LDT base
+	vmwrite rbx,rax
+
+	; TR (Dummy)
+	xor rax,rax
+	mov ax,tssd64_idx
+	mov ebx,0x80E ; TR selector
+	vmwrite rbx,rax
+	mov rax,0xff
+	mov ebx,0x480E ; TR limit
+	vmwrite rbx,rax
+	mov rax,0x8b
+	mov ebx,0x4822 ; TR access
+	vmwrite rbx,rax
+	mov rax,0
+	mov ebx,0x6814 ; TR base
+	vmwrite rbx,rax
+
+RET
+
 ; A Protected mode guest
 VMX_Initialize_Guest2:
 
@@ -631,7 +777,7 @@ RET
 	call VMX_Enable
 
 
-if TEST_VMX_2 > 0
+if TEST_VMX = 1
 
     ; Real mode guest (unrestricted)
 
@@ -681,7 +827,9 @@ if TEST_VMX_2 > 0
 	; Launch it!!
 	VMLAUNCH
 
-else
+end if
+
+if TEST_VMX = 2
 
     ; Protected mode guest 
 	; Load the revision
@@ -734,6 +882,58 @@ else
 
 end if 
 
+
+if TEST_VMX = 3
+
+    ; Long mode guest 
+	; Load the revision
+	linear rdi,VMXRevision,VMXDATA64
+	mov ebx,[rdi];
+
+	; Initialize the region
+	linear rdi,VMXStructureData2,VMXDATA64
+	mov rcx,[rdi];  Get address of data1
+	mov rsi,rdi
+	mov rdi,rcx
+	mov [rdi],ebx ; // Put the revision
+	VMCLEAR [rsi]
+	mov [rdi],ebx ; // Put the revision
+	VMPTRLD [rsi] 
+	mov [rdi],ebx ; // Put the revision
+ 
+	; Initializzation
+	call VMX_InitializeEPT
+	mov rdx,0x49
+	call VMX_Initialize_VMX_Controls
+	linear rcx,VMX_VMExit,CODE64
+	call VMX_Initialize_Host
+	linear r10,StartVM3,CODE64
+	call VMX_Initialize_Guest3
+ 
+	; The EPT initialization for the guest
+	linear rax,PhysicalEptOffset64,DATA16
+	mov rax,[rax]
+	or rax,0 ; Memory Type 0
+	or rax,0x18 ; Page Walk Length 3
+	mov rbx,0x201A ; EPTP
+	vmwrite rbx,rax
+ 
+	; The Link Pointer -1 initialization
+	mov rax,0xFFFFFFFFFFFFFFFF
+	mov rbx,0x2800 ; LP
+	vmwrite rbx,rax
+ 
+	; One more RSP initialization of the host
+	xor rax,rax
+	mov rbx,0x6c14 ; RSP
+	mov rax,rsp
+	vmwrite rbx,rax
+
+	; Launch it!!
+	break64
+	VMLAUNCH
+
+end if 
 
 	; If we get here, VMLAUNCH failed
 

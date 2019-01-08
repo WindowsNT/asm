@@ -171,7 +171,7 @@ mov [PhysicalPagingOffset64],eax
 end if
 
 ; --------------------------------------- VMX EPT Find Page Entry  ---------------------------------------
-if TEST_VMX_1 > 0 
+if TEST_VMX > 0 
 
 if STATIC_PAGEVM = 0
 ; Alloc VMX Pages high, preserve low ram
