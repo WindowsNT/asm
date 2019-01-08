@@ -28,6 +28,10 @@ stx4e:
 stx5 dw 1000 dup(0)
 stx5e:
 
+
+stx6 dw 1000 dup(0)
+stx6e:
+
 nop
 
 ; ---- Protected Mode Thread
@@ -168,7 +172,7 @@ mov di,mut1
 mov ax,0x0500
 int 0xF0
 
-repeat 4
+repeat 6
 	; lock mut 
 	push cs
 	pop es
@@ -217,6 +221,24 @@ linear ecx,stx4e,STACKS
 linear edx,rt3,T64
 int 0xF0
 
+; run a protected thread
+push cs
+pop es
+mov ax,0x0101
+mov ebx,5
+linear ecx,stx5e,STACKS
+linear edx,rt2,T32
+int 0xF0
+
+
+; run a long thread
+push cs
+pop es
+mov ax,0x0102
+mov ebx,6
+linear ecx,stx6e,STACKS
+linear edx,rt3,T64
+int 0xF0
 
 ; wait mut
 push cs
