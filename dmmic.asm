@@ -28,9 +28,11 @@ stx4e:
 stx5 dw 1000 dup(0)
 stx5e:
 
-
 stx6 dw 1000 dup(0)
 stx6e:
+
+stx7 dw 1000 dup(0)
+stx7e:
 
 nop
 
@@ -60,6 +62,30 @@ int 0xF0
 retf
 
 
+; Virtualized PM Thread
+v1:
+
+; Int 0xF0 works also in protected mode
+mov ax,0
+int 0xF0
+
+; DOS call
+mov bp,0x0900
+xor esi,esi
+mov si,MAIN16
+shl esi,16
+mov dx,m4
+mov ax,0x421
+int 0xF0
+
+; Unlock mutex
+mov ax,0x0503
+linear edi,mut1,MAIN16
+int 0xF0
+
+retf
+
+
 
 ; ---- Long Mode Thread
 SEGMENT T64 USE64
@@ -77,13 +103,12 @@ mov ax,0
 int 0xF0
 
 ; DOS call
-mov rbp,0x0900
 xor rsi,rsi
 mov si,MAIN16
 shl rsi,16
 mov rdx,m3
-mov rax,0x421
-int 0xF0
+mov rax,0x0900
+int 0x21
 
 ; Unlock mutex
 mov ax,0x0503
@@ -103,6 +128,7 @@ m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
 m1 db "Hello from real mode thread",0xd,0xa,"$";
 m2 db "Hello from protected mode thread",0xd,0xa,"$";
 m3 db "Hello from long mode thread",0xd,0xa,"$";
+m4 db "Hello from protected mode virtualized thread",0xd,0xa,"$";
 mut1 db 0
 
 ; Real mode thread
@@ -230,14 +256,13 @@ linear ecx,stx5e,STACKS
 linear edx,rt2,T32
 int 0xF0
 
-
-; run a long thread
+; run a virtualized thread
 push cs
 pop es
-mov ax,0x0102
-mov ebx,6
-linear ecx,stx6e,STACKS
-linear edx,rt3,T64
+mov ax,0x0103
+mov ebx,0x207
+linear ecx,stx7e,STACKS
+linear edx,v1,T32
 int 0xF0
 
 ; wait mut

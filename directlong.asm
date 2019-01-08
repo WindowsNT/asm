@@ -1,13 +1,20 @@
 
 
-macro thread64header
+macro thread64header brk=0
 {
+   local nobrk
+
 	USE16 
 	; Remember CPU starts in real mode
 	db 4096 dup (144) ; // fill NOPs
 
 	cli
 
+	mov ax,brk
+	cmp ax,1
+	jnz nobrk
+	xchg bx,bx
+	nobrk:
 
 
 	; Stack
@@ -20,6 +27,7 @@ macro thread64header
 
 	; Unreal
 	call FAR CODE16:EnterUnreal
+
 
 	; GDT and IDT
 	mov ax,DATA16

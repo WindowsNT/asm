@@ -83,6 +83,7 @@ VMX_Initialize_VMX_Controls:
 	vmwrite ebx,eax
 RET
 
+
 VMX_Initialize_Host:
 	; We initialize
 	; CR0, CR3 , CR4
@@ -90,6 +91,7 @@ VMX_Initialize_Host:
 	; SS:RSP for entry after VMExit
 	; DS,ES,TR
 	; GDTR,IDTR
+	; RCX = IP
 
 	; CRX
 	mov rbx,0x6C00 ; cr0
@@ -110,9 +112,7 @@ VMX_Initialize_Host:
 	xor rax,rax
 	mov rbx,0x6c16 ; RIP
 	xor rax,rax
-	; mov rax,VMX_VMExit
-	; We need a linear address - no segmentation in long mode
-	linear rax,VMX_VMExit,CODE64
+	mov rax,rcx
 	vmwrite rbx,rax
 
 	; SS:RSP
@@ -227,6 +227,10 @@ RET
 ; A Protected mode guest
 VMX_Initialize_Guest2:
 
+	; r8 -> selector
+	; r9 -> base
+	; r10 -> entry
+
     xor rax,rax
 	; cr0,cr3,cr4 paging protected mode
 	; cs ss:rip
@@ -260,7 +264,7 @@ VMX_Initialize_Guest2:
 
 	; cs stuff
 	xor rax,rax
-	mov ax,vmx32_idx
+	mov rax,r8
 	mov ebx,0x802 ; CS selector
 	vmwrite rbx,rax
 
@@ -274,7 +278,7 @@ VMX_Initialize_Guest2:
 	vmwrite rbx,rax
 
 	xor rax,rax
-	mov ax,VMX32
+	mov rax,r9
 	shl rax,4
 	mov ebx,0x6808 ; CS base
 	vmwrite rbx,rax
@@ -282,7 +286,7 @@ VMX_Initialize_Guest2:
 	; xchg bx,bx
 	mov ebx,0x681E ; IP
 	xor rax,rax
-	add rax,StartVM2
+	add rax,r10
 	vmwrite rbx,rax
 
 	; GDTR,IDTR
@@ -310,7 +314,7 @@ VMX_Initialize_Guest2:
 
 	; es,ds,fs,gs
 	xor rax,rax
-	mov ax,data32_idx
+	mov ax,page32_idx
 	mov ebx,0x800 ; ES selector
 	vmwrite rbx,rax
 	mov ebx,0x804 ; SS selector
@@ -343,7 +347,7 @@ VMX_Initialize_Guest2:
 	vmwrite rbx,rax
 	mov ebx,0x481E ; GS access
 	vmwrite rbx,rax
-	mov rax,VMX32
+	mov rax,0
 	shl rax,4
 	mov ebx,0x6806 ; ES base
 	vmwrite rbx,rax
@@ -650,6 +654,7 @@ if TEST_VMX_2 > 0
 	mov rdx,0x82
 	;mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
+	linear rcx,VMX_VMExit,CODE64
 	call VMX_Initialize_Host
 	call VMX_Initialize_Guest
  
@@ -698,7 +703,11 @@ else
 	call VMX_InitializeEPT
 	mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
+	linear rcx,VMX_VMExit,CODE64
 	call VMX_Initialize_Host
+	mov r8,vmx32_idx
+	mov r9,VMX32
+	mov r10,StartVM2
 	call VMX_Initialize_Guest2
  
 	; The EPT initialization for the guest

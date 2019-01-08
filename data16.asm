@@ -96,6 +96,7 @@ data64_descriptor  GDT_STR 0ffffh,0,0,92h,0afh,0 ; 16TB 64-bit data, 08cfh acces
 absd64_descriptor  GDT_STR 0ffffh,0,0,92h,0afh,0 ; 16TB 64-bit data, 08cfh access = 10001111b = Big,64bit (0), 1111 more size
 tssd32_descriptor  GDT_STR 0h,0,0,89h,040h,0 ; TSS segment in GDT
 vmx32_descriptor   GDT_STR 0ffffh,0,0,9ah,0cfh,0 ; 4GB 32-bit code , 9ah = 10011010b = Present, DPL 00,No System, Code Exec/Read. 0cfh access = 11001111b = Big,32bit,<resvd 0>,1111 more size
+raw32_descriptor   GDT_STR 0ffffh,0,0,9ah,0cfh,0 ; 4GB 32-bit code , 9ah = 10011010b = Present, DPL 00,No System, Code Exec/Read. 0cfh access = 11001111b = Big,32bit,<resvd 0>,1111 more size
 gdt_size = $-(dummy_descriptor)
 
 dummy_idx       = 0h    ; dummy selector
@@ -114,6 +115,7 @@ data64_idx      =       60h             ; offset of 64-bit data segment in GDT
 absd64_idx      =       68h             ; offset of 64-bit data segment in GDT
 tssd32_idx      =       70h             ; TSS descriptor
 vmx32_idx       =       78h             ; offset of 32-bit code  segment in GDT
+raw32_idx       =       80h             ; offset of 32-bit code  segment in GDT
 data32_ldt_idx  =       04h             ; offset of 32-bit data  segment in LDT
 
 

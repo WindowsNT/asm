@@ -95,6 +95,163 @@ end if
 	hlt
 	hlt
 
+if RESIDENT_OWN_LM_STACK > 0
+Thread64PV:	
+	; mov rsp,xxxxxxxx
+	;mov rsp,0x0000000012345678
+	db 0x48
+	db 0xC7
+	db 0xC4
+	cv64st dd 0 
+else
+    cv64st dd 0
+Thread64PV:
+	linear rsp,stack64dmmi_end,STACK64
+end if 
+
+	linear rax,idt_LM_start
+	lidt [rax]
+	mov ax,page64_idx
+	mov ss,ax
+	mov ds,ax
+	mov es,ax
+
+; ---- VMX
+
+	; Existence test
+	linear rbx,vmt1,DATA16
+	mov byte [rbx],0
+
+	; VMX Preparation
+	linear rbx,vmt1,DATA16
+	mov byte [rbx],1
+
+	; VMX_Init
+	linear rax,vvr1,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinit dd 0 
+	ret
+	vvr1:
+
+	; VMX_Enable
+	linear rax,vvr2,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxenable dd 0 
+	ret
+	vvr2:
+
+	; Load the revision
+	linear rdi,VMXRevision,VMXDATA64
+	mov ebx,[rdi];
+
+	; Initialize the region
+	linear rdi,VMXStructureData2,VMXDATA64
+	mov rcx,[rdi];  Get address of data1
+	mov rsi,rdi
+	mov rdi,rcx
+	mov [rdi],ebx ; // Put the revision
+	VMCLEAR [rsi]
+	mov [rdi],ebx ; // Put the revision
+	VMPTRLD [rsi] 
+	mov [rdi],ebx ; // Put the revision
+
+	; EPT init
+	linear rax,vvr7,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinitept dd 0 
+	ret
+	vvr7:
+
+	; Controls init
+	mov rdx,0x49
+	linear rax,vvr6,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinitcontrols dd 0 
+	ret
+	vvr6:
+
+
+	; Host Init
+	push gs
+	push fs
+	linear rcx,vretxx,CODE16
+	linear rax,vvr4,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinithost dd 0 
+	ret
+	vvr4:
+	pop fs
+	pop gs
+
+	; Guest Init
+	mov r8,raw32_idx
+	mov r9,0
+	linear r10,vmentry,CODE16
+	linear rax,vvr5,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinitguest2 dd 0 
+	ret
+	vvr5:
+
+	; The EPT initialization for the guest
+	linear rax,PhysicalEptOffset64,DATA16
+	mov rax,[rax]
+	or rax,0 ; Memory Type 0
+	or rax,0x18 ; Page Walk Length 3
+	mov rbx,0x201A ; EPTP
+	vmwrite rbx,rax
+ 
+	; The Link Pointer -1 initialization
+	mov rax,0xFFFFFFFFFFFFFFFF
+	mov rbx,0x2800 ; LP
+	vmwrite rbx,rax
+ 
+	; One more RSP initialization of the host
+	xor rax,rax
+	mov rbx,0x6c14 ; RSP
+	mov rax,rsp
+	vmwrite rbx,rax
+
+	break16
+	VMLAUNCH
+	jmp vretxx
+
+	; Virtual Machine Here, Protected mode
+USE32
+	cv64 dd 0 
+	vmentry:
+	xchg bx,bx
+;	linear rax,vretx,CODE16
+;	push rax; for returning
+;	db 0x68; push
+;	cv64 dd 0 
+;	ret
+;	vretx:
+	VMCALL ; exit
+
+USE64
+	vretxx:
+
+	; VMX_Disable
+	linear rax,vvr3,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxdisable dd 0 
+	ret
+	vvr3:
+
+	cli
+	hlt
+	hlt
+
+
+
 
 USE16
 Thread32C:
@@ -105,6 +262,12 @@ Thread64C:
 	db 066h
 	db 0eah
 	Thread64Ptr1 dd 0
+	dw code64_idx
+Thread64CV:
+	thread64header
+	db 066h
+	db 0eah
+	Thread64Ptr4 dd 0
 	dw code64_idx
 
 
@@ -182,6 +345,24 @@ int16:
 			call far CODE16:SendSIPIf
 			IRET
 		.n12:
+
+		cmp al,3
+		jnz .n13
+			; BL = CPU
+			; AL = 3 = Virtualized Thread
+			; BX = mode (Currently 1 only, PM mode)
+			; EDX = Linear Address
+			; ECX = Linear Stack
+
+			and ebx,0xFF
+			mov ax,CODE16
+			mov ds,ax
+			mov [cv64],edx
+			mov [cv64st],ecx
+			linear eax,Thread64CV,CODE16
+			call far CODE16:SendSIPIf
+			IRET
+		.n13:
 
 	IRET
 

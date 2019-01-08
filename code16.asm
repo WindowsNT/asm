@@ -225,6 +225,27 @@ mov ax,CODE16
 mov ds,ax
 linear eax,BackFromExecutingInterruptLM,CODE64
 mov [Thread64Ptr3],eax
+mov ax,CODE16
+mov ds,ax
+linear eax,Thread64PV,CODE16
+mov [Thread64Ptr4],eax
+
+mov ax,CODE16
+mov ds,ax
+linear eax,VMX_Init,CODE64
+mov [cv64_vmxinit],eax
+linear eax,VMX_Enable,CODE64
+mov [cv64_vmxenable],eax
+linear eax,VMX_Disable,CODE64
+mov [cv64_vmxdisable],eax
+linear eax,VMX_Initialize_Host,CODE64
+mov [cv64_vmxinithost],eax
+linear eax,VMX_Initialize_Guest2,CODE64
+mov [cv64_vmxinitguest2],eax
+linear eax,VMX_InitializeEPT,CODE64
+mov [cv64_vmxinitept],eax
+linear eax,VMX_Initialize_VMX_Controls,CODE64
+mov [cv64_vmxinitcontrols],eax
 
 
 ; --------------------------------------- Find ACPI  ---------------------------------------

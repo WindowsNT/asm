@@ -27,6 +27,7 @@ GDTInit:
 	gdt_initialize CODE16,code16_descriptor
 	gdt_initialize DATA16,data16_descriptor
 	gdt_initialize STACK16,stack16_descriptor
+	gdt_initialize 0,raw32_descriptor
 
     ; Paging segment, we 've found it already	
 	xor eax,eax
