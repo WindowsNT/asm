@@ -65,6 +65,7 @@ retf
 ; Virtualized PM Thread
 v1:
 
+
 ; Int 0xF0 works also in protected mode
 mov ax,0
 int 0xF0
@@ -76,7 +77,7 @@ mov si,MAIN16
 shl esi,16
 mov dx,m4
 mov ax,0x421
-int 0xF0
+;int 0xF0 Not Yet
 
 ; Unlock mutex
 mov ax,0x0503
@@ -261,6 +262,7 @@ push cs
 pop es
 mov ax,0x0103
 mov ebx,0x207
+linear edi,stx6e,STACKS
 linear ecx,stx7e,STACKS
 linear edx,v1,T32
 int 0xF0

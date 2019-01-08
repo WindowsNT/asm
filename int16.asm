@@ -218,21 +218,30 @@ end if
 	mov rax,rsp
 	vmwrite rbx,rax
 
-	break16
 	VMLAUNCH
 	jmp vretxx
 
 	; Virtual Machine Here, Protected mode
 USE32
-	cv64 dd 0 
 	vmentry:
-	xchg bx,bx
-;	linear rax,vretx,CODE16
-;	push rax; for returning
-;	db 0x68; push
-;	cv64 dd 0 
-;	ret
-;	vretx:
+
+	; set the stack
+	mov ax,page32_idx
+	mov ss,ax
+
+	; set the IDT
+	linear ebx,idt_PM_start,DATA16
+	lidt [ebx]
+
+	; mov esp,xxxxxxxx
+	db 0xBC
+	cv64vst dd 0 
+
+	; call the address
+	db  09ah 
+	cv64 dd  0
+	dw  vmx32_idx
+
 	VMCALL ; exit
 
 USE64
@@ -353,12 +362,14 @@ int16:
 			; BX = mode (Currently 1 only, PM mode)
 			; EDX = Linear Address
 			; ECX = Linear Stack
+			; EDI = Virtualized Linear Stack
 
 			and ebx,0xFF
 			mov ax,CODE16
 			mov ds,ax
 			mov [cv64],edx
 			mov [cv64st],ecx
+			mov [cv64vst],edi
 			linear eax,Thread64CV,CODE16
 			call far CODE16:SendSIPIf
 			IRET
@@ -493,6 +504,7 @@ TempBackRM:
 
 	mov     eax,cr0         
 	and     al,not 1        
+	and eax,7FFFFFFFh; Set PE=0
 	mov     cr0,eax         
 	db      0eah
 	dw      .flush_ipq,CODE16
@@ -546,6 +558,7 @@ TempBackLM:
 
 	mov     eax,cr0         
 	and     al,not 1        
+	and eax,7FFFFFFFh; Set PE=0
 	mov     cr0,eax         
 	db      0eah
 	dw      .flush_ipq,CODE16
