@@ -30,7 +30,7 @@ It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default i
 9. VMX is there
 10. Spawn a Virtual Machine in Paged Protected Mode
 11. Entry /r which installs as TSR the DMMI services
-12. DMMIC app runs which demonstrates DMMI
+12. DMMIC app runs which demonstrates DMMI, launching real mode, protected mode, long mode and virtualized protected mode threads
 
 
 
