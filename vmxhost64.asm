@@ -287,6 +287,10 @@ VMX_Initialize_Guest3:
 	mov rax,idtl_size
 	vmwrite rbx,rax
 
+	; DR7
+	mov ebx,0x681A ; DR7
+	mov rax,0x400
+	vmwrite rbx,rax
 
 	; SEGMENT registers
 

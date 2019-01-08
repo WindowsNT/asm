@@ -135,7 +135,7 @@ InitPageTable643:
 	mov es,ax
 	mov esi,[gs:PhysicalPagingOffset64]
 
-	
+
 	; Put the PML4T to 0x0000, these are 512 entries, so it takes 0x1000 bytes
 	; We only want the first PML4T 
 	mov eax,esi

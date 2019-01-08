@@ -114,7 +114,7 @@ end if
 	mov edx,[gs:PhysicalPagingOffset64]
 	pop gs
     mov cr3,edx
-    
+
 	; Enable Long Mode
     mov ecx, 0c0000080h ; EFER MSR number. 
     rdmsr ; Read EFER.
