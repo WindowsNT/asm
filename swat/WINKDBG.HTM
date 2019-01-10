@@ -1,0 +1,332 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <TITLE>Notes on Windows Kernel Debugging</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Notes on Windows Kernel Debugging</FONT></B></CENTER>
+
+
+<P>Windows implements a low-level debugging interface called Kernel Debugging
+(WKD) which obtains control very early in the startup sequence of Windows.&nbsp;
+The program WDEB386 shipped with the Windows SDK is an example of one such
+program; 386SWAT is another.
+
+<P>When Windows sees that a kernel debugger is present, it informs the
+debugger about a number of events as they occur, principally parameter
+errors made by running Windows programs as they call Windows API functions.&nbsp;
+For example, if a program calls EnableWindow with an invalid window handle
+(say, zero), this error is passed on to the WKD for processing before returning
+to the calling program.&nbsp; In this way, a great many errors can be caught
+before they can cause any harm.
+
+<P>By default, 386SWAT is a WKD.&nbsp; If, for some reason, you wish to
+disable this feature, place the keyword <TT><FONT SIZE=+1><A HREF="swatpro.htm#NOWINK">NOWINK</A></FONT></TT>
+into your 386SWAT profile.
+
+<P>At the current time, you must have a monochrome adapter and monitor
+attached to your system in order for WKD services to be allowed by 386SWAT.&nbsp;
+386SWAT tests for a mono card and disables WKD if not found.
+<BR>&nbsp;
+
+<P><B>New Command Line Actions</B>
+
+<P><A NAME="WKD Command"></A>The WKD command takes several options:
+<UL>
+<LI>
+To enable or disable WKD services entirely, use</LI>
+</UL>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>WKD </FONT></TT>[<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>]
+<BR>&nbsp;
+<DD>
+This option is available outside Windows only.&nbsp; If you have specified
+<TT><FONT SIZE=+1><A HREF="swatpro.htm#NOWINK">NOWINK</A> </FONT></TT>in
+the 386SWAT profile, this option has no effect -- you must remove that
+profile option and reboot the system to enable WKD services.</DD>
+
+<UL>
+<LI>
+To change the response to a parameter error, use</LI>
+</UL>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>WKD </FONT></TT>[<TT><FONT SIZE=+1>NOISY</FONT></TT>|<FONT SIZE=+1><TT>QUIET</TT>]</FONT>
+<BR>&nbsp;
+<DD>
+If <TT><FONT SIZE=+1>NOISY</FONT></TT> is specified, then each parameter
+error is followed by the prompt <TT><FONT SIZE=+1>Break, Ignore, Quiet?</FONT></TT>
+to which you must respond <TT><FONT SIZE=+1>B</FONT></TT>, <TT><FONT SIZE=+1>I</FONT></TT>,
+or <TT><FONT SIZE=+1>Q</FONT></TT>.</DD>
+
+<DD>
+A response of <TT><FONT SIZE=+1>Q</FONT></TT>, is equivalent to setting
+<TT><FONT SIZE=+1>WKD QUIET</FONT></TT> after which parameter errors are
+logged to the screen, but execution does not stop for any more parameter
+errors until you break into 386SWAT and&nbsp; type <TT><FONT SIZE=+1>WKD
+NOISY</FONT></TT> on 386SWAT's command line.&nbsp; This is the default
+state, so you'll see parameter errors fly past on the mono screen&nbsp;&nbsp;
+without pause.&nbsp; I recommend that when you are debugging your own code,
+use <TT><FONT SIZE=+1>WKD NOISY</FONT></TT>; otherwise, use <TT><FONT SIZE=+1>WKD
+QUIET</FONT></TT>.&nbsp; This is because many commercial packages contain
+so many parameter errors that you'll constantly be interrupted with a BIQ
+prompt.</DD>
+
+<DD>
+A response of <TT><FONT SIZE=+1>I</FONT></TT>, ignores this one error only
+and continues execution.</DD>
+
+<DD>
+A response of <TT><FONT SIZE=+1>B</FONT></TT>, triggers a single step breakpoint
+at an IRETD inside 386SWAT.&nbsp; Tracing over this instruction returns
+to the instruction inside Windows immediately following the call to 386SWAT
+(typically an INT 41h).&nbsp; Tracing from this point on eventually gets
+you back to a call to LogError which was called by the Windows API function
+which encountered the invalid parameter, and then back to the application
+which called the Windows API with an invalid parameter.&nbsp; If the application
+is Win32, then you'll have to trace back through a thunking layer before
+you get to the application.&nbsp; This can be quite tricky.&nbsp; At some
+point, I'll try to put in some stack tracing to aid this process.</DD>
+
+<UL>
+<LI>
+Sometimes Windows and/or applications make direct calls to LogError as
+opposed to indirect calls as part of a parameter error.&nbsp; These calls
+are uncommon, so there is a separate switch to control 386SWAT's response
+to such an event.&nbsp; Use</LI>
+</UL>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>WKD LOGERROR
+</FONT></TT>[<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>]
+<BR>&nbsp;
+<DD>
+to change the response of stopping at an IRETD inside 386SWAT or not.&nbsp;
+The default setting is <TT><FONT SIZE=+1>OFF</FONT></TT>.</DD>
+
+<UL>
+<LI>
+Sometimes an application is bad enough that it triggers an unrecoverable
+fault (typically a GP or Page Fault) and it must be terminated.&nbsp; Windows
+gives the WKD a crack at it first to which 386SWAT responds by stopping
+in the application at the faulting instruction, thus giving you the opportunity
+to debug the problem.&nbsp; If you wish to tell Windows to handle the fault
+itself (typically by terminating the application), use</LI>
+</UL>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>WKD FAULT
+SKIP</FONT></TT>
+
+<P>If you do not want to receive any more fault messages from Windows,
+use
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>WKD FAULT
+OFF</FONT></TT>
+
+<P>To restart receiving fault messages, use
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; WKD FAULT ON</FONT></TT>
+
+<P><A NAME="c-K"></A>* The keystroke Ctrl-K brings up a menu of items to
+display from which you can choose various internal Windows structures.&nbsp;
+At the moment, the only one which has been fleshed out is the display of
+the Windows Global Heap (WGH).&nbsp; The WGH contains one entry for each
+globally allocated region of memory.&nbsp; For example, the various code
+and data segments of KRNL386.EXE are global allocations and have entries
+in this table.&nbsp; To scroll through this table, use the usual up and
+down arrow keys as well as Page Up and Page Down.
+
+<P><A NAME="SGH Command"></A>* To search through the WGH for a specific
+entry, use the SGH command:
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>SGH</FONT></TT>
+[<TT><FONT SIZE=+1>/b</FONT></TT>|<TT><FONT SIZE=+1>/s</FONT></TT>|<TT><FONT SIZE=+1>/h</FONT></TT>|<TT><FONT SIZE=+1>/o</FONT></TT>]&nbsp;
+[<TT><FONT SIZE=+1>/c</FONT></TT>] <I>expr</I>
+
+<P>The expression (<I>expr</I>) entered is interpreted as a base address
+if <TT><FONT SIZE=+1>/b</FONT></TT> is specified, size if <TT><FONT SIZE=+1>/s</FONT></TT>,
+handle if <TT><FONT SIZE=+1>/h</FONT></TT>, and owner if <TT><FONT SIZE=+1>/o</FONT></TT>.&nbsp;
+If <TT><FONT SIZE=+1>/c</FONT></TT> is specified, the search continues
+from the currently displayed entry; otherwise, the search starts at the
+top of the heap.&nbsp; If the value is found in the WGH, the WGH is displayed
+with the matching entry at the top of the screen.&nbsp; If you wish to
+repeat the search (perhaps because there are multiple entries with the
+same owner), either retype the command (and specify <TT><FONT SIZE=+1>/c</FONT></TT>
+so the search continues with the next entry after the one at the top of
+the screen), or start the command with a slash so it is not erased after
+successful execution. If the value is not found in the WGH, an error message
+is displayed.
+
+<P><A NAME="IPF Command"></A>* If Invalid Page Faults are being trapped
+by SWAT's VxD (see <A HREF="swatvxd.htm">SWATVXD.DOC</A> for more details),
+use the IPF command to control how these events are to be handled.
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>IPF</FONT></TT>
+[<TT><FONT SIZE=+1>/d</FONT></TT>]&nbsp; [<TT><FONT SIZE=+1>/s</FONT></TT>]&nbsp;
+[<TT><FONT SIZE=+1>/r</FONT></TT>] <I>expr</I>
+
+<P>where <TT><FONT SIZE=+1>/d</FONT></TT> tells SWAT not to display a message
+on the mono screen describing this event, <TT><FONT SIZE=+1>/s</FONT></TT>
+tells SWAT not to stop when this event occurs, <TT><FONT SIZE=+1>/r</FONT></TT>
+tells SWAT to remove this entry from its local tables, and <I>expr </I>is
+an expression which evaulates to a linear address corresponding to the
+Invalid Page Fault.
+
+<P>* To display the memory pointed to by a selector as a Module Database,
+use
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>MDB</FONT></TT>
+<I>expr</I>
+
+<P>* To display the memory pointed to by a selector as a Task Database,
+use
+
+<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>TDB</FONT></TT>
+<I>expr</I>
+
+<P>* Certain commands usually preceded with a dot are automatically passed
+to Windows for processing by WIN386, assuming Windows is active and WIN386
+services are available.&nbsp; These commands include
+<TABLE BORDER=0 WIDTH="100%" >
+<TR>
+<TD><TT><FONT SIZE=+1>?</FONT></TT></TD>
+
+<TD>Display a Help screen with the available commands</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.?</FONT></TT></TD>
+
+<TD>Display a list of registered dot commands (e.g., .M)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.R</FONT></TT> [#]</TD>
+
+<TD>Display the registers of the current thread (or thread #)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VM</FONT></TT> [#]</TD>
+
+<TD>Display the complete VM status of the current VM (or #)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VC</FONT></TT> [#]</TD>
+
+<TD>Display the current VM's (or #) control block</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VH</FONT></TT> [#]</TD>
+
+<TD>Display a VMM linked list, given list handle</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VR</FONT></TT> [#]</TD>
+
+<TD>Display the registers of the current VM (or #)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VS</FONT></TT> [#]</TD>
+
+<TD>Display the current VM's (or #) virtual stack</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VL</FONT></TT></TD>
+
+<TD>Display list of all valid VM handles</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.DS</FONT></TT></TD>
+
+<TD>Display protected mode stack with labels</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.VMM</FONT></TT></TD>
+
+<TD>Display menu of VMM state info</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>.</FONT></TT><I>dev_name</I></TD>
+
+<TD>Display device-specific info</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P><B>Profile Options</B>
+
+<P>Because 386SWAT is a WKD, it is given much more information to process.&nbsp;
+Much of that data is stored in its internal log file (acessible via Ctl-F10)
+which means that you should increase the log file's default size.&nbsp;
+You might experiment with different values, but I suggest using something
+on the order of <TT><FONT SIZE=+1><A HREF="swatpro.htm#LOGSIZE">LOGSIZE</A>=100000</FONT></TT>.
+
+<P>During Windows startup while still in RM/VM, Windows loads the real
+mode portion of all of the VxDs to be used this Windows session.&nbsp;
+At this time, Windows tells the WKD about these VxDs and where they will
+be loaded in memory when in PM, and 386SWAT logs this information in two
+ways.
+
+<P>The first way is to write a line to the mono display with the data about
+each segment (code or data) of the form
+
+<P><TT><FONT SIZE=+1>Loaded VxD </FONT></TT><I>VxDname</I><TT><FONT SIZE=+1>,
+module </FONT></TT><I>Modname</I><TT><FONT SIZE=+1> at </FONT></TT><I>address</I><TT><FONT SIZE=+1>
+len </FONT></TT><I>length</I>
+
+<P>The second way is to append a symbol to 386SWAT's symbol table of the
+form <I>VxDname</I><TT><FONT SIZE=+1>_Code</FONT></TT><I>nnnn</I> or <I>VxDname</I><TT><FONT SIZE=+1>_Data</FONT></TT><I>nnnn</I>,
+where <I>nnnn</I> is a decimal sequence number starting at <TT><FONT SIZE=+1>1</FONT></TT>
+and is used to distinguigh one code/data segment from another.&nbsp; By
+convention in Windows, code segments are in selector <TT><FONT SIZE=+1>0028h</FONT></TT>
+and data segments are in selector <TT><FONT SIZE=+1>0030h</FONT></TT>.&nbsp;
+These symbols are useful when debugging VxDs.
+
+<P><A NAME="WKDLS"></A>In order to save this information, you need to tell
+386SWAT how much space to reserve.&nbsp; The profile option <TT><FONT SIZE=+1><A HREF="swatpro.htm#WKDLS">WKDLS</A>
+</FONT></TT>(Load Segments) is used for this purpose.&nbsp; The actual
+value depends upon how many VxD code and data segments are loaded on your
+system.&nbsp; I use <TT><FONT SIZE=+1>WKDLS=700</FONT></TT>.&nbsp; If you
+have no interest in debugging VxDs, omit this profile option as the default
+value is zero which reserves no space.&nbsp; You might also want to increase
+the profile value for <TT><FONT SIZE=+1><A HREF="swatpro.htm#SYMSIZE">SYMSIZE</A></FONT></TT>.&nbsp;
+I use <TT><FONT SIZE=+1>SYMSIZE=700000</FONT></TT> (you do have 32MB of
+RAM, don't you?).
+<BR>&nbsp;
+
+<P><B>Debugging DLLs</B>
+
+<P>The Windows SDK (3.1x or 95) contains separate copies of various system
+DLLs each of which contain more messages and checks on Windows execution.&nbsp;
+I haven't played with these much, so you're on your own, but it may be
+very worthwhile.&nbsp; They also contain symbol files for which I haven't
+as yet put in code to load.
+<BR>&nbsp;
+
+<P><B>SWAT VxD</B>
+
+<P>This version of 386SWAT no longer requires that you load SWATVXD.EXE
+as a resident program (thus saving you a few bytes of DOS memory), but
+the VxD must be in same directory as 386SWAT.LOD.&nbsp; The VxD is now
+loaded by 386SWAT when Windows starts up.&nbsp; See the file <A HREF="swatvxd.htm">SWATVXD.DOC</A>
+for more information on how to configure the VxD.
+<BR>&nbsp;
+
+<P><B>Loading 386SWAT</B>
+
+<P>If you are running 386MAX as your memory manager, you could load 386SWAT
+from the 386MAX profile with the <TT><FONT SIZE=+1>LOAD=</FONT></TT> keyword.&nbsp;
+However, because this mechanism doesn't provide for 386SWAT to have a DOS
+footprint and such a footprint is needed for WKDing, I do not recommend
+loading SWAT this way anymore.&nbsp; Instead, load 386SWAT as a device
+driver on the line which immediately follows the line which loads the memory
+manager.&nbsp; 386SWAT must load in low DOS memory, so don't try to load
+it high.&nbsp; The low DOS memory footprint of 386SWAT is about 2KB.&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

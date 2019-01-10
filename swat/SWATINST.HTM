@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Installing 386SWAT</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Installing 386SWAT</FONT></B></CENTER>
+
+
+<P>Create a directory on your hard disk (say, <TT><FONT SIZE=+1>C:\386SWAT</FONT></TT>),
+copy the ZIP file to that directory, and unzip it there. To unzip 386SWAT,
+use
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; PKUNZIP 386SWAT</FONT></TT>
+
+<P>This debugger can be used in conjunction with any memory manager which
+supports VCPI, or with just HIMEM.SYS.
+
+<P>To install 386SWAT, place the following line into your CONFIG.SYS file:
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; Device=</FONT></TT><I>d:\path\</I><TT><FONT SIZE=+1>386SWAT.LOD
+</FONT></TT><I>options</I>
+
+<P>Place the <TT><FONT SIZE=+1>Device=</FONT></TT> statement for 386SWAT
+immediately following the <TT><FONT SIZE=+1>Device=</FONT></TT> for the
+memory manager (if any), or HIMEM.SYS if no memory manager is being used.
+<I>d:\path\</I> represents the drive and path location of 386SWAT and <I>options</I>
+represents zero or more profile options.
+
+<P>As there are several options you may wish to use with 386SWAT, we recommend
+that you put all 386SWAT keywords in a profile one keyword per line, and
+point to the profile with the <TT><FONT SIZE=+1><A HREF="swatpro.htm#PRO">PRO</A>=</FONT></TT>
+option on the 386SWAT.LOD line. For example,
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; Device=</FONT></TT><I>d:\path\</I><TT><FONT SIZE=+1>386SWAT.LOD
+PRO=</FONT></TT><I>d:\path\</I><TT><FONT SIZE=+1>386SWAT.PRO</FONT></TT>
+<BR><!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

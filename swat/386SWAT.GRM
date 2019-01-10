@@ -1,0 +1,319 @@
+'$Header:   P:/PVCS/386SWAT/386SWAT.GRV   1.32   10 Aug 1998 11:00:44   BOB  $
+		   GRAMMAR FOR 386SWAT COMMAND LINE
+
+// Command lines
+APPKEY
+BCnx opt_addr		n î {<empty>, 0..7}  x î {<empty>, *, +, -}
+BD opt_addr
+BD addr Ln I		n î {<empty>, 1, 2, 4}
+BD addr Ln R		n î {<empty>, 1, 2, 4}
+BD addr Ln W		n î {<empty>, 1, 2, 4}
+BD addr L1 X
+BDnx			x î {*, +, -}	n î {<empty>, 0, 1, 2, 3}
+BPnx opt_addr		n î {<empty>, 0..7}  x î {<empty>, *, +, -}
+BTF
+BTF {ON|OFF}
+CHAT
+Dxy-			x î {<empty>, b, d, g, i, t, t2, t3, v, w},
+			y î {<empty>, /n} where n is the data width
+Dxy opt_addr		x î {<empty>, b, d, g, i, t, t2, t3, v, w},
+			y î {<empty>, /n} where n is the data width
+Dxy addr P		x î {<empty>, b, d, g, i, t, t2, t3, v, w},
+			y î {<empty>, /n} where n is the data width
+Dxy addr P exp		x î {<empty>, b, d, g, i, t, t2, t3, v, w},
+			y î {<empty>, /n} where n is the data width
+DLGx addr		x î {16, A, 32, W}
+DTE exp
+E  addr
+E  addr lvallist
+EXIT
+F  addr L lval lval
+F  addr L lval lval P
+F  addr L lval lval P exp
+FS
+G  opt_addr
+GM opt_boolexp
+H  addr
+Ix lval 		x î {<empty>, b, d, w}
+IMR
+INSERT gdtr idtr [cr3 [lapde]]
+INSERT *    idtr
+IPF [/d] [/s] [/r] expr
+IRR
+ISR
+LBR
+LBR {ON|OFF}
+LF filename
+LI x			x î {+, -}
+LI dcon x		x î {<empty>, +, -}
+LS filename x		x î {<empty>, lval}
+M  addr L lval addr
+MACBASE addr
+MDB exp
+Ox lval lval		x î {<empty>, b, d, w}
+PATHx dirlist		x î {<empty>, +}
+PS lval x		x î {<empty>, lval (<256)}
+PTE addr
+PTE exp
+PTE addr P exp
+PTE exp  P exp
+QS addr
+R  reg = exp
+R  reg.str = exp
+REBOOT x		x î {0, 1, 2}
+REMDBG
+RC
+RR
+RS
+Sx addr L expr atom	x î {<empty>, 1}
+Sx addr addr   atom	x î {<empty>, 1}
+S  addr addr   ! instr
+S  addr L expr ! instr
+S  addr addr   # PTE
+S  addr L expr # PTE
+SBx			x î {+, -}
+SB*x			x î {+, -}
+SETCOM x		x î {<empty>, -}
+SETCOM port bps 	port î {1, 2, 3, 4}
+SETCOM xn		x î {RTS, DTR}		n î {+, -}
+SGH [/b|/s|/h|/o|/n] [/c] expr
+SIGINT lval
+SPTE addr
+SPTE exp
+SPTE addr P exp
+SPTE exp  P exp
+TDB exp
+TOGINT lvallist
+TS
+TS opt_sel opt_group x opt_seln opt_addr
+			x î {<empty>, *, P, V}	n î {<empty>, +, -}
+Ux-			x î {<empty>, 16, 32}
+Ux opt_addr		x î {<empty>, 16, 32}
+Ux addr P		x î {<empty>, 16, 32}
+Ux addr P exp		x î {<empty>, 16, 32}
+
+VMSCOUNT xx
+VMSINT {ON|OFF}
+VMSINT=xx,xx,...
+
+WKD FAULT [ON|OFF|SKIP]
+WKD LOGERROR [ON|OFF]
+WKD [ON|OFF]
+WKD [QUIET|NOISY]
+
+
+// Lval list
+lvallist ð lval
+	 ð lval lvallist
+
+
+// Optional addresses
+opt_addr ð <empty>
+	 ð addr
+
+
+// Addresses
+addrð exp		using default segment/selector as per specific command
+    ð ea
+
+
+// Optional boolean expression
+opt_boolexpð <empty>
+	   ð exp
+
+
+// Expressions on values
+exp ð ( exp )
+    ð mfn		monadic functions
+    ð dfn		dyadic functions
+
+
+// Monadic functions
+mfn ð atom
+    ð [ ea		extract word at effective address
+    ð { ea		extract dword ...
+    ð O.ea		extract offset from effective address
+    ð S.ea		extract segment/selector ...
+    ð L.ea		extract linear address ...
+    ð P.ea		extract physical address ...
+    ð + exp
+    ð - exp
+    ð ~ exp
+
+
+// Lefthand values
+lvalð atom
+    ð ( exp )
+
+
+// Effective address with segment/selector
+ea  ð seg : exp
+    ð sel | exp
+    ð .EA		Effective Address #1 (or the only one)
+    ð .EA2		...		  #2
+    ð .GDT		GDT base address (using selector zero)
+    ð .IDT		IDT ...
+    ð .LDT		LDT ...
+    ð .TSS		TSS ...
+    ð .CMAC		address of next C MAC entry
+    ð .CODE		current code display address
+    ð .CSIP		address of current cs:[e]ip
+    ð .DATA		current data display address
+    ð .DMAC		segment of first DOS MAC entry
+    ð .NMAC		segment of next  DOS MAC entry
+    ð .PMIxx		Sel|Off of PM Interrupt xxh
+    ð .RMIxx		Seg:Off of RM interrupt # xx
+    ð .VM		Sel|Off of current Windows VM structure
+    ð .VMIxx		..	   VM ...
+    ð .VMRET		return cs|eip from Windows VM (|{.vmstk+50 or
+			|{.vmstk+150)
+    ð .VMSTK		current ss|esp saved in Windows VM structure
+			(same as |{.vm+40)
+    ð .IRET		far word:dword return address on stack
+			allowing a mode switch from PM to VM
+    ð .RETN		near word or dword return address on stack
+    ð .RETND		near dword return address on stack
+    ð .RETNS		near word return address on stack
+    ð .RETF		far word:word or word:dword return address on stack
+    ð .RETFD		far word:dword return address on stack
+    ð .RETFS		far word:word return address on stack
+    ð .XBDA		Seg:Off of XBDA; same as ([40:0E):0
+    ð .XBDA2		Seg:Off of 2ndary XBDA; same as ((S..XBDA)+[.XBDA+B4):0
+    ð dotcmd ? exp	dyadic functions on dot commands (.GDT, .IDT, etc.)
+			where ? is a dyadic function
+    ð :[ ea		extract word:word at effective address
+    ð :{ ea		...	word:dword ...
+    ð |[ ea		...	word|word ...
+    ð |{ ea		...	word|dword ...
+    ð |G ea		...	...	   in GDT-format (using selector zero)
+    ð |I ea		...	...	   in IDT-format (using IDT selector)
+    ð |L ea		...	...	   in LDT-format (same as GDT-format)
+    ð |T ea		...	...	   in TSS-format (using CS|EIP)
+    ð symbol		effective address of this symbol
+
+
+// Dyadic functions on dot commands
+dotcmd ? exp
+    ð S.dotcmd : O.dotcmd ? exp 	for VM addresses
+    ð S.dotcmd | O.dotcmd ? exp 	... PM ...
+			where ? is a dyadic function
+
+
+// Dyadic functions
+dfn ð atom
+    ð lval + exp	addition
+    ð lval - exp	subtraction
+    ð lval * exp	multiplication
+    ð lval / exp	division (with truncation towards zero)
+    ð lval & exp	bitwise AND
+    ð lval ^ exp	bitwise XOR
+    ð lval == exp	is equal (eq)
+    ð lval != exp	is not equal (ne)
+    ð lval <  exp	is less than (lt)
+    ð lval <= exp	lt or eq
+    ð lval >  exp	is greater than (gt)
+    ð lval >= exp	gt or eq
+    ð lval && exp	logical AND
+    ð lval || exp	logical OR
+
+
+Because we have usurped the | symbol as the selector separator, it is
+not available for bitwise OR.  To do bitwise OR between A and B, use
+      (A & ~B) ^ B
+
+// Precedence
+Operators			  Type
+- ~				  Monadic
+* /				  Dyadic
++ -				  Dyadic
+symbols, .code, .data, etc.	  Address expression
+: |				  Dyadic (address construction)
+] [ {				  Monadic (extraction)
+>> <<				  Dyadic (bit shift)
+< <= >= >			  Dyadic (relational)
+== !=				  Equality
+&				  Dyadic (bitwise AND)
+^				  Dyadic (bitwise XOR)
+&&				  Dyadic (logical AND)
+||				  Dyadic (logical OR)
+
+
+
+// Segment or selector
+seg ð lval
+sel ð lval
+
+// Optional segment or selector
+opt_sel ð <empty>
+	ð *
+	ð seg
+	ð sel
+
+// Optional group ID
+opt_group ð <empty>
+	  ð *
+	  ð con
+
+// Atoms
+atomð con
+    ð reg
+    ð .LBRFR
+    ð .LBRTO
+    ð .LEXFR
+    ð .LEXTO
+
+
+// Registers
+reg ð GP		AX, AL, AH, BX, ...
+    ð EGP		EAX, EBX, ECX, ...
+    ð CRn		Control registers
+    ð DRn		Debug registers
+    ð TRn		Test registers
+    ð Misc		IP, EIP, FL, EFL, TR, LDTR
+
+
+// Constants
+con	 ð <32-bit hex values>
+dcon	 ð <16-bit unsigned decimal values>
+filename ð <DOS pathname>
+dirlist  ð <List of directory names separated by commas (,)>
+
+// Bits per second (BPS) values
+bps ð 55
+    ð 110
+    ð 300
+    ð 600
+    ð 1200
+    ð 2400
+    ð 4800
+    ð 9600
+    ð 19200
+    ð 38400
+    ð 76800
+    ð 115200
+
+Note that this grammar is mostly precedence-free.  Multiplication and
+division have a higher precedence than addition and subtraction, but
+everything else is at the same level.  Moreover, other than the above
+exception, all expressions execute right to left.  When in doubt, use
+parentheses.
+
+
+Examples
+--------
+
+* To display the successive entries in the DOS memory allocation
+  chain, display one such entry via a DB command.  Then type
+
+  /D ((S..DATA)+1+[.DATA+3):0
+
+  Continuing to press Enter displays the successive MAC entries.
+
+* To display the successive entries in the C memory allocation chain,
+  display one such entry (at the count word) via a DB command.	Then
+  type
+
+  /D .DATA + 2 + FFFE & [.DATA
+
+
+

@@ -1,0 +1,552 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <TITLE>VCPI Debugger Extensions</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B>Preliminary Proposal</B></CENTER>
+
+<CENTER><B>For</B></CENTER>
+
+<CENTER><B>Debugger Extensions</B></CENTER>
+
+<CENTER><B>to</B></CENTER>
+
+<CENTER><B>VCPI Specification</B></CENTER>
+
+<CENTER>30 May 89</CENTER>
+
+<CENTER>Amended 22 Aug 90</CENTER>
+
+<CENTER>Amended&nbsp; 9 Aug 94</CENTER>
+
+<HR NOSHADE WIDTH="100%">
+<CENTER>Rationale&nbsp;
+<HR NOSHADE WIDTH="100%"></CENTER>
+
+
+<P>The premise is that there is already a resident debugger in the system
+which the client wishes to use.&nbsp; These calls provide an interface
+between the client and the debugger to allow that to happen.&nbsp; In order
+for the debugger to support this interface, it should intercept INT 67h
+during its initialization and troll for the following calls, ignoring most
+others.&nbsp; The debugger may wish to troll for the "Set 8259A Interrupt
+Vector Mappings" call in order to properly determine where the timer and
+keyboard interrupts start.
+<BR>&nbsp;
+<CENTER><B>V86 Mode Program Interface</B>&nbsp;
+<HR SIZE=4 NOSHADE WIDTH="100%"></CENTER>
+
+<CENTER><B>OVERVIEW</B></CENTER>
+
+
+<P>If your program enters PM via DPMI using a memory manager with an integrated
+DPMI host, skip all this as 386SWAT hooks into the host's GDT and IDT through
+the INTRUDE option.&nbsp; Note that DPMI hosts which install as a separate
+device driver appear to the memory manager (and thus to 386SWAT) as a VCPI
+client, so the above advice to skip this document does not apply.&nbsp;
+I haven't tried to debug a DPMI client in this context, so I'm not sure
+how to do it.
+
+<P>If your program enters PM via VCPI, use functions <TT><FONT SIZE=+1>DEF0</FONT></TT>,
+<TT><FONT SIZE=+1>DE01</FONT></TT>, <TT><FONT SIZE=+1>DEF2</FONT></TT>,
+and <TT><FONT SIZE=+1>DEF3</FONT></TT> in that order so that 386SWAT is
+properly initialized in your program's GDT and IDT.
+
+<P>If your program enters PM from RM and uses paging, use functions <TT><FONT SIZE=+1>DEF0</FONT></TT>,
+<TT><FONT SIZE=+1>DEF4</FONT></TT>, <TT><FONT SIZE=+1>DEF2</FONT></TT>,
+<TT><FONT SIZE=+1>DEF3</FONT></TT>, and <TT><FONT SIZE=+1>DEF9</FONT></TT>
+in that order although function <TT><FONT SIZE=+1>DEF9</FONT></TT> can
+be executed anytime after function <TT><FONT SIZE=+1>DEF0</FONT></TT> executes
+successfully.
+
+<P>If your program enters PM from RM and does not use paging, use functions
+<TT><FONT SIZE=+1>DEF0</FONT></TT>, <TT><FONT SIZE=+1>DEF2</FONT></TT>,
+and <TT><FONT SIZE=+1>DEF3</FONT></TT> in that order.
+
+<P>When debugging VCPI clients, be sure to enable the VMSINT flag either
+by putting the keyword <TT><FONT SIZE=+1><A HREF="swatpro.htm#VMSINT">VMSINT</A></FONT></TT>
+into your 386SWAT profile, or by typing <TT><FONT SIZE=+1><A HREF="swatcmd.htm#VMSINT">VMSINT
+ON</A></FONT></TT> from the 386SWAT command line.
+<BR>&nbsp;
+<BR>
+<HR SIZE=4 NOSHADE WIDTH="100%">
+<BR><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF0h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Determine Debugger Presence
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+None.
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 84h</FONT></TT> if VCPI not supported
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 8Fh</FONT></TT> if debugger support not present
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BH =</FONT></TT> Debugger specification major version
+#
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BL =</FONT></TT> ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+minor ...
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>This call determines whether or not a resident debugger is present
+in the system.&nbsp; The current specification version number is <TT><FONT SIZE=+1>5.00</FONT></TT>;
+that is, <TT><FONT SIZE=+1>BH = 05h</FONT></TT>, <TT><FONT SIZE=+1>BL =
+00h</FONT></TT>.&nbsp; These values are in binary such that if the specification
+version number were <TT><FONT SIZE=+1>10.12</FONT></TT>, this call would
+return <TT><FONT SIZE=+1>BH = 0Ah</FONT></TT>, <TT><FONT SIZE=+1>BL = 0Ch</FONT></TT>.
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF1h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Get Debugger Information
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+None.
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>EDX =</FONT></TT> Physical address of debugger information
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>This call returns the physical address of a certain data structure
+inside 386SWAT for use in conjunction with the 386SWAT Virutal Device for
+Windows 3.&nbsp; The contents of the structure is as follows:
+
+<P><TT><FONT SIZE=+1>INFO_LEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+dw&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Byte count of structure</FONT></TT>
+<BR><TT><FONT SIZE=+1>INFO_BASE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Physical base address of SWAT code
+segment</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWTINF_VER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dw&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Version # of structure</FONT></TT>
+<BR>More fields are defined which are used by <A HREF="swatvxd.htm">SWATVXD</A>.
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF2h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Initialize Debugger Interface
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>ES:DI ==></FONT></TT> GDT entries for debugger support
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If <TT><FONT SIZE=+1>ES = 0</FONT></TT>, <TT><FONT SIZE=+1>EDI ==></FONT></TT>
+...
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BX =</FONT></TT> initial selector
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 84h</FONT></TT> if VCPI not supported
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 8Fh</FONT></TT> if debugger support not present
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BX:EDX =</FONT></TT> Address of protected mode entry
+point
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>This call allows the debugger to setup its own GDT entries as it pleases.&nbsp;
+The number of entries it may use is limited to thirty (30) so the client
+can statically allocate space in its GDT.&nbsp; The starting selector number
+in <TT><FONT SIZE=+1>BX</FONT></TT> is needed so that the "Initialize Debugger
+IDT Entry" call knows what selectors to use when initializing an IDT entry.&nbsp;
+Consequently, this call must precede that call in order to know the proper
+selector value.
+
+<P>If you are writing a PM program which enters PM via VCPI, your call
+to the VCPI Get PM Interface (<TT><FONT SIZE=+1>DE01</FONT></TT>) must
+precede this call as 386SWAT needs to hook into the latter call in order
+to ensure that its PTEs are visible when the VCPI client is active (and
+thus know what its new linear address is).
+
+<P>The selector and offset returned identify the address of the protected
+mode entry point in the debugger (see below).&nbsp; This entry point should
+be called via a USE32 far call as it might be a task gate.
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF3h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Initialize Debugger IDT Entry
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BX =</FONT></TT> interrupt #
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>ES:DI ==></FONT></TT> IDT entry for interrupt <TT><FONT SIZE=+1>BX</FONT></TT>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If <TT><FONT SIZE=+1>ES = 0</FONT></TT>, <TT><FONT SIZE=+1>EDI ==></FONT></TT>
+...
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 83h</FONT></TT> if interrupt # not supported by the
+debugger
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 84h</FONT></TT> if VCPI not supported
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>= 8Fh</FONT></TT> if debugger support not present
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>This call allows the client to selectively activate the debugger's
+interrupt handlers.&nbsp; Because some debuggers may support more interrupt
+handlers than others, it is recommended that the client call this function
+for all interrupts between <TT><FONT SIZE=+1>00h</FONT></TT> and <TT><FONT SIZE=+1>1Fh</FONT></TT>.&nbsp;
+If the debugger doesn't support a particular interrupt number, it will
+return an error code which the caller can ignore.
+
+<P>Some interrupt numbers may be handled wholly by the debugger (not passed
+on to the previous handler).&nbsp; Some may be chained, with the debugger
+handling only certain situations (as may be the case if the 8259A's interrupt
+numbers overlay CPU fault interrupt numbers).&nbsp; For this reason, the
+client should initialize the IDT entry with a valid handler in case the
+debugger passes along the interrupt.
+
+<P>Because this call may be invoked multiple times on the same interrupt
+number, the debugger must check the existing entry to see if it is the
+same as the value to which it would initialize the entry.&nbsp; If that's
+the case, the debugger should ignore the call and return a successful result
+code.
+
+<P>If you are writing a PM program which enters PM via VCPI, your call
+to the VCPI Get PM Interface (<TT><FONT SIZE=+1>DE01</FONT></TT>) must
+precede this call as 386SWAT needs to hook into the latter call in order
+to ensure that its PTEs are visible when the VCPI client is active (and
+thus know what its new linear address is).
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF4h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Set New Debugger CR3 and Linear Address
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>EBX
+=</FONT></TT> new CR3
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>EDX =</FONT></TT> new linear address or -1 if unchanged.
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>This call is used in conjunction with functions <TT><FONT SIZE=+1>DEF2</FONT></TT>
+and <TT><FONT SIZE=+1>DEF3</FONT></TT> if your program enters PM without
+using either VCPI or DPMI.&nbsp; In that case, this case must precede the
+calls to functions <TT><FONT SIZE=+1>DEF2</FONT></TT> and <TT><FONT SIZE=+1>DEF3</FONT></TT>
+and you must also call function <TT><FONT SIZE=+1>DEF9</FONT></TT>.
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF5h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(Reserved)
+<BR>
+<HR SIZE=4 NOSHADE WIDTH="100%">
+<TT><FONT SIZE=+1><a name="DEF6"></a>INT 67h</FONT></TT> <BR>
+<TT><FONT SIZE=+1>AX = 0DEF6h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Symbol Table Management Functions
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>BL
+= 00h</FONT></TT>&nbsp;&nbsp; Append <TT><FONT SIZE=+1>ECX</FONT></TT>
+names from <TT><FONT SIZE=+1>DS:ESI</FONT></TT>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>ECX =</FONT></TT> # names to append
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>DS:ESI ==></FONT></TT> table of names to append (see
+SYMC_STR)
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>AH = 88h</FONT></TT> if not
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>ECX =</FONT></TT> # symbols appended
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR><TT><FONT SIZE=+1>SYMC_STR struc</FONT></TT>
+
+<P><TT><FONT SIZE=+1>SYMC_FVEC df&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Seg:Off or Sel|Off</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMC_FLAG dw&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Flags:&nbsp; see SYMFL_REC below</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMC_GRP&nbsp; dw&nbsp;&nbsp;&nbsp;&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Group # (arbitray value may be used</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; with TS command from the command</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; line to group symbols)</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMC_NAMLEN db&nbsp;&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Length byte</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+db&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ? dup (?)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; ASCII name (no terminating zero)</FONT></TT>
+
+<P><TT><FONT SIZE=+1>SYMC_STR ends</FONT></TT>
+
+<P><TT><FONT SIZE=+1>SYMFL_REC record $SYMFL_VM:1,$SYMFL_TYP:5,$SYMFL_RSV:10</FONT></TT>
+
+<P><TT><FONT SIZE=+1>@SYMFL_VM equ&nbsp;&nbsp;&nbsp; mask $SYMFL_VM ; 1
+= symbol is for VM</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; 0 = ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PM</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; The above flag is meaningful for _DAT and _LN</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; types only.</FONT></TT>
+<BR><TT><FONT SIZE=+1>@SYMFL_TYP equ&nbsp;&nbsp; mask $SYMFL_TYP ; Data
+types:&nbsp; see @SYMTYP_xxx below</FONT></TT>
+<BR><TT><FONT SIZE=+1>@SYMTYP_DAT equ&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Code or data</FONT></TT>
+<BR><TT><FONT SIZE=+1>@SYMTYP_LN&nbsp; equ&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Line number record constructed by MAPSSF</FONT></TT>
+<BR><TT><FONT SIZE=+1>@SYMTYP_ABS equ&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; ABS record</FONT></TT>
+<BR><TT><FONT SIZE=+1>@SYMTYP_SWT equ&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Symbol is for SWAT internal use</FONT></TT>
+
+<P>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>BL
+= 01h</FONT></TT>&nbsp;&nbsp; Search for name <TT><FONT SIZE=+1>DS:ESI</FONT></TT>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>DS:ESI ==></FONT></TT> name to search for (see <TT><FONT SIZE=+1>SYMC_STR</FONT></TT>)
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>AH = A0h</FONT></TT> if not found
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>BL
+= 02h</FONT></TT>&nbsp;&nbsp; Translate old symbol to new
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>DS:ESI ==></FONT></TT> <TT><FONT SIZE=+1>SYMTRAN_STR</FONT></TT>
+(see below)
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>Use this call to translate a symbol's segment/selector and group to
+a new segment/selector and base.
+
+<P><TT><FONT SIZE=+1>SYMTRAN_STR struc</FONT></TT>
+
+<P><TT><FONT SIZE=+1>SYMTRAN_OSEL dw&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Old segment/selector</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMTRAN_OGRP dw&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Old group #</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMTRAN_NFLAG dw ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; New flags</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMTRAN_NSEL dw&nbsp; ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; New segment/selector</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMTRAN_NBASE dd ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; New base (to be added to all offsets)</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMTRAN_FLAGS dw ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Flags for match significance</FONT></TT>
+
+<P><TT><FONT SIZE=+1>SYMTRAN_STR ends</FONT></TT>
+
+<P><TT><FONT SIZE=+1>; Flags used in SYMTRAN_FLAGS to indicate which elements
+in SYMTRAN_STR</FONT></TT>
+<BR><TT><FONT SIZE=+1>; are to be ignored.</FONT></TT>
+<BR><TT><FONT SIZE=+1>; $SYMFL_ADDVMSEG indicates that the new segment
+value is to be added</FONT></TT>
+<BR><TT><FONT SIZE=+1>; to all V86 mode segments.</FONT></TT>
+<BR><TT><FONT SIZE=+1>SYMTFL_REC record $SYMTFL_IGOSEL:1,$SYMTFL_IGOGRP:1,$SYMTFL_IGNFLAG:1,\</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $SYMTFL_IGNSEL:1,$SYMTFL_ADDVMSEG:1,$SYMTFL_RSVD:11</FONT></TT>
+
+<P>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BL = 03h</FONT></TT>&nbsp;&nbsp; Flush the symbol table
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>BL = 04h</FONT></TT>&nbsp;&nbsp; Append without replacing
+existing symbols
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(allow duplicates of existing symbols)
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(same as <TT><FONT SIZE=+1>BL=00h</FONT></TT>)
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>BL
+= 05h</FONT></TT>&nbsp;&nbsp; Execute ASCIIZ command in 386SWAT
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>DS:ESI ==></FONT></TT> ASCIIZ string containing a command
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>
+<HR NOSHADE WIDTH="100%">Use this call to execute a command on the 386SWAT
+command line.&nbsp; This function is used by the <A HREF="swatsym.htm#SWATCMD">SWATCMD.EXE</A>
+device driver.
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>BL
+= 06h</FONT></TT>&nbsp;&nbsp; Copy ASCIIZ string to error log
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>DS:ESI ==></FONT></TT> ASCIIZ string
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>
+<HR NOSHADE WIDTH="100%">
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF7h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(Reserved)
+<BR>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF8h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(Reserved)
+<BR>
+<HR SIZE=4 NOSHADE WIDTH="100%"><TT><FONT SIZE=+1>INT 67h</FONT></TT>
+<BR><TT><FONT SIZE=+1>AX = 0DEF9h</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Fill in 386SWAT's PTEs
+<BR>
+<HR NOSHADE WIDTH="100%">INPUTS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>ECX
+=</FONT></TT> maximum # PTEs <TT><FONT SIZE=+1>ES:DI</FONT></TT> can hold
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>ES:DI ==></FONT></TT> save area for PTEs
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+If <TT><FONT SIZE=+1>ES = 0</FONT></TT>, <TT><FONT SIZE=+1>EDI ==></FONT></TT>
+...
+<BR>
+<HR NOSHADE WIDTH="100%">OUTPUTS:&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>AH
+= 00h</FONT></TT> if successful
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>AH = 8Bh</FONT></TT> if 386SWAT needs more PTEs than
+specified
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<TT><FONT SIZE=+1>ECX =</FONT></TT> # additional PTEs 386SWAT needs
+<BR>
+<HR NOSHADE WIDTH="100%">
+<BR>Use this call in conjunction with function <TT><FONT SIZE=+1>DEF4</FONT></TT>
+if your program enters PM without using VCPI or DPMI so that 386SWAT's
+PTEs are visible in your program's address space.
+<BR>
+<HR SIZE=4 NOSHADE WIDTH="100%">
+<CENTER><B>Protected Mode Program Interface</B></CENTER>
+
+
+<P>For the moment, there are no defined functions.&nbsp; However, when
+there are, we will require that <TT><FONT SIZE=+1>AH = 0DEh</FONT></TT>
+and that the subfunction code be in <TT><FONT SIZE=+1>AL</FONT></TT>.
+<BR>&nbsp;
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%">
+<CENTER><B>Tips On Debugging DPMI Programs</B></CENTER>
+
+
+<P>If you are using an integrated DPMI host such as 386MAX, no special
+action is needed on your part to debug a DPMI program.&nbsp; 386SWAT installs
+itself as a PL0 extension to the memory manager and thus also to the DPMI
+host.&nbsp; Place breakpoints in your code as needed as well as step right
+over the far call to the DPMI host which switches from VM to PM.
+
+<P>If you using a non-integrated DPMI host such as QDPMI.SYS which is distributed
+with QEMM, then essentially you are debugging a VCPI client which provides
+DPMI services to its clients.&nbsp; See the next section for details on
+debugging VCPI programs.
+<BR>&nbsp;
+
+<P>
+<HR SIZE=4 NOSHADE WIDTH="100%">
+<CENTER><B>Tips On Debugging VCPI Programs</B></CENTER>
+
+
+<P>Assuming SWAT has successfully intruded into the MM's (memory manager's)
+PM context, it is on the same level as MM -- that is, you should think
+of it as a PL0 extension of the VCPI host.&nbsp; This means that you need
+to tell SWAT to intrude into the VCPI client's context.
+
+<P>Some VCPI clients are easy to break into, some are quite hostile (not
+maliciously, it's just that they don't leave any wiggle room). There's
+no magic to this.&nbsp; Fundamentally, SWAT needs room in the GDT for its
+selectors.&nbsp; See the above description on how to get your program to
+cooperate with SWAT, but if you want to get up and running quickly, you
+might first try these steps:
+<UL>
+<LI>
+Allocate about 30 selectors at the end of the GDT,</LI>
+
+<LI>
+Initialize the selectors to all zero,</LI>
+
+<LI>
+Plant an INT 01h/03h in the PM portion of your code or whatever you prefer,</LI>
+
+<LI>
+Type VMSINT ON on the SWAT command line,</LI>
+
+<LI>
+Start your program.</LI>
+</UL>
+The only tricky part is to ensure that any breakpoints you set to which
+SWAT would respond occur after the stack in the VCPI client has been setup
+(and preferably also <TT><FONT SIZE=+1>DS</FONT></TT>, <TT><FONT SIZE=+1>ES</FONT></TT>,
+<TT><FONT SIZE=+1>FS</FONT></TT>, and <TT><FONT SIZE=+1>GS</FONT></TT>).&nbsp;
+Typically, this means that you can debug through every single instruction
+except for the handful which occur during the handoff from the VCPI host's
+PM context to the VCPI client's PM context.&nbsp; The reason for this is
+that the VCPI PM handoff depends upon descriptor caching.&nbsp; In particular,
+the VCPI spec has the client specifying the state of all EGP registers,
+but only the <TT><FONT SIZE=+1>CS</FONT></TT> segment registers.&nbsp;
+Thus the VCPI client starts off execution with its own environment (GDT,
+LDT, IDT, TR, and CR3) in effect, but on the VCPI host's stack.&nbsp; The
+value of that stack
+<BR>selector quite likely is invalid in the client's GDT/LDT, so the VCPI
+client must switch to its own stack ASAP.&nbsp; Of course, if an interrupt/exception
+occurs before then, when the CPU attempts to use the (presumably) invalid
+stack it would trigger a Double Fault, quickly followed by a Triple Fault
+and system shutdown.
+
+<P>One other sharp corner I've run into is with VCPI clients which assume
+that their TSS won't be used by the CPU, so they "save" a few bytes by
+re-using that data area.&nbsp; SWAT uses TSS selectors for its IDT entries,
+so when SWAT gains control the CPU saves the preceding context into the
+caller's TSS.&nbsp; Also, it's a nice touch to save your CR3 into the appropriate
+place in the TSS, but SWAT will do that for you in case you forget.&nbsp;
+Other debuggers might not be so thoughtful.
+
+<P>Also, if you switch LDTs from the original one, be sure to save the
+current one in the TSS as that field is read-only to the CPU.&nbsp; That
+is, the CPU doesn't save the current LDT there when it performs a task
+switch, so SWAT can't "see" your LDT otherwise.
+
+<P>As far as symbols are concerned, use <A HREF="swatsym.htm#MAPSSF">MAPSSF</A>
+with a <A HREF="swatsym.htm#.WSG File">.WSG</A> file.&nbsp; See the <A HREF="swatsym.htm">SWATSYM.DOC</A>
+for more details.&nbsp; After SWAT pops up in PM within your program, type
+<A HREF="swatcmd.htm#TS">TS</A> on the SWAT command line to tell SWAT
+to recalculate the base address of all symbols and symbols should appear.&nbsp;
+The <A HREF="swatsym.htm#.WSG File">.WSG</A> file tells SWAT the value
+of various selectors, but of course it can't know at that time the base
+address.&nbsp; That's why you need to tell SWAT to recalculate.
+<BR>
+<HR SIZE=4 NOSHADE WIDTH="100%">
+<CENTER><B>Tips On Debugging RM Programs</B></CENTER>
+
+
+<P>Debugging Real Mode programs is quite similar to debugging VCPI programs,
+except that you must use the debugging interface to allow SWAT to gain
+a foothold into your PM context.&nbsp; Because there is no interrupt (such
+as INT 67h for VCPI) when a RM programs enters PM, your program must cooperate
+with SWAT in order for it to be of use.
+
+<P>Also note that you cannot trace through the instructions which setup
+the resources the CPU needs to run in PM.&nbsp; In particular, this includes
+LGDT, LIDT, and <TT><FONT SIZE=+1>MOV CR0,</FONT></TT><I>r32</I> (or LMSW),
+as well as those instructions which setup the segment registers in PM,
+especially <TT><FONT SIZE=+1>CS</FONT></TT> and <TT><FONT SIZE=+1>SS</FONT></TT>
+(note that <TT><FONT SIZE=+1>CS</FONT></TT> is setup by executing a far
+jump).&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

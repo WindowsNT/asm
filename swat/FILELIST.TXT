@@ -1,0 +1,56 @@
+This file contains a list of all files included in 386SWAT.ZIP along
+with a brief description of each file's contents.
+
+FILELIST.TXT	This file.
+
+386SWAT.DOC	A preliminary documentation file.
+
+SWATSYM.DOC	A documentation file for 386SWAT symbolic debugging.
+
+VCPIDBG.DOC	A documentation file describing the API implemented
+		  in 386SWAT for debugging VCPI clients.
+
+386SWAT.LOD	The debugger itself.  See 386SWAT.DOC for details.
+
+386SWAT 	A sample profile file listing all profile options.
+		  You may wish to copy this file to *.PRO and use it
+		  as the basis for your customized profile.
+
+386SWAT.GRM	A listing of the LALR grammar used by 386SWAT's
+		  command line.
+
+MAPSSF.EXE	A program to convert a .MAP file to a .SSF (SWAT
+		  Symbol File) as well as pass symbols to 386SWAT.
+		  See the file SWATSYM.DOC for details.
+
+SWATCMD.EXE	A program used to send commands to 386SWAT.  This
+		  program also runs as a device driver to aid in
+		  debugging those programs.
+
+SWATRUN.COM	A program used to run another program under 386SWAT's
+		  control.  See the file SWATSYM.DOC for details.
+
+SWATVXD.EXE	A VxD for debugging Windows applications (as well as
+		  other VxDs).	See SWATVXD.DOC for details.
+
+DPMITSR.ZIP	This program is an example of a simple DPMI TSR.  It
+		  hooks Int 21 function 4B.
+
+EPM.ZIP 	This program is an example of Entering PM from any of
+		  RM, VM-VCPI, or VM-DPMI.  When debugging VCPI
+		  clients, make sure you have enabled the VMSINT flag
+		  (use VMSINT ON from the SWAT command line).
+
+HELLO_PM.ZIP	This program is an example of a DPMI application that
+		  enters protected mode via DPMI services, prints
+		  "Hello, world," then returns to DOS (and V86 mode).
+
+SWATDPMI.ZIP	This program is an example of a DPMI application that
+		  copies code into extended memory, then executes it.
+
+KEYBIN.COM	Use this program on an International keyboard to help
+		  the author of 386SWAT support your keyboard.
+
+KEYBIN.TXT	Consult this text file to see how to use KEYBIN.
+
+

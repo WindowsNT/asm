@@ -1,0 +1,238 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/x-server-parsed-html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>386SWAT Default Options</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>386SWAT Default Options</FONT></B></CENTER>
+
+
+<P>
+<HR WIDTH="100%"><TT><FONT SIZE=+1>; Recommended options are</FONT></TT><TT><FONT SIZE=+1></FONT></TT>
+
+<P><TT><FONT SIZE=+1>&nbsp; trapdiv&nbsp;&nbsp;&nbsp; ; Direct INT 00h
+to 386SWAT (Divide Overflow Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; trapnmi&nbsp;&nbsp;&nbsp; ; Direct INT 02h
+to 386SWAT (Non-maskable interrupt)</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; trapbound&nbsp; ; Direct INT 05h to 386SWAT
+(BOUND Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; trapinv&nbsp;&nbsp;&nbsp; ; Direct INT 06h
+to 386SWAT (Invalid Opcode Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; trapstack&nbsp; ; Direct INT 0Ch to 386SWAT
+(Stack Fault)</FONT></TT><TT><FONT SIZE=+1></FONT></TT>
+
+<P>
+<HR WIDTH="100%"><TT><FONT SIZE=+1>; The default options are</FONT></TT>
+<BR><TT><FONT SIZE=+1>;</FONT></TT>
+<BR><TT><FONT SIZE=+1>; addrhbits=12 ; Specify bits in addresses to hash
+(8-12)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; cmdhist=1024 ; Specify the size of the command
+history buffer</FONT></TT>
+<BR><TT><FONT SIZE=+1>; intrude&nbsp;&nbsp;&nbsp; ; Attempt to intrude
+into another memory manager's PL0 context</FONT></TT>
+<BR><TT><FONT SIZE=+1>; logsize=4096 ; Specify size of error log buffer
+in bytes</FONT></TT>
+<BR><TT><FONT SIZE=+1>; normlidt&nbsp;&nbsp; ; Disable Real Mode LIDT redirection</FONT></TT>
+<BR><TT><FONT SIZE=+1>; proxsrch=2,1 ; Search symbols for matches within
+range 2 of units with</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; granularity 1 (default granularity is 1 for byte).</FONT></TT>
+<BR><TT><FONT SIZE=+1>; savescreen=16 ; Specify # last screens to save</FONT></TT>
+<BR><TT><FONT SIZE=+1>; symfilter=__imp__ _ ; Specify leading text to strip
+from symbols</FONT></TT>
+<BR><TT><FONT SIZE=+1>; symsize=4096 ; Specify # bytes to reserve for the
+symbol table</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapskip&nbsp;&nbsp; ; Direct INT 03h to 386SWAT
+(Single-skip)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapstep&nbsp;&nbsp; ; Direct INT 01h to 386SWAT
+(Single-step)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; wkdls=0&nbsp;&nbsp;&nbsp; ; No Windows Kernel Debugger
+Load Segment symbols</FONT></TT>
+<BR><TT><FONT SIZE=+1>;</FONT></TT>
+<BR>
+<HR WIDTH="100%"><TT><FONT SIZE=+1>; The default services are</FONT></TT>
+<BR><TT><FONT SIZE=+1>;</FONT></TT>
+<BR><TT><FONT SIZE=+1>; Windows Kernel Debugger services enabled (disable
+via nowink)</FONT></TT>
+<BR><TT><FONT SIZE=+1>;</FONT></TT>
+<BR>
+<HR WIDTH="100%">
+<BR><TT><FONT SIZE=+1>; All possible options are</FONT></TT>
+<BR><TT><FONT SIZE=+1>;</FONT></TT>
+<BR><TT><FONT SIZE=+1>; [section name] ; Limit profile processing to the
+matching MultiConfig</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; section in CONFIG.SYS</FONT></TT>
+<BR><TT><FONT SIZE=+1>; addrhbits=nn ; Specify bits in addresses to hash
+(8-12, default=12)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; altscr&nbsp;&nbsp;&nbsp;&nbsp; ; Use alternate
+screen for debugging</FONT></TT>
+<BR><TT><FONT SIZE=+1>; /a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Alias for ALTSCR</FONT></TT>
+<BR><TT><FONT SIZE=+1>; buckets=nnn ; Specify # 1K hash bucket blocks (1-255)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; cmdhist=nnn ; Specify the size of the command history
+buffer</FONT></TT>
+<BR><TT><FONT SIZE=+1>; coldboot&nbsp;&nbsp; ; Do not try to warm boot
+on Ctrl-Alt-Del</FONT></TT>
+<BR><TT><FONT SIZE=+1>; dvga&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Use
+Dual VGA screen</FONT></TT>
+<BR><TT><FONT SIZE=+1>; gpskip=key[,key] ; GP Skip instructions:&nbsp;
+ALL, INT, HLT, OUTD, OUTI, IND,</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; INI, CLI, STI, IRET, PPF, and CRn so far</FONT></TT>
+<BR><TT><FONT SIZE=+1>; intrude&nbsp;&nbsp;&nbsp; ; Obsolete option which
+is now the default</FONT></TT>
+<BR><TT><FONT SIZE=+1>; keyb=cclay ; Use international keyboard whose country
+code/layout is cclay.</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Possible values are</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+;&nbsp;&nbsp; cclay&nbsp; Country</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; ----------------------</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+;&nbsp;&nbsp; GR129&nbsp; Germany</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+;&nbsp;&nbsp; SP172&nbsp; Spain</FONT></TT>
+<BR><TT><FONT SIZE=+1>; lcd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;
+LCD screen present</FONT></TT>
+<BR><TT><FONT SIZE=+1>; loadhigh&nbsp;&nbsp; ; Obsolete option which is
+now the default</FONT></TT>
+<BR><TT><FONT SIZE=+1>; loadlow&nbsp;&nbsp;&nbsp; ; Tell 386MAX it's not
+OK to load us into extended memory</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; after INIT_REAL and to relocate our INIT_VIRT code.</FONT></TT>
+<BR><TT><FONT SIZE=+1>; loadsym&nbsp;&nbsp;&nbsp; ; Enable command line
+loading of symbols</FONT></TT>
+<BR><TT><FONT SIZE=+1>; loadsym=d:\path\filename.ext [optional args] ;
+Load SSF file at PM init time</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; [/b=xxxxxxxx]&nbsp;&nbsp;&nbsp; Optional physical base address in hex</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; [/h]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Optional HPDA flag
+(enable DPMI services)</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; [/li-]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Optional disable of line numbers</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; [/xl]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disable larger comparison
+w/SYMSIZE</FONT></TT>
+<BR><TT><FONT SIZE=+1>; logsize=nnnnn ; Specify size of error log buffer
+in bytes (default=4096)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; mono&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Use
+monochrome adapter if present</FONT></TT>
+<BR><TT><FONT SIZE=+1>; nogd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; Don't
+automatically set the GD bit in DR7</FONT></TT>
+<BR><TT><FONT SIZE=+1>; normlidt&nbsp;&nbsp; ; Disable Real Mode LIDT redirection</FONT></TT>
+<BR><TT><FONT SIZE=+1>; noswap&nbsp;&nbsp;&nbsp;&nbsp; ; Don't swap screens
+over single-step/skip</FONT></TT>
+<BR><TT><FONT SIZE=+1>; nowink&nbsp;&nbsp;&nbsp;&nbsp; ; Disable Windows
+Kernel Debugger services</FONT></TT>
+<BR><TT><FONT SIZE=+1>; passthrough=nn,nn,... ; Specify one or more hardware
+interrupt handlers</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; (numbers in hex) to pass through while SWAT is active.</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; The only ones currently supported are B, C, 76, and 77.</FONT></TT>
+<BR><TT><FONT SIZE=+1>; path=dir[,dir2[...]] ; Specify source code search
+path for symbolic debugging</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; (current directory is NOT included by default)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; portinit=string ; Specify a modem initialization
+string (setcom must be</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; specified as well).&nbsp; Valid escape sequences are:</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; \\ Send a backslash</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; \r Send a carriage return</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; \b Send a break signal</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; \p Pause about 250 ms.</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; \1 - \0 Wait 1 - 10 seconds.</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; On the first invocation of SWAT, the system will</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; automatically attempt to establish connection with a remote</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; SWAT system.</FONT></TT>
+<BR><TT><FONT SIZE=+1>; proxsrch=r[,g] ; Search symbols for matches within
+range r of units with</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; granularity g (default granularity is 1 for byte).</FONT></TT>
+<BR><TT><FONT SIZE=+1>; ps4=xxxx&nbsp;&nbsp; ; Periscope 4 hardware debugger
+board is at I/O port xxxx</FONT></TT>
+<BR><TT><FONT SIZE=+1>; rmlidt&nbsp;&nbsp;&nbsp;&nbsp; ; Enable Real Mode
+LIDT redirection</FONT></TT>
+<BR><TT><FONT SIZE=+1>; savescreen=nnn ; Specify # last screens to save
+(default = 16)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; setcom=port,bps[,{IRQ|p}[,base]] ; Initialize specified
+serial port (1-4) for</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; remote debugging at specified bps.&nbsp; Optional IRQ number (3,4)</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; overrides default association of ports with IRQs, or p may</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; be specified for polled operation.&nbsp; Optional port base</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; may be specified to override BIOS value at 40:0.</FONT></TT>
+<BR><TT><FONT SIZE=+1>; symfilter=text1 [text2 [...]] ; Specify leading
+text to strip from symbols</FONT></TT>
+<BR><TT><FONT SIZE=+1>; symsize=nnnnn ; Specify # bytes to reserve for
+the symbol table (default=4096)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapbound&nbsp; ; Direct INT 05h to 386SWAT (BOUND
+Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapdebug&nbsp; ; Direct INT 01h/03h to 386SWAT
+(Same as TRAPSTEP with TRAPSKIP)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapdiv&nbsp;&nbsp;&nbsp; ; Direct INT 00h to 386SWAT
+(Divide Overflow Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapgenp&nbsp;&nbsp; ; Direct INT 0Dh to 386SWAT
+(General Protection Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapinv&nbsp;&nbsp;&nbsp; ; Direct INT 06h to 386SWAT
+(Invalid Opcode Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapnmi&nbsp;&nbsp;&nbsp; ; Direct INT 02h to 386SWAT
+(Non-maskable interrupt)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trappage&nbsp;&nbsp; ; Direct INT 0Eh to 386SWAT
+(Page Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapsegnp&nbsp; ; Direct INT 0Bh to 386SWAT (Segment
+Not Present Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapskip&nbsp;&nbsp; ; Direct INT 03h to 386SWAT
+(Single-skip)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapstack&nbsp; ; Direct INT 0Ch to 386SWAT (Stack
+Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; trapstep&nbsp;&nbsp; ; Direct INT 01h to 386SWAT
+(Single-step)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; traptss&nbsp;&nbsp;&nbsp; ; Direct INT 0Ah to 386SWAT
+(TSS Fault)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; vcpiswat&nbsp;&nbsp; ; Don't attempt to intrude
+into a memory manager's PL0 context</FONT></TT>
+<BR><TT><FONT SIZE=+1>; video=d:\path\filename.ext ; Load/create video
+tables</FONT></TT>
+<BR><TT><FONT SIZE=+1>; vmscount=n ; Number of times to intrude on GDT/IDT
+for VCPI debugging</FONT></TT>
+<BR><TT><FONT SIZE=+1>; vmsint&nbsp;&nbsp;&nbsp;&nbsp; ; Launder Windows
+and VCPI mode switches and hook interrupts</FONT></TT>
+<BR><TT><FONT SIZE=+1>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; 00, 01, 02, 03, 05, 06, 08, 0A, 0B, 0C, 0D, and 0E.</FONT></TT>
+<BR><TT><FONT SIZE=+1>; vmsint=nn,nn,... ; Limit VMSINT debugging to these
+interrupt #s</FONT></TT>
+<BR><TT><FONT SIZE=+1>; watchdog=nn ; Set watchdog timer to nn timer ticks
+(0-255)</FONT></TT>
+<BR><TT><FONT SIZE=+1>; wkdls=nnn&nbsp; ; Define # WKD Load Segment entries</FONT></TT><TT><FONT SIZE=+1></FONT></TT>
+
+<P><TT><FONT SIZE=+1>; debug=caps ; Signal NMI if CapsLock pressed at startup</FONT></TT>
+<BR><TT><FONT SIZE=+1>; debug=ibv&nbsp; ; Use Interrupt mask base Vector
+for Ctrl-Alt-PAD5</FONT></TT>
+<BR><TT><FONT SIZE=+1>; debug=int&nbsp; ; Signal INT 03h if CapsLock present
+at startup</FONT></TT>
+<BR><TT><FONT SIZE=+1>; debug=pmi&nbsp; ; Signal INT 03h near end of INIT_PROT</FONT></TT>
+<BR><TT><FONT SIZE=+1>; debug=trip ; Use triple fault method to reboot</FONT></TT>
+<BR><TT><FONT SIZE=+1>; debug=vmi&nbsp; ; Signal INT 03h on entry to INIT_VIRT</FONT></TT>
+<BR><TT><FONT SIZE=+1>; debug=wcb1 ; Signal INT 01h on WCB VM->RM</FONT></TT>
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

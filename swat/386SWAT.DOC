@@ -1,0 +1,1428 @@
+386SWAT   -- A Debugger for All Modes
+   (C) Copyright 1988-2001 Qualitas, Inc.  All rights reserved.
+
+This protected mode debugger when used in conjunction with 386MAX or
+any other memory manager provides debugging services to protected
+mode, virtual 8086 mode programs, and DPMI and VCPI clients while
+occupying zero bytes of memory in the first megabyte.  It supports
+disassembly of the full 386, 387, 486, and Pentium CPU instruction
+set through the Pentium 4 MMX & SSE instructions.
+
+
+Installing 386SWAT
+------------------
+
+Create a directory on your hard disk (say, C:\386SWAT), copy the ZIP
+file to that directory, and unzip it there.  To unzip 386SWAT, use
+
+PKUNZIP 386SWAT
+
+This debugger can be used in conjunction with any memory manager which
+supports VCPI, or with just HIMEM.SYS.
+
+*  To install 386SWAT, place the following line into your CONFIG.SYS
+   file:
+
+      DEVICE=d:\path\386SWAT.LOD options
+
+   Place the DEVICE= statement for 386SWAT immediately following the
+   DEVICE= for the memory manager (if any), or HIMEM.SYS if no memory
+   manager is being used.  "d:\path\" represents the drive and path
+   location of 386SWAT and "options" represents zero or more profile
+   options.
+
+As there are several options you may wish to use with 386SWAT, we
+recommend that you put all 386SWAT keywords in a profile one keyword
+per line, and point to the profile with the PRO= option on the
+386SWAT.LOD line.  For example,
+
+   DEVICE=d:\path\386SWAT.LOD PRO=d:\path\386SWAT.PRO
+
+
+386SWAT Profile Options
+-----------------------
+
+The following profile options are recognized by 386SWAT.  Options may
+be entered in upper and/or lower case.	See the file 386SWAT for a
+list you can use already in profile format.
+
+[section name]	For versions of DOS which support MultiConfig, this
+		option limits profile processing to the matching
+		MultiConfig section in CONFIG.SYS.
+
+ADDRHBITS=n	Bits to use for address hashing (8-12; default 12).
+
+ALTSCR		Display debugging information on the screen other
+		than the current one being used.  That is, in a two
+		monitor system, if the current screen uses the
+		color adapter, display debugging data on the
+		monochrome screen and vice versa.  This option is
+		valid only if we detect that there are both a color
+		and monochrome adapter in the system.  Otherwise, it
+		is ignored.  Note that the screens can be swapped via
+		Alt-F7.  An alias for this option is /A.
+
+BUCKETS=n	Specify the number of name hashing blocks to allocate
+		(about 1K each).
+
+CMDHIST=nnn	Specify the size of the command history buffer.
+		Default is 1024.
+
+COLDBOOT	Don't write 1234h to warm boot flag location when
+		rebooting system from within 386SWAT.
+
+DEBUG=TRIP	Use triple fault method of rebooting.  Sometimes a
+		system doesn't reboot when using the 8042 method (the
+		default), so here's another way to skin the cat.
+
+DEBUG=WCB1	Signal an INT 01h at Windows Callback time when entering
+		Windows (VM->RM) so breakpoints can be set.  This keyword
+		is particvularly useful in conjunction with the INSERT
+		command.  To change this state later on, use the command
+		WKD WCB1 [ON|OFF].
+
+DVGA		Use a Dual VGA screen as the secondary monitor.
+
+GPSKIP=key[,key]  If a GP Fault occurs on any of the instructions
+		named in the list, do not signal this to 386SWAT.  This
+		option allows you to trap GP Faults but filter out
+		ones which may commonly occur but not be of interest.
+		The key values (GP Skip instructions) supported are
+
+		Keyword        Instruction(s)
+		  CLI	       CLI
+		  CRn	       MOV r32,CRn/MOV CRn,r32
+		  HLT	       HLT
+		  IND	       IN AL/AX/EAX,DX
+		  INI	       IN AL/AX/EAX,immed
+		  INT	       INT xx
+		  IRET	       IRET/IRETD
+		  OUTD	       OUT DX,AL/AX/EAX
+		  OUTI	       OUT immed,AL/AX/EAX
+		  PPF	       PUSHF/POPF/PUSHFD/POPFD
+		  STI	       STI
+
+		The keyword ALL covers all of the above options.
+
+INTRUDE 	Attempt to intrude into another memory manager's PL0
+		context.  If this is successful, 386SWAT appears as
+		a PL0 debugger in the context of the memory manager.
+		This option is now the default.  To disable this
+		option, see VCPISWAT.
+
+KEYB=ccidn	Use international keyboard whose country code/layout
+		is cclay.  Possible values are
+
+		   cclay       Country
+		-------------------------
+		   GR129       Germany
+		   SP172       Spain
+
+		If your keyboard is not in this list, read the file
+		KEYBIN.TXT to see how you can help.
+
+LCD		An LCD screen is present (and 386SWAT uses the
+		monochrome screen attributes).	Does anyone know how
+		to detect this case under program control?  I would
+		prefer not to require the user to tell us what the
+		screen is like.
+
+LOADLOW 	Tell 386MAX it's not OK to load us into extended
+		memory after INIT_REAL and to relocate our INIT_VIRT
+		code.  It's highly unlikely you'll need this option.
+
+LOADSYM=filename [optional]
+		Load specified symbol file with optional arguments:
+
+		/b=xxxxxxxx  Optional physical base address in hex
+		/h	     Optional HPDA flag (enable DPMI services)
+		/li-	     Optional disable of line numbers
+		/xl	     Disable larger comparison w/SYMSIZE
+
+LOGSIZE=nnnnn	Define size of error log in bytes.  Default is 4096.
+
+MONO		Use monochrome adapter if present.
+
+NOGD		Because some programs may reset the debug registers
+		which you've carefully setup, 386SWAT automatically sets
+		the Global Debug (GD) bit in DR7 on startup so that
+		we can stop such programs before they can do any
+		harm.  In case you don't want 386SWAT to do this, use
+		this keyword.
+
+NORMLIDT	Disable Real Mode LIDT redirection.  Device 386SWAT uses
+		a separate IDT to handle nasty bugs which write into
+		the Real Mode IDT at 0:0 such as DOS 6.x does during
+		its transient CONFIG.SYS processing.  This is the
+		default state.
+
+NOSWAP		Don't restore the previous underlying screen when
+		single-stepping.  This option is useful in
+		conjunction with the ALTSCR option.  This option
+		specifies the initial state only.  It can be toggled
+		via Alt-F6.
+
+NOWINK		Disable Windows Kernel Debugging.
+
+PASSTHROUGH=xx,xx,xx,...
+		Allow one or more hardware interrupts to be passed
+		through to the previous protected mode handler while
+		386SWAT is active.  Currently, these are limited to 76,
+		77, 0B, and 0C.  THIS OPTION SHOULD NOT BE USED
+		UNLESS NECESSARY.  For example, when the IBM PS/2
+		SCSI adapter (8EFE or 8EFF) is used, staying in 386SWAT
+		for more than 1 or 2 minutes will cause the hard disk
+		to lock on the next disk access.  PASSTHROUGH=76 will
+		allow one to stay in 386SWAT indefinitely.
+
+PATH=d:\dir1[,d:\dir2[,...]]
+		Specify source file search path.
+
+PORTINIT=string Initialize serial port.  String may contain any character
+		except semicolon, including the following escape sequences:
+		\\     Send backslash
+		\r     Send CR
+		\b     Send a break signal (this is a hardware signal,
+		       not a character)
+		\p     Pause for about 250ms.
+		\1 - \0 Delay for 1 - 10 seconds.
+		SETCOM must be specified to set the parameters for the
+		serial port.  On the first entry to 386SWAT (which may be
+		remotely triggered) 386SWAT will automatically try to
+		connect for remote debugging.
+
+PRO=d:\path\filename.ext
+		Read subsequent command line options from a profile.
+		Just as with 386MAX, as you append more and more
+		options to the 386SWAT command line, you may prefer
+		to collect them all in a 386SWAT profile, one per
+		line.  These options may be followed by a semicolon
+		and a comment.	This profile is handled exactly the
+		same way as is the corresponding profile for 386MAX.
+
+PROXSRCH=r[,g]	Set range and granularity for proximity searching on
+		symbol addresses.
+
+PS4=xxxx	Periscope 4 hardware debugger board is installed at
+		I/O port xxxx (for reference, the factory setting is
+		300h).	This feature allows 386SWAT to manage the
+		traceback buffer and other features of the Periscope
+		Company's 386 hardware debugger.  *NOTE* this
+		feature isn't finished.
+
+RMLIDT		Enable Real Mode LIDT redirection.  Device 386SWAT uses
+		a separate IDT to handle nasty bugs which write into
+		the Real Mode IDT at 0:0 such as DOS 6.x does during
+		its transient CONFIG.SYS processing.
+
+SAVESCREEN=nnn	Specify the number of last screens to save.  This
+		keyword allows you to control how many screens back
+		Alt-F10 can display.  The default is sixteen.  Each
+		screen consumes 4000 bytes of storage in extended
+		memory.
+
+SETCOM=port,bps[,itype[,portbase]]
+		Specify port to use for remote debugging.
+		port   From 1-4 for COM1 through COM4.
+		bps    Transfer rate, from 1 to 115200.
+		itype  Interrupt mode.	May be 3 or 4 to specify
+		       IRQ (default is IRQ3 for COM2/COM4, IRQ4
+		       for COM1/COM3), * for default, or p for
+		       polled operation.  Currently, an IRQ line is
+		       required for remote debugging.
+		portbase UART port base if different from defaults:
+		       COM1=3F8, COM2=2F8, COM3=3E8, COM4=2E8.
+
+SYMFILTER=text1 [text2 [...]]
+		Some symbols, especially from Windows programs
+		written in C, are prefaced with text such as
+		"__imp__", "_", and the like which adds to the
+		symbol's length but not understanding.  This feature
+		allows you to specify in the 386SWAT profile leading
+		text which is to be stripped from each symbol.
+
+		The default settings are
+
+		   SYMFILTER=__imp__ _
+
+		Up to 128 characters can be specified in this way.
+
+SYMSIZE=nnnnn	Specify the number of bytes to reserve for the symbol
+		table.	The default size is 4096.
+
+TRAPBOUND	Trap BOUND instruction interrupts, ignoring INT 05h.
+
+TRAPDEBUG	Intercept INT 01h/03h at installation time.
+		Normally, 386MAX directs protected mode occurrences
+		of INT 01h/03h to 386SWAT and real mode occurrences
+		to the real IDT handler.  This options causes all
+		such interrupts to be handled by 386SWAT.  This
+		feature may be toggled via Alt-F1.
+
+TRAPDIV 	Trap divide overflow interrupts.
+
+TRAPGENP	Trap General Protection Faults (toggle via Alt-F3).
+
+TRAPINV 	Trap Invalid Opcode interrupts (toggle via Ctl-F3).
+
+TRAPNMI 	Trap Non-Maskable Interrupts.  This option is useful
+		in conjunction with a hardware breakout switch which
+		can be used to invoke the debugger even if all
+		interrupts are disabled (toggle via Alt-F2).
+
+TRAPPAGE	Trap Page Faults (toggle via Alt-F4).
+
+TRAPSEGNP	Trap Segment Not Present Faults.
+
+TRAPSKIP	Trap INT 03h instructions (toggle via Ctl-F2).
+
+TRAPSTACK	Trap Stack Faults (toggle via Ctl-F4).
+
+TRAPSTEP	Trap INT 01h breakpoints (toggle via Ctl-F1).
+
+TRAPTSS 	Trap TSS Faults.
+
+VCPISWAT	Do not attempt to intrude into another memory
+		manager's PL0 context.  This option disables the
+		default INTRUDE option.
+
+VIDEO=d:\path\filename.ext
+		Read in/write to video tables.	If the specified file
+		exists, it is read in and used as video table
+		information.  If the file doesn't exist, it is
+		created.  The information in the video table
+		specifies how to switch to particular video modes as
+		well as how to set certain cursor types.  Use this
+		option if you wish to bring up 386SWAT on top of
+		graphic applications on single-monitor systems.
+		*NOTE* this option doesn't fully work as yet, so I
+		suggest that you don't use it.
+
+VMSCOUNT=n	Used with VMSINT (see below).  Limit number of times
+		386SWAT inserts itself into VCPI client's GDT/IDT.  This
+		may be useful when debugging VCPI applications that
+		call Enter Protected Mode (AX=DE0C) repeatedly, such
+		as a real-mode int 8 handler that enters protected
+		mode on every clock tick.  The correct value may have
+		to be determined by trial and error.
+
+VMSINT[=xx,xx,..] Trap VCPI Enter Protected Mode switches (AX=DE0C)
+		and blast in sufficient GDT and IDT entries to debug
+		the client application.  This option is useful when
+		debugging a VCPI application which does not follow
+		the preliminary VCPI debugger specification.  Use
+		this option with care.	The argument (if present)
+		limits the intercepted interrupts to the values.
+		When VMSINT is in effect, it may be important to
+		limit the interrupts.  For example, some DOS16M apps
+		(such as Lotus 1-2-3 Version 3.0) intercept
+		interrupts but don't set the access rights byte in
+		the IDT (they assume that it's still set for a 286
+		interrupt gate, as DOS16M setup originally).  Thus
+		when 386SWAT blasts its task gate entries into the IDT,
+		subsequent DOS16M intercepts leave those entries
+		marked as a task gate.	This debug option limits us
+		to intercepting those faults necessary to catch
+		catastrophic errors, but not everything.  Interrupts
+		which may be intercepted are 00, 01, 02, 03, 05, 06,
+		0A, 0B, 0C, 0D, and 0E.
+
+WKDLS=nnn	Allow up to nnn Windows Kernel Debugger Load Segment
+		values.  These are the segments of VxDs loaded at
+		Windows startup.  They are identified by the VxD name
+		followed by either "_Code" or "_Data" followed by the
+		segment number.  For example, VWIN32_Code0001.	The
+		default count is zero.
+
+
+Invoking The Debugger
+---------------------
+
+Generally, the debugger lies in the background waiting for some
+catastrophic event to occur.
+
+To bring up the debugger from the keyboard, press Ctl-Alt-Pad5.  That
+is, with the Ctl- and Alt-keys held down, pressing the 5 key on the
+numeric pad invokes the debugger.  This mechanism is useful when your
+program is stuck somewhere.  Remember, the keyboard and the keyboard
+interrupt must be enabled for this to work.  On systems for which the
+Pad5 key is inconvenient to use (such as some laptops), the sequence
+Ctl-Alt-SysReq also brings up the debugger.
+
+To run a particular program through the debugger, use the SWATRUN
+utility.
+
+If remote debugging is active (see SETCOM profile option and SETCOM
+command) the debugger may also be activated by sending 'SWT!' followed
+by a break signal.  This is done by pressing Ctl-6 in the CHAT screen.
+
+The utility SWATCMD.EXE (loaded via Device= or from the DOS command
+line) may be used to pass commands to 386SWAT.	Invoking SWATCMD with no
+options brings up 386SWAT at an INT 03h (assuming TRAPSKIP or TRAPDEBUG
+is active).
+
+
+Debugging Aids in 386MAX
+------------------------
+
+The following options are recognized by 386MAX and may be useful in
+conjunction with 386SWAT.  These options should be placed in your
+386MAX profile.
+
+To catch even-value stack wraps, use DEBUG=NOWRAP.  This situation
+occurs when an interrupt is encountered with SP = 2 or 4.  In this
+case, the 386 will push the three words onto the stack and wrap to the
+end of the stack segment leaving SP = FFFC or FFFE.  Quite likely,
+this is an error as most stack segments aren't meant to be 64 KB in
+length.  Technically, this event is not an error as far as the 386 is
+concerned, but logically it almost always is an error.	The default
+behavior of 386MAX is not to signal an error; the DEBUG=NOWRAP keyword
+tells 386MAX to trap this case.
+
+To catch writes into unmapped EMS pages, use DEBUG=EMSWRIT.  This
+option traps with a Page Fault attempts to write into unmapped EMS
+pages as well as after a Save Page Map call.  The latter is presumed
+to have been done by a memory-resident program prior to mapping in its
+own pages.  To catch reads and/or writes in unmapped EMS pages, use
+DEBUG=EMSRDWR.	To catch an EMS bug in MS-DOS 4.0x, try this latter
+option with BUFFERS in EMS memory.
+
+To catch unemulated Invalid Opcodes, use DEBUG=I06.
+
+To signal an INT 01h on each DPMI error, use DEBUG=DPMIERR.
+
+To force a new selector on all selector allocates, use
+DEBUG=DPMINEWSEL.  This option is useful if your code has a stale
+selector, that is, you allocate a selector and tuck it away for later
+use, but then, before its last reference, you free it and allocate
+another selector.  Without this option you might get the old selector
+number (the one you just freed).  When the stale selector is used, it
+might not generate an error, but surely it won't do what you expected.
+
+
+Debugging Screen
+----------------
+
+The top of the initial debugging screen consists of a row of the
+32-bit general purpose registers, two rows of the segment registers,
+and one row of CR0, CR2, and extended flags.
+
+The rest of the initial debugging screen displays the instructions to
+be executed with the stack appearing on the right in one or two
+columns.  If the current instruction references memory, the segment
+register, offset, and memory value of the reference are displayed on
+the line separating the registers from the instructions.
+
+The last line is the command line.
+
+There are several keystrokes available at this point:
+
+ESC		Continue processing.  Equivalent to Go command in
+		other debuggers.
+
+F1		Display a help screen with submenus.
+
+F2		Display GDT entries.
+
+F3		Display LDT entries.
+
+F4		Display IDT entries.
+
+F5		Display PTE entries.
+
+F6		Display search screen.
+
+F7		Display memory.  While this display is active, Ctl-B
+		displays in byte format, Ctl-W, in word format, Ctl-D
+		in dword format, Ctl-V in vector format, Ctl-G in GDT
+		format, Ctl-I in IDT format, and Ctl-T in TSS format.
+
+F8		Display TSS entries.
+
+F9		Display the instruction disassembly screen.
+
+F10		Display screen on entry to debugger (this feature has
+		no effect on two-monitor systems).
+
+F11		Single-step the current instruction (see Padplus).
+		This key as well as F12 are useful on systems
+		without a Padplus/Padminus key, or ones for which
+		this key is difficult to type such as some laptops.
+
+F12		Single-skip the current instruction (see Padminus).
+
+s-F1		Goto the immediate CALL or JMP address of the
+		instruction at the top of the screen and save the
+		address of the current instruction (see Disassembly
+		Bookmarks below).
+
+s-F2		Return from the previous s-F1 goto.
+
+s-F3		Goto the instruction on the top line (see Padstar).
+
+s-F4		Display the last AutoFault message.
+
+s-F5		Display the Real Mode Interrupt Vector Table.
+
+s-F10		Save the current screen in the last screen buffers.
+
+a-F1		Toggle intercept of INTs 01h/03h.  The current state
+		appears below the segment/selector register display
+		as 01 or blank, 03 or blank.  The default state is
+		controlled by the presence or absence of the
+		TRAPDEBUG keyword.
+
+a-F2		Toggle intercept of INT 02h.  The current state
+		appears below the segment/selector register display
+		as 02 or blank.  The default state is controlled by
+		the presence or absence of the TRAPNMI keyword.
+
+a-F3		Toggle intercept of INT 0Dh.  The current state
+		appears below the segment/selector register display
+		as 0D or blank.  The default state is controlled by
+		the presence or absence of the TRAPGENP keyword.
+
+a-F4		Toggle intercept of INT 0Eh.  The current state
+		appears below the segment/selector register display
+		as 0E or blank.  The default state is controlled by
+		the presence or absence of the TRAPPAGE keyword.
+
+a-F5		Toggle stack display state between two columns of
+		words and one column of dwords.  The tick marks
+		appear every 16 bytes.
+
+a-F6		Toggle screen save state (eliminates screen flicker
+		when single-stepping over instructions which don't
+		write to the screen).  The current state appears
+		below the segment/selector register display as SS=ON
+		or SS=OFF.
+
+a-F7		Toggle video base (switch debugging screens in a
+		two-monitor system).
+
+a-F8		Display NDP register screen.  Use the same keystroke
+		to remove the NDP screen.
+
+a-F9		Display debug register screen.	This screen remains
+		active until it is replaced by another screen.	That
+		is, you may type on the command line, etc. while the
+		debug register screen is displayed.
+
+a-F10		Display previous debugging screens.  This option can
+		be used to compare changes over a single-step or
+		single-skip.  Up to sixteen previous screens can be
+		displayed in this manner using the Up and Down arrows.
+		To change from the default value of sixteen, use the
+		keyword SAVESCREEN (see above).
+
+a-F11		Display MMX and SSE2 register screen.
+
+a-F		Goto the far return address at SS:SP or SS|eSP
+		(depending upon the current mode).  If the current
+		code segment is USE16, the far return address is
+		assumed to be word:word (or word|word); if it's
+		USE32, the format is assumed to be word:dword (or
+		word|dword).  This shortcut is equivalent to typing
+		G .RETF at the command line.
+
+a-N		Goto the near return address at SS:SP or SS|eSP
+		(depending upon the current mode).  If the current
+		code segment is USE16, the near return address is
+		assumed to be word; if it's USE32, the format is
+		assumed to be dword.  This shortcut is equivalent to
+		typing G .RETN at the command line.
+
+c-F1		Toggle intercept of INT 01h only.  The current state
+		appears below the segment/selector register display
+		as 01 or blank.  The default state is controlled by
+		the presence or absence of the TRAPSTEP keyword.
+
+c-F2		Toggle intercept of INT 03h only.  The current state
+		appears below the segment/selector register display
+		as 03 or blank.  The default state is controlled by
+		the presence or absence of the TRAPSKIP keyword.
+
+c-F3		Toggle intercept of INT 06h.  The current state
+		appears below the segment/selector register display
+		as 06 or blank.  The default state is controlled by
+		the presence or absence of the TRAPINV keyword.
+
+c-F4		Toggle intercept of INT 0Ch.  The current state
+		appears below the segment/selector register display
+		as 0C or blank.  The default state is controlled by
+		the presence or absence of the TRAPSTACK keyword.
+
+c-F5		Display PDE entries.
+
+c-F6		Display symbols.
+
+c-F7		Display file browser.
+
+c-F8		Enter CHAT mode.  This allows two connected machines
+		to test the serial port connection.  What you type is
+		displayed on the lower screen and sent to the other
+		system; whatever is received is displayed on the top
+		screen.  If only garbage characters appear the two
+		machines may not have the same data transfer rate set.
+
+c-F9		Attempt to connect for remote debugging.  See the section
+		at the end of this document on remote debugging.
+
+c-F10		Display error log.
+
+c-F11		Single-step INT-like instruction in VM to PM,
+		otherwise just single-step (same as c-Padplus).
+
+c-Up		Decrement the location pointer to the previous entry.
+		This change has a different effect depending upon the
+		type of information being displayed.  If used in a
+		data display, it moves back one data item (byte,
+		word, dword, etc.).  If used in a TSS display, the
+		I/O ports in the I/O bit permission map scroll up.
+
+c-Down		Increment the location pointer to the next entry.
+		This change has a different effect depending upon the
+		type of information being displayed.  If used in a
+		data display, it moves forward one data item (byte,
+		word, dword, etc.).  If used in a TSS display, the
+		I/O ports in the I/O bit permission map scroll down.
+
+c-Home		Place the current instruction at the top of the
+		screen.
+
+c-B		Display memory in byte (xx) format.
+
+c-D		Display memory in dword (xxxxxxxx) format.
+
+c-G		Display memory in GDT format.
+
+c-I		Display memory in IDT format.
+
+c-K		Display Windows Kernel Debugger Structures menu.
+		This menu may be displayed only when running under
+		Windows as a kernel debugger.
+
+c-M		Display memory allocation chain entries based at the
+		value assigned to MACBASE.  By default, this value is
+		the initial value of .DMAC.
+
+c-T		Display memory in TSS format.
+
+c-V		Display memory in vector (xxxx:xxxx) format.
+
+c-W		Display memory in word (xxxx) format.
+
+c-Z		Zap (convert to NOPs) the instruction at the top of
+		the instruction disassembly window.
+
+c-ESC		Same as ESC, but if you're on an INT 03h, it skips
+		over it first and then continues.  If the current
+		instruction is not an INT 03h, this keystroke behaves
+		identically to ESC.
+
+Padplus 	Single-step the current instruction (same as F11).
+
+c-Padplus	Single-step INT-like instruction in VM to PM,
+		otherwise just single-step (same as c-F11).
+
+Padminus	Single-skip the current instruction (same as F12).
+		That is, execute the current instruction and put a
+		breakpoint on the instruction following.  This is
+		used to execute but not single-step through a CALL or
+		LOOP instruction.
+
+Padstar 	Goto the instruction on the top line.
+
+Up		Scroll the screen up one line.	This key has the same
+		effect in almost all screen displays.
+
+Down		Scroll the screen down one line.  This key has the
+		same effect in almost all screen displays.
+
+PgUp		Scroll the screen up one page.	This key has the same
+		effect in almost all screen displays.
+
+PgDown		Scroll the screen down one page.  This key has the
+		same effect in almost all screen displays.
+
+s-PrtSc 	Print the screen.  Note that if either the previous
+		application screen (F10) or one of the previous
+		debugging screens (a-F10) is currently displayed,
+		that screen is sent to the printer.  The I/O port in
+		the BIOS data area which corresponds to LPT1 is used.
+
+c-s-PrtSc	Print the instruction portion of the screen.  If the
+		current screen displayed is the instruction
+		disassembly window, print only the instruction
+		portion of that screen.  The I/O port in the BIOS
+		data area which corresponds to LPT1 is used.
+
+Ctl-Alt-Del	Reboot the system.
+
+
+Disassembly Bookmarks
+---------------------
+
+At times you need to browse through some code (sometimes it's even
+your own code) following subroutine calls, conditional jumps, etc.
+wherever they might go.  To make this task easier, use the s-F1 and
+s-F2 keys.  To disassemble at the target of some instruction which
+transfers control, place the instruction at the top of the disassembly
+window and press s-F1.	For example, say at offset 1234 in the code
+segment there is a CALL 5678.  Place the CALL at the top of the
+disassembly window and press s-F1.  The disassembly window now
+displays the code at 5678 with an invisible bookmark left at the
+return address 1234.  Each time s-F1 is used, it leaves a bookmark at
+the instruction at the top of the disassembly window and disassembles
+at that instruction's target.  To return to the previous bookmark,
+press s-F2.  386SWAT supports up to 128 nested levels of such
+disassembly.
+
+As another example, you should be able to disassemble almost any
+interrupt (say, U .VMI21 which disassembles at VM interrupt 21h), and
+using the bookmark feature exclusively, go down to the bottom of the
+chain.
+
+This feature is clever, but not that clever.  It can figure out where
+(say) JMP Dword Ptr CS:[1234] is going and disassemble at that target,
+but it can't figure out the same instruction with a DS override.  Nor
+can it handle effective addresses other than ones with an immediate
+displacement only (i.e., no registers such as [BX+SI]).
+
+
+Autofault
+---------
+
+Have you ever been puzzled by some CPU fault as to why it occurred,
+that is, why did the CPU think there was a problem?  If so, this
+feature is for you.  Whenever 386SWAT is called on the difficult to
+figure out CPU faults (TSS Fault, Stack fault, GP Fault, or Page
+Fault), the Autofault feature attempts to determine why and to present
+a short prose description of the cause.  The description is displayed
+in the lower lefthand corner of the screen.  Pressing a key causes the
+message to disappear.  To display it again (up to the time another
+fault occurs), press s-F4.
+
+This feature is implemented for GP, TSS, and Page Faults.
+
+
+Windows Debugging
+-----------------
+
+386SWAT runs as a debugger under Windows when accompanied by its VxD.
+This file (SWATVXD.EXE) should be in the same directory as the
+debugger file (386SWAT.LOD) and is loaded automatically when Windows
+starts.  To take advantage of the information provided by the VxD, you
+should have a monochrome monitor and screen attached to your system.
+For more details about the VxD including how to configure it, see the
+file SWATVXD.DOC.
+
+
+Windows Kernel Deubugging
+-------------------------
+
+If you program under Windows 3.1x or Win95 (but not WinNT), 386SWAT
+presents itself to Windows as a very low-level debugger.  Essentially,
+386SWAT is provided the same level of access as the remote debugger
+WDEB386 shipped with Windows.  WDEB386 requires that you run it from a
+separate system with a COM cable running between the two systems.  In
+contrast, 386SWAT runs on the same system being debugged, however it does
+require that you have a monochrome adapter and monitor installed in
+the system.
+
+For more details on this topic, see the file WINKDBG.DOC.
+
+
+Unreal Mode
+-----------
+
+This mode is a variant of Real Mode in which any segment register can
+access all of the 4GB address space.  That is, instead of the normal
+64KB length of a segment, the length is 4GB.  This command can enable
+all or just some of the segment registers for Unreal Mode.  To enable
+this mode, use the command UNREAL as follows:
+
+UNREAL s reg [s reg ...]
+
+where s is a sign (+ or -) indicating whether to enable or disable,
+and reg is a segment register CS, DS, ES, FS, GS, SS, or the keyword
+ALL.  For example,
+
+	UNREAL +ALL	enables UM for all segment registers
+	UNREAL -ALL	disables ...
+	UNREAL +DS	enables UM for DS only
+	UNREAL +DS +ES	enables UM for DS and ES
+
+To see if a segment register is enabled for UM, look for the plus sign
+next to the segment number in the instruction disassembly window.
+
+
+Command Line
+------------
+
+The line at the bottom of the screen is used to enter various
+commands.  The following table summarizes the possibilities.  The
+usual editing keys are available such as Left, Right, Home, End,
+Insert, Backspace, and Delete.	Note that a colon (:) is used to
+separate a segment from an offset (Virtual 8086 Mode) and that a
+broken stile (|) is used to separate a selector from an offset
+(Protected Mode).  The command line is parsed according to the grammar
+found in the file 386SWAT.GRM.
+
+
+Command Line Recall
+-------------------
+
+Commands entered on the command line are saved in a ring buffer whose
+length can be changed from the default of 1024 via the profile keyword
+CMDHIST=nnn.
+
+Previous commands can be retrieved via the keystrokes Alt-< (previous
+command) and Alt-> (next command).  Pressing either of these keys
+repeatedly scrolls through the buffer in the chosen direction.	The
+keystroke Alt-? displays a history of (up to 25) commands from which a
+command can be chosen by scrolling up or down through the list, or by
+typing the letter next to the command.	A command may be deleted from
+this list via the Del key.
+
+
+Monitor mode
+------------
+
+The GM (go monitor) command takes an expression which will be
+evaluated as the CPU single-steps (equivalent to Pad-plus or F11).
+No display will occur until 1) the monitor expression evaluates
+TRUE or 2) 386SWAT is invoked by some other means (GP fault, NMI, Ctrl-
+Alt-Pad5, etc.)
+
+Boolean expressions may be constructed using the dyadic operators
+&&, ||, <, <=, ==, >=, and >.  Operator precedence is the same as
+the C language.  See _Operators_.
+
+For example:
+
+gm ah
+will execute until AH is non-zero.
+
+gm [.csip == 21cd && ah!=9
+will execute until the current instruction is INT 21 and AH is any value
+other than 9 (DOS display string).
+
+gm cx == 0
+will execute until CX is 0.
+
+gm
+will execute until the last expression specified with gm is TRUE.
+
+
+Functions
+---------
+
+A number of arithmetic, bitwise, and logical functions are available.
+The precedence of evaluation is similar to that of the C programming
+language.  Here they are, listed in order of precedence:
+
+Functions			  Type
+---------------------------------------------------------------
+- ~				  Monadic
+* /				  Dyadic
++ -				  Dyadic
+symbols, .code, .data, etc.	  Address expression
+: |				  Dyadic (address construction)
+] [ {				  Monadic (extraction)
+>> <<				  Dyadic (bit shift)
+< <= >= >			  Dyadic (relational)
+== !=				  Equality
+&				  Dyadic (bitwise AND)
+^				  Dyadic (bitwise XOR)
+&&				  Dyadic (logical AND)
+||				  Dyadic (logical OR)
+
+For example, this expression
+
+   2a + 3 * {[.data+2|2c / 4 & ffff == 5af && 3 << bl || 21 ^ 2
+
+is evaluated as
+
+(((2a + (3 * ({([.data+2)|(2c / 4)))) & (ffff == 5af)) && (3 << bl)) || (21 ^ 2)
+
+
+	Code Breakpoints
+BC		ð Display all code breakpoints.
+BC addr 	ð Set code breakpoint at ADDR.
+BC*		ð Clear all code breakpoints.
+BC* addr	ð Clear code breakpoint at ADDR.
+BC+		ð Enable all code breakpoints.
+BC+ addr	ð Enable code breakpoint at ADDR.
+BC-		ð Disable all code breakpoints.
+BC- addr	ð Disable code breakpoint at ADDR.
+
+	Debug Registers DR0 to DR3
+BD		ð Display debug registers (also Alt-F9).
+BD addr 	ð Set DR breakpoint on instruction fetches at
+		  address addr.
+BD addr Ln R	ð Set DR breakpoint on read/writes of length n (n=1,
+		  2, 4) at address addr.
+BD addr Ln W	ð Set DR breakpoint on writes of length n (n=1, 2,
+		  4) at address addr.
+BDn*		ð Clear DRn.
+BDn+		ð Enable DRn.
+BDn-		ð Disable DRn.
+
+	Data Display
+D		ð Display next screen of data
+D addr		ð Data display
+D-		ð Data display back one page
+Dx addr 	ð Data type (B = Byte,	 W = Word, D = Dword,
+			     V = Vector, G = GDT,  I = IDT, T = TSS,
+			     T2 = 286 TSS, T3 = 386 TSS)
+Dx addr P	ð Data display as physical data (say in ROM which has
+		  been mapped over by 386MAX)
+Dx addr P exp	ð Data display using exp as CR3 - this is useful when
+		  debugging VCPI clients because they use a separate
+		  CR3
+All data display commands may be followed by an optional width switch
+(e.g., DW/5 which displays the data at five words per line instead of
+the usual eight).  The data width switch must be placed between the
+data command and its arguments (if any) as in DW/5 DS:0.
+
+	Descriptor Table Entry
+DTE expr	ð Display on the command line a Descriptor Table Entry.
+
+	Data Entry
+E addr [xx ...] ð Enter data starting at ADDR using optional hex
+		  bytes xx.
+
+	Exit To DOS
+EXIT		ð Exit to DOS.	This command is equivalent to the '
+		  following command sequence:
+		  R AH=4C
+		  SIGINT 21
+		  G
+
+	Data Fill
+F addr L len xx ð Fill data starting at ADDR of length LEN with
+		   byte value xx.
+F addr L len xx P ð Fill physical data starting at ADDR of length
+		  LEN with byte value xx.
+F addr L len xx P exp ð Fill data starting at ADDR of length LEN with
+		  byte value xx where ADDR is translated using exp as
+		  CR3 - this is useful when debugging VCPI clients
+		  because they use a separate CR3.
+
+	Data Move
+M addr L len addr ð Move data starting at first ADDR of length LEN
+		    to second ADDR
+
+	Hex Arithmetic
+H exp		ð Display hex arithmetic result
+
+	Instruction Goto
+G		ð Go without stopping (same as ESC)
+G addr		ð Goto to instruction at address ADDR
+GM bool_exp	ð Go monitor (single-step until bool_exp is TRUE)
+GM		ð Go monitor using last boolean expression specified with gm
+
+	MAC Display
+MACBASE addr	ð Set the base address of the MAC chain in case it's
+		  different from .DMAC.  This is handy when
+		  displaying the DOS subsegment chain.
+
+	Insertion Into PM Context',CR
+INSERT gdtr idtr [cr3 [lapde]] ð Insert into PM context.
+INSERT *    idtr	       ð Insert into IDT.
+
+where gdtr = linear address of fword describing the GDT
+      idtr = ...				    IDT
+      cr3  = incoming CR3 (optional)
+      lapde= linear address of 4MB block where 386SWAT's
+	     PDE(s) should be copied
+
+Insert 386SWAT into a PM context while still in RM.
+This feature is useful when attempting to debug across
+the boundary from RM to PM.  In particular, it can be used
+to gain control shortly after Windows enters PM.
+
+	Instruction Disassembly
+U		ð Display the next screen of instructions
+U addr		ð Unassemble instructions starting at ADDR
+U-		ð Unassemble instructions back one page
+U16 addr	ð Unassemble instructions starting at ADDR as a
+		  16-bit code segment
+U32 addr	ð Unassemble instructions starting at ADDR as a
+		  32-bit code segment
+Ux addr P	ð Unassemble instructions as physical data (say in
+		  ROM which has been mapped over by 386MAX)
+Ux addr P exp	ð Unassemble instructions starting at ADDR using exp
+		  as CR3 - this is useful when debugging VCPI clients
+		  because they use a separate CR3
+
+	Page Table Display
+PTE addr	ð Display the Page Directory and Page Table entries
+PTE val 	  which correspond to the address addr or linear
+		  address val.
+SPTE addr/val	ð Same as PTE command, but also displays the matching
+		  PTE in the PTE display screen (F5).
+
+	Signal Interrupt
+SIGINT xx	ð Signal interrupt xx (00 to FF, of course).  This
+		  keyword is useful (particularly for hardware
+		  interrupts) when you are debugging a time-critical
+		  piece of code and need to see what would happen if
+		  (say) a timer tick happened at this particular
+		  point.
+
+	Toggle Interrupt Interception
+TOGINT xx [xx ...] ð Toggle interception of interrupt xx (00 to FF,
+		  of course).  Valid interrupts are 00, 01, 02, 03,
+		  05, 06, 0C, 0D, 0E.  For example, if TRAPINV does
+		  not appear in the 386SWAT profile and you wish to
+		  enable it, use TOGINT 6.
+
+	Register Operations
+R reg=exp	ð Set register REG to EXP.  Valid registers include
+		  all GP and EGP as well as FL, EFL, CRn, DRn, TRn,
+		  TR, and LDTR.  There are two ways to crash the
+		  system via this command:  setting CR3 to a bad
+		  value, or setting EFL with a bad value for the VM
+		  or IOPL flags.  The code which sets CR0 forces the
+		  Page Enable and Protect Enable bits on (as
+		  evidenced by typing R CR0=0), so experiment without
+		  fear.  Use the pseudo-register names CSIP or CSEIP
+		  to set both registers to an address.
+R reg.str=exp	ð This command also supports bit mask qualifiers on
+		  registers.  For example, to set the AM bit in CR0,
+		  type R CR0.AM=1.  See below for a complete list of
+		  mask values supported.
+RC		ð Clear saved register state so another RS may
+		  execute.
+RR		ð Restore saved registers.
+RS		ð Save registers to restore later via RR.  Only one
+		  RS may be executed at a time without either
+		  restoring the state via RR or clearing the state
+		  via RC.
+
+	Search Operations
+S addr1 addr2 tgt ð Search from addr1 to addr2 or from ea for len
+S addr L len tgt   bytes for target tgt.  The search results are
+		   displayed on a separate screen which may be made
+		   active at other times by pressing F6.  Only the
+first 23 matches are displayed.  In a future release the Up, Down,
+Page Up, and Page Down keys will allow scrolling through successive
+matches.  The target may take one of several forms:
+
+* Use a target of the form xx, xxxx, xxxxxxxx where x represents a hex
+  digit to search for bytes, words, or dwords of a specified value.
+  For example, the form S 0:0 L FFFF 10CD searches for all occurrences
+  of the hex bytes CD followed by 10 in the first 64KB of conventional
+  memory.  Word and dword searches do not require word or dword
+  alignment of the matching data.  The number of digits entered
+  determines the width of the value.  Thus you should use leading
+  zeros to pad out a small value to a wider width.  For example, 0 and
+  00 both search for a single byte of zeros, 000 and 0000 both search
+  for a word of zeros, and 00000, 000000, 0000000, and 00000000 all
+  search for a dword of zeros.
+
+* Use a target of the form "search_string" to search for a case
+  sensitive string.  For example, S 0:0 L FFFF "386MAX" searches for
+  all occurrences of the string 386MAX in the first 64KB of conventional
+  memory.  The ability to search for a case insensitive string will be added
+  in the future.
+
+* Use a target of the form !instr to search for a specific assembler
+  instruction.	For example, S 0:0 L FFFF !INT 10 searches for all
+  occurrences of video interrupts in the first 64KB of conventional
+  memory.  This target is found by disassembling the code between the
+  start and stop addresses instruction by instruction, thus the
+  alignment of the matching instructions and the starting address is
+  critical.  If data appears within that range, some matches may be
+  missed.  The command S1 (instead of S) can be used to disassemble
+  the code byte by byte.  That is, with the S command, having
+  disassembled an instruction which does not match the specified
+  pattern, the next instruction is searched; with the S1 command, the
+  next byte is searched.
+
+  The code search text may include one or more question marks as
+  wildcards which match any character in the disassembled
+  instructions.  For example, use S 50|0 FFFF !mov e??,cr? to find
+  all moves from a control register to a 32-bit register.  Try the
+  forms S 3BC7:100 FFFF !mov [1234] and S 3BC7:100 FFFF !mov ?s:[1234]
+  to find all moves into location [1234] with or without a segment
+  override.  To find jumps to a specific location, use the code
+  targets !j? 1234, !j?? 1234, and !j??? 1234.	Note that floating
+  point instructions may be disassembled beginning with either 'F' or
+  'FN' depending upon the presence of a preceding WAIT opcode (9Bh).
+  To be safe, search for both.
+
+* Use a target of the form #PTE to search for a PTE in the Page
+  Tables.  For example, S 0 C0000000 # CF4000 searches for the PTE
+  CF4000 from linear 0 through linear C0000000.  The linear addresses
+  are both rounded down to a 4KB boundary.  A match at a particular
+  linear address means that the PTE was found and it covers the 4KB
+  block at the linear address displayed.  When comparing PTEs, the
+  flag bits are ignored, thus a match might be found when the PTE in
+  the Page Tables is not present.
+
+	I/O Port Read/Write
+Ix port 	ð Input Byte, Word, or Dword from PORT
+IMR		ð Display current Interrupt Mask Register values for
+		  master and slave PICs
+IRR		ð Display current Interrupt Request Register values
+ISR		ð Display current In-Service Register values
+Ox port val	ð Output Byte, Word, Dword VAL to PORT
+
+	Symbolic Debugging (see SWATSYM.DOC for details)
+CD [d:][path]	ð Change the current directory to path.  If no
+CHDIR [d:][path]  argument, display the current drive/directory.
+FS		ð Flush symbol table.
+LF filename	ð Load file into browser.
+LI +		ð Enable line number display in disassembly screen.
+LI -		ð Disable line number display.
+LI dddd 	ð Go to line dddd (decimal) in file browser.
+LI dddd+	ð Go to line dddd forward from current line.
+LI dddd-	ð Go to line dddd back from current line.
+LS filename	ð Load symbol file.
+LS filename exp ð Load symbol file and add 16-bit value to all VM segments.
+PATH d:\dir1[,d:\dir2[,...]] ð Set source file search path.
+PATH+ d:\dira[,d:\dirb[,...]] ð Add to source file search path.
+PS r		ð Set range of symbol proximity searches to r.
+PS r g		ð Set range and granularity (1=bytes, 2=words, 4=dwords)
+		  of symbol proximity searches.
+QS addr 	ð Display the symbol nearest to (and below) thegiven address.
+SB+		ð Enable source browser mode.
+SB-		ð Disable source browser mode.
+SB*+		ð Enable source browser mode but disregard module names.
+TS		ð Force all symbols to be retranslated according to
+		  current GDT and LDT.
+TS sel		ð Retranslates only for selector/segment sel.
+TS * ID 	ð Retranslates for all selectors/segments with ID specified.
+TS sel ID	ð Retranslates only for selector/segment sel with ID specified.
+TS *|sel *|ID v|p ð Change to specified mode for selector and/or ID specified.
+TS *|sel *|ID *|v|p nsel ð Replace segment/selector and mode for specified
+		  selectors and IDs.  If * is specified for mode, the mode
+		  is left alone.
+TS *|sel *|ID *|v|p nsel+ ð nsel is added to all specified segments.
+
+	Remote debugging
+APPKEY		ð Edit application keystroke buffer.  This is primarily
+		  useful for remote debugging.	If an application is waiting
+		  for a keystroke, this feature allows you to send one to
+		  the application, as well as to view any that may already
+		  be available.
+CHAT		ð Enter CHAT mode (also via Ctl-F8)
+SETCOM port bps ð Initialize specified serial port for communications.
+		  See SETCOM= profile option for full syntax.
+SETCOM		ð Reinitialize the serial port with values last specified
+		  by SETCOM or SETCOM=.  This is useful when an application
+		  has reprogrammed the UART.
+SETCOM -	ð Ignore all activity on serial port.  Use this if you are
+		  done with remote debugging and wish an application to
+		  have access to the serial port.  When 386SWAT is using the
+		  serial port, no serial port interrupts will be visible
+		  to virtual mode programs.
+SETCOM RTS+	ð Pull RTS (Request To Send) line high.
+SETCOM RTS-	ð Drop RTS (Request To Send) line low.
+SETCOM DTR+	ð Pull DTR (Data Terminal Ready) line high.
+SETCOM DTR-	ð Drop DTR (Data Terminal Ready) line low.  This is one
+		  way to hang up a modem that won't respond to (wait)+++
+		  (wait)ATH(ENTER).
+REMDBG		ð Attempt to establish remote debugging session (also
+		  via Ctl-F9).	See the section below on remote debugging.
+
+	Unreal Mode
+UNREAL s reg [s reg ...] ð Turn on or off Unreal Mode.	This mode is a
+		  variant of Real Mode in which data registers (DS,
+		  ES, FS, GS, or SS) can access all of the 4GB address
+		  space.  That is, instead of the normal 64KB length
+		  of a data segment, the length is 4GB.  This command
+		  can enable all or just some of the data registers
+		  for Unreal Mode.
+
+		  Legend:  s is either + or - and reg is one of
+		    ALL DS ES FS GS or SS
+
+		  For example:
+		  To enable all registers, use +ALL
+		  To disable all registers, use -ALL
+		  To enable or disable selected registers, use +xS or
+		    -xS, where x is D E F G or S, as in +DS or -ES.
+		    You may specify multiple registers on the same
+		    line as in +DS +ES.
+
+	Virtual Mode Switches
+VMSCOUNT=val	ð Don't intrude into the GDT/IDT for VCPI debugging
+		  until the value in this counter has decremented to
+		  zero.  This keyword is useful for occasions where
+		  the VCPI client shuffles its GDT and IDT around for
+		  a while before deciding just where it's going to be.
+VMSINT=ON	ð Enable (ON) or disable (OFF) VCPI debugging.	Use
+VMSINT=OFF	  this feature in cases where some VCPI programs
+		  misbehave when VCPI debugging is enabled.  In this
+		  case, enable VCPI debugging only as necessary.
+VMSINT=xx,xx,...ð Change the default interrupts intercepted by 386SWAT
+		  when debugging VCPI clients.
+
+	Pentium-Pro CPU Specific Commands
+BTF		ð Display Branch Trace Facility state (ON or OFF).
+BTF ON|OFF	ð Turn Branch Trace Facility state ON or OFF.
+LBR		ð Display Last Branch/Exception values on the
+		  command line.
+LBR ON|OFF	ð Turn Last Branch/Exception window display ON or OFF.
+		  The four-line window displays the Last Branch From
+		  EIP, Last Branch To EIP, Last Exception From EIP,
+		  and Last Exception To EIP.  Also, the keywords
+		  .LBRFR, .LBRTO, .LEXFR, .LEXTO contain the value of
+		  the Last Branch/Exception From/To EIP in case these
+		  need to be used in command line expressions
+		  (e.g., U .LBRFR).
+
+	Windows Debugging Commands
+IPF [/d] [/s] [/r] expr ð If Invalid Page Faults are being trapped by
+		  386SWAT's VxD (see SWATVXD.DOC for more details), use
+		  the IPF command to control how these events are to
+		  be handled.  The optional switch /d tells 386SWAT not
+		  to display a message on the mono screen describing
+		  this event, /s tells 386SWAT not to stop when this
+		  event occurs, /r tells 386SWAT to remove this entry
+		  from its local tables, and expr is an expression
+		  which evaulates to a linear address corresponding to
+		  the Invalid Page Fault.
+
+MDB expr	ð Display the memory pointed to by the selector expr as
+		  a Windows Module Database.
+
+SGH [/b|/s|/h|/o] [/c] expr ð Search through the Windows Global
+		  Heap for values.  The expression (expr) entered is
+		  interpreted as a base address if /b is specified,
+		  size if /s, handle if /h, and owner if /h.  If /c is
+		  specified, the search continues from the currently
+		  displayed entry; otherwise, the search starts at the
+		  top of the heap.
+
+TDB expr	ð Display the memory pointed to by the selector expr as
+		  a Windows Task Database.
+
+WKD [ON|OFF]	ð Turn ON or OFF Kernel Debugging.  This command
+		  cannot be used from within Windows.
+WKD [QUIET|NOISY] ð Disable (QUIET) or Enable (NOISY) reports on
+		  Parameter Errors.
+
+WKD LOGERROR [ON|OFF] ð Turn ON or OFF the INT 01h trap of LogErrors.
+
+WKD FAULT [ON|OFF|SKIP] ð Turn ON, OFF, or SKIP once traps for Faults.
+
+WKD WCB1 [ON|OFF] ð Turn ON or OFF signalling of signalling an INT 01h at
+		  Windows Callback time when entering Windows (VM->RM) so
+		  breakpoints can be set.  This command is particularly
+		  useful in conjunction with the INSERT command.
+
+
+Common Memory References
+------------------------
+
+There are a number of points in memory to which it is common to refer,
+e.g., the address of the instruction at the top of the disassembly
+window.  These references are made easier by using one of the
+following shortcuts (all of which can be used anywhere on the command
+line where an address is expected such as BD .CODE, or BD .DATA L4 W):
+
+.EA			Effective Address of the first (or only)
+			   operand to the instruction at the top of
+			   the disassembly window
+.EA2			Effective Address of the second operand to the
+			   instruction at the top of the disassembly
+			   window
+.GDT			GDT base address (using selector zero)
+.IDT			IDT ...
+.LDT			LDT ...
+.TSS			TSS ...
+.CMAC			Seg:Off of next C MAC entry  -- equivalent to
+			   .DATA + 2 + FFFE & [.DATA
+.CODE			current code display address
+.CSIP			current cs:[e]ip
+.DATA			current data display address
+.DMAC			Seg:0 of first DOS MAC entry
+.NMAC			Seg:0 of next DOS MAC entry -- equivalent to
+			   ((S..DATA)+1+[.DATA+3):0
+.LBRFR			EIP of Last Branch From
+.LBRTO			...		   To
+.LEXFR			...	    Exception From
+.LEXTO			...		      To
+.MDB			Sel|0 of current Windows Module Database
+.TDB			...			 Task ...
+.PMIxx			Sel|Off of PM Interrupt xxh
+.RMIxx			Seg:Off of RM interrupt # xx
+.VM			Sel|Off of current Windows VM structure
+.VMCRS			Sel|Off of Client Register Struc in .VM
+.VMIxx			Seg:Off of VM interrupt # xx
+.VMRET			Return CS|EIP saved in .VMCRS
+.XBDA			Seg:Off of XBDA; same as ([40:0E):0
+.XBDA2			Seg:Off of 2ndary XBDA; same as ((S..XBDA)+[.XBDA+B4):0
+
+A common address to jump to is the (near or far) return address of a
+subroutine.  This is made easier by using shortened forms of the
+commands one might use to extract these addresses.  The various
+flavors of return addresses are (where LaSTK is the address of the
+current stack pointer -- SS:SP if VM, SS|SP if PM and the B-bit in SS
+is clear, and SS|ESP if PM and the B-bit in SS is set):
+
+Keyword 	Grammar Equivalent	Meaning
+---------------------------------------------------------------------
+.RETND		{LaSTK			Near dword
+.RETNS		[LaSTK			Near word
+.RETFD		:{LaSTK or |{LaSTK	Far word:dword or word|dword
+					(depending upon the VM bit in
+					the current EFL)
+.RETFS		:[LaSTK or |[LaSTK	Far word:word or word|word
+					(depending upon the VM bit in
+					the current EFL)
+.RETN		.RETND or .RETNS	Depending upon the D-bit in CS
+.RETF		.RETFD or .RETFS	...
+.IRET		.RETF in VM		Also allows mode switch from
+		.RETFD in PM		PM to VM by checking VM bit
+					in EFL above return address
+
+As a common shortcut, .RETN and .RETF refer to one of the above forms
+depending upon the setting of the D-bit in the current CS (that is,
+whether we're running in a USE16 or USE32 segment).  Moreover, .IRET
+can be used as a shorthand for .RETF with the added check on the VM
+bit in the EFL above the return address.  If this bit is set, the
+return address is interpreted as a VM address even though the current
+mode is PM.
+
+No magic is invoked to extract the return address if data has been
+pushed onto the stack below the return address, so be sure that LaSTK
+points to the actual return address.
+
+Also note that the keystrokes A-F and A-N are defined as shortcuts for
+the commands G .RETF and G .RETN, respectively.
+
+
+Register Mask Values
+--------------------
+
+The following pseudo-records describe the bit masks supported by the
+register command where "*" represents reserved bits with no
+corresponding name:
+
+EFL record  *:13, AC:1, VM:1, RF:1, *:1, NT:1, IOPL:2, OF:1, DF:1,\
+	    IF:1, TF:1, SF:1, ZF:1, *:1, AF:1, *:1, PF:1, *:1, CF:1
+
+CR0 record  PG:1, CD:1, NW:1, *:10, AM:1, *:1,	WP:1,\
+	    *:10, NE:1, ET:1, TS:1, EM:1, MP:1, PE:1
+
+PTE record  FRM:20,   PTE_AVL:3, *:2,	   PTE_D:1,  PTE_A:1,\
+	    PTE_CE:1, PTE_WT:1,  PTE_US:1, PTE_RW:1, PTE_P:1
+
+SEL record  SEL:13, TI:1, PL:2
+
+DR6 record  *:16, BT:1, BS:1, BD:1, *:9, B3:1, B2:1, B1:1, B0:1
+DR7 record  LEN3:2, RW3:2, LEN2:2, RW2:2, LEN1:2, RW1:2, LEN0:2, RW0:2,\
+	    *:2, GD:1, *:3, GE:1, LE:1, G3:1, L3:1, G2:1, L2:1, G1:1, L1:1,\
+	    G0:1, L0:1
+
+TR4 record  TR4_TAG:21, TR4_WVAL:1, TR4_LRU:3, TR4_RVAL:4, *:3
+TR5 record  *:21, TR5_SSEL:7, TR5_ESEL:2, TR5_CTL:2
+TR6 record  FRM:20, TR6_V:1, TR6_D:1, TR6_DP:1, TR6_U:1, TR6_UP:1,\
+	    TR6_W:1, TR6_WP:1, *:4, TR6_C:1
+TR7 record  FRM:20,*:7, TR7_HT:1, TR7_REP:2, *:2
+
+
+NDP Register Screen
+-------------------
+
+This feature is preliminary, but it does allow you to move through the
+NDP registers and settings and change them at will.  Lacking is an
+exact binary to decimal conversion algorithm as well as a decimal to
+binary conversion algorithm.  It can be displayed and cleared via
+Alt-F8.
+
+
+MMX & SSE Register Screen
+-------------------------
+
+This feature is preliminary, but it does display all of the registers.
+To see the register display, press Alt-F11.  If there are things you
+like to see on this screen, just ask.  Not being an MMX or SSE
+programmer, I'm not sure what such programmers need.
+
+
+Remote debugging
+----------------
+
+Two machines may be connected for remote debugging.  The connection
+may be made via a null modem cable connecting the serial ports on
+both machines, or via modem.
+
+The connection is initiated by using the SETCOM command to initialize
+the serial port, then pressing Ctl-F9 on each system to attempt to
+connect.  When a connection is established, the "Press M to become
+master" prompt appears.  Only one of the two systems may become
+master; the other one then becomes the slave.  Processing on the slave
+system then proceeds normally; the master system is now running a
+special terminal program.
+
+Keystrokes typed in the master terminal program are sent to the remote
+system (with some exceptions - see below), and screen output from the
+remote 386SWAT system appears on the master terminal screen.
+
+Special keys
+
+Ctl-Alt-Del will NOT be sent to the remote system while in the master
+terminal screen - it will reboot the master system.  Ctl-F9 invokes
+a menu of special options for the master system:
+  T	Terminate connection with slave immediately.
+  G	Terminate connection, but have slave go instead of returning to
+	the 386SWAT command prompt.
+  R	Terminate connection, have slave go, but have slave automatically
+	attempt to re-establish connection on next invocation of 386SWAT.
+  B	Terminate connection and reboot slave system.
+  S	Suspend session temporarily.  This temporarily exits the terminal
+	program.  You may exit 386SWAT.  Ctl-F9 again resumes the connection.
+  U	Upload program to remote.
+  D	Download program from remote.
+  Esc	Continue with terminal program
+
+Other keys are Ctl-6 (interrupt remote) and Alt-F7 (send remote screen
+only to master).  Alt-F7 is useful for debugging when the remote
+system is in graphics mode or otherwise unable to access the CRT
+controller.
+
+
+VCPI Program Debugging
+----------------------
+
+An API for use by VCPI programs is described in the file VCPIDBG.DOC.
+
+
+Real Mode Debugging
+-------------------
+
+If you find that an error (such as GP Fault) is signalled at an
+address other than the expected address, you might have DOS Stacks
+switched on.  In this case, DOS intercepts all IRQ interrupts inserts
+a new stack into the picture and then passes the interrupt onto the
+next handler.  To avoid this problem (and others which DOS Stacks
+attempts to solve but doesn't), put Stacks=0,0 into your CONIFG.SYS
+file and reboot.  If you have ever installed Windows 3.x or later
+(including Win 9x/ME) on your system, likely there is a residual
+Stacks=9,256 in your CONFIG.SYS.  That statement has the effect of
+wasting 2500 bytes of low DOS memory for nothing.
+
+
+Limitations
+-----------
+
+This program is very preliminary.  It lacks many of the features of a
+full-blown debugger.  On the other hand, it has a few features they
+don't have.
+
+
+Technical Support
+-----------------
+
+Please send your problems, praises, and comments to
+
+bsmith@sudleyplace.com
+
+

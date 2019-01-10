@@ -1,0 +1,1140 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6 [en] (Win98; U) [Netscape]">
+   <meta name="Author" content="Bob Smith">
+   <title>Command Line Actions</title>
+</head>
+<body text="#000000" bgcolor="#FFFFC0" link="#0000FF" vlink="#800080" alink="#FF00FF">
+
+<center><b><font size=+2>Command Line Actions</font></b></center>
+
+<p>A number of arithmetic, bitwise, and logical functions are available.
+The precedence of evaluation is similar to that of the C programming language.&nbsp;
+Here they are, listed in order of precedence:
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<tr>
+<th>Functions</th>
+
+<th>Type</th>
+</tr>
+
+<tr>
+<td><tt><font size=+1>- ~</font></tt></td>
+
+<td>Monadic</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>* /</font></tt></td>
+
+<td>Dyadic</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>+ -</font></tt></td>
+
+<td>Dyadic</td>
+</tr>
+
+<tr>
+<td><i>symbols</i>, <tt><font size=+1>.code</font></tt>, <tt><font size=+1>.data</font></tt>,
+etc.</td>
+
+<td>Address expression</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>: |</font></tt></td>
+
+<td>Dyadic (address construction)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>] [ {</font></tt></td>
+
+<td>Monadic (extraction)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>>> &lt;&lt;</font></tt></td>
+
+<td>Dyadic (bit shift)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>&lt; &lt;= >= ></font></tt></td>
+
+<td>Dyadic (relational)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>== !=</font></tt></td>
+
+<td>Equality</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>&amp;</font></tt></td>
+
+<td>Dyadic (bitwise AND)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>^</font></tt></td>
+
+<td>Dyadic (bitwise XOR)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>&amp;&amp;</font></tt></td>
+
+<td>Dyadic (logical AND)</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>||</font></tt></td>
+
+<td>Dyadic (logical OR)</td>
+</tr>
+</table>
+For example, this expression
+<p><tt><font size=+1>2a + 3 * {[.data+2|2c / 4 &amp; ffff == 5af &amp;&amp;
+3 &lt;&lt; bl || 21 ^ 2</font></tt>
+<p>is evaluated as
+<p><tt><font size=+1>(((2a + (3 * ({([.data+2)|(2c / 4)))) &amp; (ffff
+== 5af)) &amp;&amp; (3 &lt;&lt; bl)) || (21 ^ 2)</font></tt>
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Code Breakpoints</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="BC"></a><tt><font size=+1>BC</font></tt></td>
+
+<td>Display all code breakpoints.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC</font> </tt><i>addr</i></td>
+
+<td>Set code breakpoint at <i>addr.</i></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC*</font></tt></td>
+
+<td>Clear all code breakpoints.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC*</font> </tt><i>addr</i></td>
+
+<td>Clear code breakpoint at <i>addr.</i></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC+</font></tt></td>
+
+<td>Enable all code breakpoints.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC+</font> </tt><i>addr</i></td>
+
+<td>Enable code breakpoint at <i>addr.</i></td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC-</font></tt></td>
+
+<td>Disable all code breakpoints.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>BC-</font> </tt><i>addr</i></td>
+
+<td>Disable code breakpoint at <i>addr.</i></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+  <caption><b>Debug Registers DR0 to DR3</b></caption>
+  <tr> 
+    <td VALIGN=TOP><a NAME="BD"></a><tt><font size=+1>BD</font></tt></td>
+    <td>Display debug registers (also <a href="swatscr.htm#a-F9">Alt-F9</a>).</td>
+  </tr>
+  <tr> 
+    <td VALIGN=TOP><tt><font size=+1>BD</font></tt> <i>addr</i></td>
+    <td>Set DR breakpoint on instruction fetches at address <i>addr</i>.</td>
+  </tr>
+  <tr> 
+    <td valign=TOP><tt><font size=+1>BD</font></tt> <i>addr</i> <tt><font size=+1>L</font></tt><i>n</i><tt><font size="+1">I</font></tt></td>
+    <td>Set DR breakpoint on I/O of length <i>n</i> (<i>n</i>=1 (byte), 2 (word), 
+      4 (dword)) at I/O port <i>addr</i>.</td>
+  </tr>
+  <tr> 
+    <td VALIGN=TOP><tt><font size=+1>BD</font></tt> <i>addr</i> <tt><font size=+1>L</font></tt><i>n</i><tt><font size=+1>R</font></tt></td>
+    <td>Set DR breakpoint on read/writes of length <i>n</i> (<i>n</i>=1, 2, 4) 
+      at address <i>addr</i>.</td>
+  </tr>
+  <tr> 
+    <td VALIGN=TOP><tt><font size=+1>BD</font></tt> <i>addr</i> <tt><font size=+1>L</font></tt><i>n</i><tt><font size=+1>W</font></tt></td>
+    <td>Set DR breakpoint on writes of length <i>n</i> (<i>n</i>=1, 2, 4) at address 
+      <i>addr</i>.</td>
+  </tr>
+  <tr> 
+    <td VALIGN=TOP><tt><font size=+1>BD</font></tt><i>n</i><tt><font size=+1>*</font></tt></td>
+    <td>Clear DR<i>n.</i></td>
+  </tr>
+  <tr> 
+    <td VALIGN=TOP><tt><font size=+1>BD</font></tt><i>n</i><tt><font size=+1>+</font></tt></td>
+    <td>Enable DR<i>n.</i></td>
+  </tr>
+  <tr> 
+    <td VALIGN=TOP><tt><font size=+1>BD</font></tt><i>n</i><tt><font size=+1>-</font></tt></td>
+    <td>Disable DR<i>n.</i></td>
+  </tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Data Display</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="D"></a><tt><font size=+1>D</font></tt></td>
+
+<td>Display next screen of data.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>D </font></tt><i>addr</i></td>
+
+<td>Data display.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>D-</font></tt></td>
+
+<td>Data display back one page.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>D</font></tt><i>x addr</i></td>
+
+<td>Data type (<tt><font size=+1>B</font></tt> = Byte, <tt><font size=+1>W</font></tt>
+= Word, <tt><font size=+1>D</font></tt> = Dword, <tt><font size=+1>V</font></tt>
+= Vector, <tt><font size=+1>G</font></tt> = GDT, <tt><font size=+1>I</font></tt>
+= IDT, <tt><font size=+1>T</font></tt> = TSS, <tt><font size=+1>T2</font></tt>
+= 286 TSS, <tt><font size=+1>T3</font></tt> = 386 TSS).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>D</font></tt><i>x addr</i> <tt><font size=+1>P</font></tt></td>
+
+<td>Data display as physical data (say in ROM which has been mapped over
+by 386MAX).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>D</font></tt><i>x addr</i> <tt><font size=+1>P</font></tt><i>exp</i></td>
+
+<td>Data display using <i>exp</i> as <tt><font size=+1>CR3</font></tt>
+- this is useful when debugging VCPI clients because they use a separate
+<tt><font size=+1>CR3</font></tt>.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td COLSPAN="2">All data display commands may be followed by an optional
+width switch (e.g., <tt><font size=+1>DW/5</font></tt> which displays the
+data at five words per line instead of the usual eight). The data width
+switch must be placed between the data command and its arguments (if any)
+as in <tt><font size=+1>DW/5 DS:0</font></tt>.&nbsp;</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Data Entry</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="E"></a><tt><font size=+1>E</font></tt><i> addr
+[xx ...]</i></td>
+
+<td>Enter data starting at <i>addr</i> using optional hex bytes <i>xx</i>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Descriptor Table Entry</b></caption>
+
+<tr VALIGN=TOP>
+<td VALIGN=TOP><a NAME="DTE"></a><tt><font size=+1>DTE</font></tt><i> expr</i></td>
+
+<td>Display the Descriptor Table Entry corresponding to the selector in
+<i>expr</i>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Exit To DOS</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="EXIT"></a><tt><font size=+1>EXIT</font></tt></td>
+
+<td>Exit to DOS. This command is equivalent to the following command sequence:&nbsp;
+<p><tt><font size=+1>R AH=4C</font></tt>
+<br><tt><font size=+1>SIGINT 21</font></tt>
+<br><tt><font size=+1>G</font></tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Data Fill</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="F"></a><tt><font size=+1>F</font></tt> <i>addr</i><tt><font size=+1>L</font></tt>
+<i>len xx</i></td>
+
+<td>Fill data starting at <i>addr</i> of length <i>len</i> with byte value
+<i>xx</i>.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>F</font></tt> <i>addr</i> <tt><font size=+1>L</font></tt><i>len
+xx</i> <tt><font size=+1>P</font></tt></td>
+
+<td>Fill physical data starting at <i>addr</i> of length <i>len</i> with
+byte value <i>xx</i>.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>F</font></tt> <i>addr</i> <tt><font size=+1>L</font></tt><i>len
+xx</i> <tt><font size=+1>P</font></tt><i>exp</i></td>
+
+<td>Fill data starting at <i>addr</i> of length <i>len</i> with byte value
+<i>xx</i>
+where <i>addr</i> is translated using <i>exp</i> as <tt><font size=+1>CR3</font></tt>
+- this is useful when debugging VCPI clients because they use a separate
+<tt><font size=+1>CR3</font></tt>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Data Move</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="M"></a><tt><font size=+1>M</font></tt> <i>addr</i> <tt><font size=+1>L</font></tt><i>len</i>
+<i>addr</i></td>
+
+<td>Move data starting at first <i>addr</i> of length <i>len</i> to second
+<i>addr</i></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Hex Arithmetic</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="H"></a><tt><font size=+1>H</font></tt> <i>exp</i></td>
+
+<td>Display hex arithmetic result</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Instruction Goto</b></caption>
+
+<tr VALIGN=TOP>
+<td VALIGN=TOP><a NAME="G"></a><tt><font size=+1>G</font></tt></td>
+
+<td>Go without stopping (same as ESC)</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td VALIGN=TOP><tt><font size=+1>G</font></tt> <i>addr</i></td>
+
+<td>Goto to instruction at address <i>addr</i></td>
+</tr>
+
+<tr VALIGN=TOP>
+<td VALIGN=TOP><a NAME="GM"></a><tt><font size=+1>GM</font></tt> <i>bool_exp</i></td>
+
+<td>Go monitor (single-step until <i>bool_exp</i> is TRUE) -- see <a href="swatmon.htm">Monitor
+Mode</a></td>
+</tr>
+
+<tr VALIGN=TOP>
+<td VALIGN=TOP><tt><font size=+1>GM</font></tt></td>
+
+<td>Go monitor using last boolean expression specified with <tt><font size=+1>GM</font></tt></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>MAC Display</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="MACBASE"></a><tt><font size=+1>MACBASE </font></tt><i>addr</i></td>
+
+<td>Set the base address of the MAC chain in case it's different from <tt><font size=+1><a href="swatcmr.htm#.DMAC">.DMAC</a></font></tt>.
+This is handy when displaying the DOS subsegment chain.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Insertion Into PM Context</b></caption>
+
+<tr>
+<td><a NAME="INSERT"></a><tt><font size=+1>INSERT </font></tt><i>gdtridtr</i>
+[<i>cr3</i> [<i>lapde</i>]]</td>
+
+<td>Insert into PM context.</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>INSERT *</font></tt> <i>idtr</i></td>
+
+<td>Insert into IDT.</td>
+</tr>
+
+<tr>
+<td></td>
+
+<td>where&nbsp;
+<br><i>gdtr</i> = linear address of fword describing the GDT&nbsp;
+<br><i>idtr</i> = ... IDT&nbsp;
+<br><i>cr3</i> = incoming <tt><font size=+1>CR3</font></tt> (optional)&nbsp;
+<br><i>lapde</i>= linear address of 4MB block where 386SWAT's PDE(s) should
+be copied&nbsp;</td>
+</tr>
+
+<tr>
+<td COLSPAN="2">Insert 386SWAT into a PM context while still in RM. This
+feature is useful when attempting to debug across the boundary from RM
+to PM. In particular, it can be used to gain control shortly after Windows
+enters PM.&nbsp;</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Instruction Disassembly</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="U"></a><tt><font size=+1>U</font></tt></td>
+
+<td>Display the next screen of instructions.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>U</font></tt> <i>addr</i></td>
+
+<td>Unassemble instructions starting at <i>addr.</i></td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>U-</font></tt></td>
+
+<td>Unassemble instructions back one page.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>U16</font></tt> <i>addr</i></td>
+
+<td>Unassemble instructions starting at <i>addr</i> as a 16-bit code segment.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>U32</font></tt> <i>addr</i></td>
+
+<td>Unassemble instructions starting at <i>addr</i> as a 32-bit code segment.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>U</font></tt><i>x</i> <i>addr</i> <tt><font size=+1>P</font></tt></td>
+
+<td>Unassemble instructions as physical data (say in ROM which has been
+mapped over by 386MAX).</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>U</font></tt><i>x</i> <i>addr</i> <tt><font size=+1>P</font></tt><i>exp</i></td>
+
+<td>Unassemble instructions starting at <i>addr</i> using <i>exp</i> as
+<tt><font size=+1>CR3</font></tt>
+- this is useful when debugging VCPI clients because they use a separate
+<tt><font size=+1>CR3</font></tt>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Page Table Display</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="PTE"></a><tt><font size=+1>PTE</font></tt> <i>addr</i>
+<br><tt><font size=+1>PTE</font></tt> <i>val</i></td>
+
+<td>Display the Page Directory and Page Table entries which correspond
+to the address <i>addr</i> or linear address <i>val.</i></td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="SPTE"></a><tt><font size=+1>SPTE</font></tt> <i>addr/val</i></td>
+
+<td>Same as PTE command, but also displays the matching PTE in the PTE
+display screen (<a href="swatscr.htm#F5">F5</a>).</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Signal Interrupt</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="SIGINT"></a><tt><font size=+1>SIGINT</font></tt> <i>xx</i></td>
+
+<td>Signal interrupt <i>xx</i> (<tt><font size=+1>00</font></tt> to <tt><font size=+1>FF</font></tt>,
+of course).</td>
+</tr>
+
+<tr>
+<td COLSPAN="2">This keyword is useful (particularly for hardware interrupts)
+when you are debugging a time-critical piece of code and need to see what
+would happen if (say) a timer tick happened at this particular point.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Toggle Interrupt Interception</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="TOGINT"></a><tt><font size=+1>TOGINT</font></tt> <i>xx [xx
+...]</i></td>
+
+<td>Toggle interception of interrupt xx (<tt><font size=+1>00</font></tt>
+to <tt><font size=+1>FF</font></tt>, of course). Valid interrupts are <tt><font size=+1>00</font></tt>,
+<tt><font size=+1>01</font></tt>,
+<tt><font size=+1>02</font></tt>, <tt><font size=+1>03</font></tt>,
+<tt><font size=+1>05</font></tt>,
+<tt><font size=+1>06</font></tt>, <tt><font size=+1>0C</font></tt>,
+<tt><font size=+1>0D</font></tt>,
+<tt><font size=+1>0E</font></tt>. For example, if <tt><font size=+1>TRAPINV
+</font></tt>does not appear in the 386SWAT profile and you wish to enable
+it, use <tt><font size=+1>TOGINT 6</font></tt>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Register Operations</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="R"></a><tt><font size=+1>R</font></tt> <i>reg[<tt><font size=+1>=</font></tt>]exp</i></td>
+
+<td>Set register <i>reg</i> to <i>exp</i>. Valid registers include all
+GP and EGP as well as <tt><font size=+1>FL</font></tt>, <tt><font size=+1>EFL</font></tt>,
+<tt><font size=+1>CR</font></tt>n,
+<tt><font size=+1>DR</font></tt>n, <tt><font size=+1>TR</font></tt>n,
+<tt><font size=+1>TR</font></tt>,
+and <tt><font size=+1>LDTR</font></tt>. There are two ways to crash the
+system via this command: setting CR3 to a bad value, or setting EFL with
+a bad value for the VM or IOPL flags. The code which sets CR0 forces the
+Page Enable and Protect Enable bits on (as evidenced by typing <tt><font size=+1>R
+CR0=0</font></tt>), so experiment without fear. Use the pseudo-register
+names <tt><font size=+1>CSIP</font></tt> or <tt><font size=+1>CSEIP</font></tt>
+to set both registers to an address.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>R</font></tt> <i>reg.str[</i><tt><font size=+1>=</font></tt><i>]exp</i></td>
+
+<td>This command also supports bit mask qualifiers on registers. For example,
+to set the AM bit in CR0, type <tt><font size=+1>R CR0.AM=1</font></tt>.
+See <a href="swatrmv.htm">Register Mask Values</a> for a complete list
+of mask values supported.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="RC"></a><tt><font size=+1>RC</font></tt></td>
+
+<td>Clear saved register state so another <tt><font size=+1>RS</font></tt>
+may execute.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="RR"></a><tt><font size=+1>RR</font></tt></td>
+
+<td>Restore saved registers.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="RS"></a><tt><font size=+1>RS</font></tt></td>
+
+<td>Save registers to restore later via <tt><font size=+1>RR</font></tt>.
+Only one <tt><font size=+1>RS</font></tt> may be executed at a time without
+either restoring the state via <tt><font size=+1>RR</font></tt> or clearing
+the state via <tt><font size=+1>RC</font></tt>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Search Operations</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="S"></a><tt><font size=+1>S</font></tt> <i>addr1 addr2 tgt</i>
+<br><tt><font size=+1>S</font></tt> <i>addr <tt><font size=+1>L</font></tt>
+len tgt</i></td>
+
+<td>Search from <i>addr1</i> to <i>addr2</i> or from <i>ea</i> for <i>len
+</i>bytes
+for target tgt.</td>
+</tr>
+</table>
+The search results are displayed on a separate screen which may be made
+active at other times by pressing <a href="swatscr.htm#F6">F6</a>. Only
+the first 23 matches are displayed. In a future release the Up, Down, Page
+Up, and Page Down keys will allow scrolling through successive matches.
+<p>The target may take one of several forms:
+<p>* Use a target of the form xx, xxxx, xxxxxxxx where x represents a hex
+digit to search for bytes, words, or dwords of a specified value. For example,
+the form <tt><font size=+1>S 0:0 L FFFF 10CD</font></tt> searches for all
+occurrences of the hex bytes CD followed by 10 in the first 64KB of conventional
+memory. Word and dword searches do not require word or dword alignment
+of the matching data. The number of digits entered determines the width
+of the value.&nbsp; Thus you should use leading zeros to pad out a small
+value to a wider width.&nbsp; For example, <tt><font size=+1>0</font></tt>
+and <tt><font size=+1>00</font></tt> both search for a single byte of zeros,
+<tt><font size=+1>000</font></tt>
+and <tt><font size=+1>0000</font></tt> both search for a word of zeros,
+and <tt><font size=+1>00000</font></tt>,
+<tt><font size=+1>000000</font></tt>,
+<tt><font size=+1>0000000</font></tt>, and <tt><font size=+1>00000000</font></tt>
+all search for a dword of zeros.
+<p>* Use a target of the form "search_string" to search for a case sensitive
+string. For example, <tt><font size=+1>S 0:0 L FFFF</font> <font size=+1>"386MAX"</font></tt>
+searches for all occurrences of the string 386MAX in the first 64KB of
+conventional memory. The ability to search for a case insensitive string
+will be added in the future.
+<p>* Use a target of the form <tt><font size=+1>!</font></tt><i>instr</i>
+to search for a specific assembler instruction. For example, <tt><font size=+1>S
+0:0 L FFFF !INT 10</font></tt> searches for all occurrences of video interrupts
+in the first 64KB of conventional memory. This target is found by disassembling
+the code between the start and stop addresses instruction by instruction,
+thus the alignment of the matching instructions and the starting address
+is critical. If data appears within that range, some matches may be missed.
+The command <tt><font size=+1>S1</font></tt> (instead of <tt><font size=+1>S</font></tt>)
+can be used to disassemble the code byte by byte. That is, with the <tt><font size=+1>S</font></tt>
+command, having disassembled an instruction which does not match the specified
+pattern, the next instruction is searched; with the <tt><font size=+1>S1</font></tt>
+command, the next byte is searched. The code search text may include one
+or more question marks as wildcards which match any character in the disassembled
+instructions. For example, use <tt><font size=+1>S 50|0 FFFF !mov e??,cr?</font></tt>
+to find all moves from a control register to a 32-bit register. Try the
+forms <tt><font size=+1>S 3BC7:100 FFFF !mov [1234]</font></tt> and <tt><font size=+1>S
+3BC7:100 FFFF !mov ?s:[1234]</font></tt> to find all moves into location
+<tt><font size=+1>[1234]</font></tt>
+with or without a segment override. To find jumps to a specific location,
+use the code targets <tt><font size=+1>!j? 1234</font></tt>, <tt><font size=+1>!j??
+1234</font></tt>, and <tt><font size=+1>!j??? 1234</font></tt>. Note that
+floating point instructions may be disassembled beginning with either <tt><font size=+1>F</font></tt>
+or <tt><font size=+1>FN</font></tt> depending upon the presence of a preceding
+WAIT opcode (9Bh). To be safe, search for both.
+<p>* Use a target of the form <tt><font size=+1>#</font></tt><i>pte</i>
+to search for a PTE in the Page Tables. For example, <tt><font size=+1>S
+0 C0000000 # CF4000 </font></tt>searches for the PTE <tt><font size=+1>CF4000</font></tt>
+from linear <tt><font size=+1>0</font></tt> through linear <tt><font size=+1>C0000000</font></tt>.
+The linear addresses are both rounded down to a 4KB boundary. A match at
+a particular linear address means that the PTE was found and it covers
+the 4KB block at the linear address displayed. When comparing PTEs, the
+flag bits are ignored, thus a match might be found when the PTE in the
+Page Tables is not present.
+<br>&nbsp;
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>I/O Port Read/Write</b></caption>
+
+<tr>
+<td><a NAME="I"></a><tt><font size=+1>I</font></tt><i>x port</i></td>
+
+<td>Input Byte, Word, or Dword from <i>port.</i></td>
+</tr>
+
+<tr>
+<td><a NAME="IMR"></a><tt><font size=+1>IMR</font></tt></td>
+
+<td>Display current Interrupt Mask Register values for master and slave
+PICs.</td>
+</tr>
+
+<tr>
+<td><a NAME="IRR"></a><tt><font size=+1>IRR</font></tt></td>
+
+<td>Display current Interrupt Request Register values.</td>
+</tr>
+
+<tr>
+<td><a NAME="ISR"></a><tt><font size=+1>ISR</font></tt></td>
+
+<td>Display current In-Service Register values.</td>
+</tr>
+
+<tr>
+<td><a NAME="O"></a><tt><font size=+1>O</font></tt><i>x port val</i></td>
+
+<td>Output <tt><font size=+1>B</font></tt>yte, <tt><font size=+1>W</font></tt>ord,
+<tt><font size=+1>D</font></tt>word
+<i>val</i> to <i>port</i>.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 >
+<caption><b>Symbolic Debugging (see <a href="swatsym.htm">SWATSYM.DOC</a>
+for details)</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="CD"></a><tt><font size=+1>CD</font></tt> <i>[d:][path]</i>
+<br><tt><font size=+1>CHDIR</font></tt> <i>[d:][path]</i></td>
+
+<td>Change the current directory to path. If no argument, display the current
+drive/directory.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="FS"></a><tt><font size=+1>FS</font></tt></td>
+
+<td>Flush symbol table.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="LF"></a><tt><font size=+1>LF</font></tt> <i>filename</i></td>
+
+<td>Load file into browser.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="LI"></a><tt><font size=+1>LI +</font></tt></td>
+
+<td>Enable line number display in disassembly screen.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>LI -</font></tt></td>
+
+<td>Disable line number display.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>LI</font></tt> <i>dddd</i></td>
+
+<td>Go to line <i>dddd </i>(decimal) in file browser.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>LI</font></tt> <i>dddd</i><tt><font size=+1>+</font></tt></td>
+
+<td>Go to line <i>dddd </i>forward from current line.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>LI</font></tt> <i>dddd</i><tt><font size=+1>-</font></tt></td>
+
+<td>Go to line <i>dddd </i>back from current line.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="LS"></a><tt><font size=+1>LS</font></tt> <i>filename</i></td>
+
+<td>Load symbol file.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>LS</font></tt> <i>filename exp</i></td>
+
+<td>Load symbol file and add 16-bit value to all VM segments.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="PATH"></a><tt><font size=+1>PATH</font></tt> <i>d:\dir1[,d:\dir2[,...]]</i></td>
+
+<td>Set source file search path.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>PATH+</font></tt> <i>d:\dira[,d:\dirb[,...]]</i></td>
+
+<td>Add to source file search path.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="PS"></a><tt><font size=+1>PS</font></tt> <i>r</i></td>
+
+<td>Set range of symbol proximity searches to <i>r</i>.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>PS</font></tt> <i>r g</i></td>
+
+<td>Set range <i>r</i> and granularity <i>g</i> (<tt><font size=+1>1</font></tt>=bytes,
+<tt><font size=+1>2</font></tt>=words,
+<tt><font size=+1>4</font></tt>=dwords) of symbol proximity searches.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="QS"></a><tt><font size=+1>QS</font></tt> <i>addr</i></td>
+
+<td>Display the symbol which is nearest to (and below) the given address.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="SB"></a><tt><font size=+1>SB+</font></tt></td>
+
+<td>Enable source browser mode.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>SB-</font></tt></td>
+
+<td>Disable source browser mode.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>SB*+</font></tt></td>
+
+<td>Enable source browser mode but disregard module names.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="TS"></a><tt><font size=+1>TS</font></tt></td>
+
+<td>Force all symbols to be retranslated according to current GDT and LDT.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>TS</font></tt> <i>sel</i></td>
+
+<td>Retranslates only for selector/segment sel.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>TS *</font></tt> <i>ID</i></td>
+
+<td>Retranslates for all selectors/segments with ID specified.</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>TS</font></tt> <i>sel ID</i></td>
+
+<td>Retranslates only for selector/segment sel with ID specified.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>TS *</font></tt>|<i>sel </i><tt><font size=+1>*</font></tt>|<i>IDv|p</i></td>
+
+<td>Change to specified mode for selector and/or ID specified.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>TS *</font></tt>|<i>sel </i><tt><font size=+1>*</font></tt>|<i>ID
+</i><tt><font size=+1>*</font></tt>|<i>v</i>|<i>p
+nsel</i></td>
+
+<td>Replace segment/selector and mode for specified selectors and IDs.
+If <tt><font size=+1>*</font></tt> is specified for mode, the mode is left
+alone.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>TS *</font></tt>|<i>sel </i><tt><font size=+1>*</font></tt>|<i>ID
+</i><tt><font size=+1>*</font></tt>|<i>v</i>|<i>p
+nsel</i><tt><font size=+1>+</font></tt></td>
+
+<td><i>nsel</i> is added to all specified segments.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Remote debugging (see <a href="swatrem.htm">SWATREM.DOC</a>)</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="APPKEY"></a><tt><font size=+1>APPKEY</font></tt></td>
+
+<td>Edit application keystroke buffer. This is primarily useful for remote
+debugging. If an application is waiting for a keystroke, this feature allows
+you to send one to the application, as well as to view any that may already
+be available.&nbsp;</td>
+</tr>
+
+<tr>
+<td><a NAME="CHAT"></a><tt><font size=+1>CHAT</font></tt></td>
+
+<td>Enter CHAT mode (also via <a href="swatscr.htm#c-F8">Ctl-F8</a>).</td>
+</tr>
+
+<tr>
+<td><a NAME="SETCOM"></a><tt><font size=+1>SETCOM </font></tt><i>port bps</i></td>
+
+<td>Initialize specified serial port for communications. See <tt><font size=+1><a href="swatpro.htm#SETCOM">SETCOM</a>=</font></tt>
+profile option for full syntax.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>SETCOM</font></tt></td>
+
+<td>Reinitialize the serial port with values last specified by <tt><font size=+1>SETCOM</font></tt>
+or <tt><font size=+1><a href="swatpro.htm#SETCOM">SETCOM</a>=</font></tt>.
+This is useful when an application has reprogrammed the UART.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>SETCOM -</font></tt></td>
+
+<td>Ignore all activity on serial port. Use this if you are done with remote
+debugging and wish an application to have access to the serial port. When
+386SWAT is using the serial port, no serial port interrupts will be visible
+to virtual mode programs.</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>SETCOM RTS+</font></tt></td>
+
+<td>Pull RTS (Request To Send) line high.</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>SETCOM RTS-</font></tt></td>
+
+<td>Drop RTS (Request To Send) line low.</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>SETCOM DTR+</font></tt></td>
+
+<td>Pull DTR (Data Terminal Ready) line high.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>SETCOM DTR-</font></tt></td>
+
+<td>Drop DTR (Data Terminal Ready) line low. This is one way to hang up
+a modem that won't respond to (wait)<tt><font size=+1>+++</font></tt> (wait)<tt><font size=+1>ATH</font></tt>(ENTER).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="REMDBG"></a><tt><font size=+1>REMDBG</font></tt></td>
+
+<td>Attempt to establish remote debugging session (also via <a href="swatscr.htm#c-F9">Ctl-F9</a>).
+See the section below on remote debugging.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 WIDTH="100%" VALIGN="TOP" >
+<caption><b>Unreal Mode</b></caption>
+
+<tr VALIGN=TOP>
+<td WIDTH="25%"><a NAME="UNREAL"></a><font size=+1><tt>UNREAL</tt> </font><i>s
+reg [s reg...]</i>
+<p>where <i>s</i> is a sign (<tt><font size=+1>+</font></tt> or <tt><font size=+1>-</font></tt>)
+indicating whether to enable or disable, and <i>reg</i> is a segment register
+<tt><font size=+1>CS</font></tt>,
+<tt><font size=+1>DS</font></tt>,&nbsp;
+<br><tt><font size=+1>ES</font></tt>, <tt><font size=+1>FS</font></tt>,
+<tt><font size=+1>GS</font></tt>,
+<tt><font size=+1>SS</font></tt>, or the keyword <tt><font size=+1>ALL</font></tt>.</td>
+
+<td>Turn on and off Unreal Mode for all or selected segment registers.&nbsp;
+This mode is a variant of Real Mode in which any segment register can access
+all of the 4GB address space.&nbsp; That is, instead of the normal 64KB
+length of a segment, the length is 4GB.&nbsp; This command can enable all
+or just some of the segment registers for Unreal Mode.&nbsp; For example,&nbsp;
+<table>
+<tr>
+<td><tt><font size=+1>UNREAL +ALL</font></tt></td>
+
+<td>enables UM for all segment registers</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>UNREAL -ALL</font></tt></td>
+
+<td>disables ...</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>UNREAL +DS</font></tt></td>
+
+<td>enables UM for <tt><font size=+1>DS</font></tt> only</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>UNREAL +DS +ES</font></tt></td>
+
+<td>enables UM for <tt><font size=+1>DS</font></tt> and <tt><font size=+1>ES</font></tt></td>
+</tr>
+</table>
+To see if a segment register is enabled for UM, look for the plus sign
+next to the segment number in the instruction disassembly window.</td>
+</tr>
+</table>
+
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Virtual Mode Switches</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="VMSCOUNT"></a><tt><font size=+1>VMSCOUNT=</font></tt><i>val</i></td>
+
+<td>Don't intrude into the GDT/IDT for VCPI debugging until the value in
+this counter has decremented to zero. This keyword is useful for occasions
+where the VCPI client shuffles its GDT and IDT around for a while before
+deciding just where it's going to be.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="VMSINT"></a><font size=+1><tt>VMSINT=ON</tt>|<tt>OFF</tt></font></td>
+
+<td>Enable (<tt><font size=+1>ON</font></tt>) or disable (<tt><font size=+1>OFF</font></tt>)
+VCPI debugging. Use this feature in cases where some VCPI programs misbehave
+when VCPI debugging is enabled. In this case, enable VCPI debugging only
+as necessary.</td>
+</tr>
+
+<tr>
+<td><tt><font size=+1>VMSINT=</font></tt><i>xx,xx,...</i></td>
+
+<td>Change the default interrupts intercepted by 386SWAT when debugging
+VCPI clients.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Pentium-Pro CPU Specific Commands</b></caption>
+
+<tr VALIGN=TOP>
+<td><a NAME="BTF"></a><tt><font size=+1>BTF</font></tt></td>
+
+<td>Display Branch Trace Facility state (ON or OFF).</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>BTF ON|OFF</font></tt></td>
+
+<td>Turn Branch Trace Facility state <tt><font size=+1>ON</font></tt> or
+<tt><font size=+1>OFF</font></tt>.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="LBR"></a><tt><font size=+1>LBR</font></tt></td>
+
+<td>Display Last Branch/Exception values on the command line.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><tt><font size=+1>LBR ON|OFF</font></tt></td>
+
+<td>Turn Last Branch/Exception window display <tt><font size=+1>ON</font></tt>
+or <tt><font size=+1>OFF</font></tt>. The four-line window displays the
+Last Branch From EIP, Last Branch To EIP, Last Exception From EIP, and
+Last Exception To EIP. Also, the keywords <tt><font size=+1><a href="swatcmr.htm#.LBRFR">.LBRFR</a></font></tt>,
+<tt><font size=+1><a href="swatcmr.htm#.LBRTO">.LBRTO</a></font></tt>,
+<tt><font size=+1><a href="swatcmr.htm#.LEXFR">.LEXFR</a></font></tt>,
+<tt><font size=+1><a href="swatcmr.htm#.LEXTO">.LEXTO</a></font></tt>
+contain the value of the Last Branch/Exception From/To EIP in case these
+need to be used in command line expressions (e.g., <tt><font size=+1>U
+.LBRFR</font></tt>).</td>
+</tr>
+</table>
+
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<caption><b>Windows Debugging Commands (see <a href="winkdbg.htm">WINKDBG.DOC</a>)</b></caption>
+
+<tr>
+<td VALIGN=TOP><a NAME="IPF"></a><tt><font size=+1>IPF</font></tt> [<tt><font size=+1>/d</font></tt>]
+[<tt><font size=+1>/s</font></tt>] [<tt><font size=+1>/r</font></tt>] <i>expr</i></td>
+
+<td VALIGN=TOP>If Invalid Page Faults are being trapped by 386SWAT's VxD
+(see <a href="swatvxd.htm">SWATVXD.DOC</a> for more details), use the IPF
+command to control how these events are to be handled. The optional switch
+<tt><font size=+1>/d</font></tt>
+tells 386SWAT not to display a message on the mono screen describing this
+event, <tt><font size=+1>/s</font></tt> tells 386SWAT not to stop when
+this event occurs, <tt><font size=+1>/r</font></tt> tells 386SWAT to remove
+this entry from its local tables, and <i>expr</i> is an expression which
+evaulates to a linear address corresponding to the Invalid Page Fault.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="MDB"></a><tt><font size=+1>MDB</font></tt> <i>expr</i></td>
+
+<td>Display the memory which corresponds to the selector <i>expr</i> as
+a Module Database.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="SGH"></a><tt><font size=+1>SGH</font></tt> [<tt><font size=+1>/b</font></tt>|<tt><font size=+1>/s</font></tt>|<tt><font size=+1>/h</font></tt>|<tt><font size=+1>/o</font></tt>]
+[<tt><font size=+1>/c</font></tt>] <i>expr</i></td>
+
+<td VALIGN=TOP>Search through the Windows Global Heap for values. The expression
+(<i>expr</i>) entered is interpreted as a base address if <tt><font size=+1>/b</font></tt>
+is specified, size if <tt><font size=+1>/s</font></tt>, handle if <tt><font size=+1>/h</font></tt>,
+and owner if <tt><font size=+1>/h</font></tt>. If <tt><font size=+1>/c</font></tt>
+is specified, the search continues from the currently displayed entry;
+otherwise, the search starts at the top of the heap.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="TDB"></a><tt><font size=+1>TDB</font></tt> <i>expr</i></td>
+
+<td>Display the memory which corresponds to the selector <i>expr</i> as
+a Task Database.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="WKD"></a><tt><font size=+1>WKD</font></tt> [<tt><font size=+1>ON</font></tt>|<tt><font size=+1>OFF</font></tt>]</td>
+
+<td VALIGN=TOP>Turn <tt><font size=+1>ON</font></tt> or <tt><font size=+1>OFF</font></tt>
+Kernel Debugging. This command cannot be used from within Windows.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>WKD</font></tt> [<tt><font size=+1>QUIET</font></tt>|<tt><font size=+1>NOISY</font></tt>]</td>
+
+<td VALIGN=TOP>Disable (<tt><font size=+1>QUIET</font></tt>) or Enable
+(<tt><font size=+1>NOISY</font></tt>) reports on Parameter Errors.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>WKD LOGERROR </font></tt>[<tt><font size=+1>ON</font></tt>|<tt><font size=+1>OFF</font></tt>]</td>
+
+<td VALIGN=TOP>Turn <tt><font size=+1>ON</font></tt> or <tt><font size=+1>OFF</font></tt>
+the INT 01h trap of calls to LogError ().</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><tt><font size=+1>WKD FAULT </font></tt>[<tt><font size=+1>ON</font></tt>|<tt><font size=+1>OFF</font></tt>|<tt><font size=+1>SKIP</font></tt>]</td>
+
+<td VALIGN=TOP>Turn <tt><font size=+1>ON</font></tt>, <tt><font size=+1>OFF</font></tt>,
+or <tt><font size=+1>SKIP</font></tt> once traps for Faults.</td>
+</tr>
+</table>
+<!--#include virtual="/footer.htm" -->
+</body>
+</html>

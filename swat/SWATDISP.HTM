@@ -1,0 +1,35 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.6 [en] (Win98; U) [Netscape]">
+   <meta name="Author" content="Bob Smith">
+   <title>386SWAT Display Options</title>
+</head>
+<body text="#000000" bgcolor="#FFFFC0" link="#0000FF" vlink="#800080" alink="#FF00FF">
+
+<center><b><font size=+2>386SWAT Display Options</font></b></center>
+
+<p>The debugger presents its output on various display devices in various
+contexts.&nbsp; Typically, it uses the primary display, but other options
+are possible.&nbsp; If you have a secondary display, such as a monochrome
+adapter/monitor or if you are running on a PCI system with a second PCI
+VGA adapter, 386SWAT can use those also.
+<p>If you have a monochrome adapter in your system, place the keyword <a href="swatpro.htm#MONO">MONO</a>
+in your 386SWAT profile.&nbsp; The debugger determines whether or not your
+monochrome adapter is always visible or is hidden by a PCI VGA card, even
+an AGP controller.&nbsp; In either case, 386SWAT ferrets out the adapter
+and displays its output there.&nbsp; Pressing <a href="swatscr.htm#a-F7">Alt-F7</a>
+switches between the monochrome and color adapters.
+<p>If you have a secondary PCI VGA adapter in your system, place the keyword
+<a href="swatpro.htm#DVGA">DVGA</a>
+in your 386SWAT profile.&nbsp; The debugger displays its output on this
+screen, even if it's hidden by an AGP controller.&nbsp; Pressing <a href="swatscr.htm#a-F7">Alt-F7</a>
+switches between the two PCI VGA adapters.
+<p>I learned a bit about PCI programming getting the above to work, so
+I've gathered together <a href="ftp://ftp.sudleyplace.com/sudleyplace/dpci.zip">assembler
+code</a> to demonstrate the techniques used for you to browse.&nbsp; Thanks
+go to Dominik Behr, Federico Bianchi, Ralf Brown, and others for their
+helpful suggestions and/or source code.<!--#include virtual="/footer.htm" -->
+</body>
+</html>

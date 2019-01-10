@@ -1,0 +1,549 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en]C-CCK-MCD   (Win98; U) [Netscape]">
+   <meta name="Author" content="Bob Smith">
+   <title>Debugging Screen and Keystrokes</title>
+</head>
+<body text="#000000" bgcolor="#FFFFC0" link="#0000FF" vlink="#800080" alink="#FF00FF">
+
+<center><b><font size=+2>Debugging Screen and Keystrokes</font></b></center>
+
+<p><u>Debugging Screen</u>
+<p>The top of the initial debugging screen consists of a row of the 32-bit
+general purpose registers, two rows of the segment registers, and one row
+of CR0, CR2, and extended flags.
+<p>The rest of the initial debugging screen displays the instructions to
+be executed with the stack appearing on the right in one or two columns.
+If the current instruction references memory, the segment register, offset,
+and memory value of the reference are displayed on the line separating
+the registers from the instructions.
+<p>The line at the bottom of the screen is used to enter various commands.&nbsp;
+The following table summarizes the possibilities. The usual editing keys
+are available such as Left, Right, Home, End, Insert, Backspace, and Delete.&nbsp;
+Note that a colon (:) is used to separate a segment from an offset (Virtual
+8086 Mode) and that a stile (<tt><font size=+1>|</font></tt>) is used to
+separate a selector from an offset (Protected Mode).&nbsp; The command
+line is parsed according to the grammar found in the file <a href="swatgrm.htm">386SWAT.GRM</a>.
+<br>&nbsp;
+<p><a NAME="Command Line Recall"></a><u>Command Line Recall</u>
+<p>Commands entered on the command line are saved in a ring buffer whose
+length can be changed from the default of 1024 via the profile keyword
+<tt><font size=+1><a href="swatpro.htm#CMDHIST">CMDHIST</a>=</font></tt><i>nnn</i>.
+<p>Previous commands can be retrieved via the keystrokes <a href="#a-<">Alt-&lt;</a>
+(previous command) and <a href="#a->">Alt-></a> (next command). Pressing
+either of these keys repeatedly scrolls through the buffer in the chosen
+direction. The keystroke <a href="#a-?">Alt-?</a> displays a history of
+(up to 24) commands from which a command can be chosen by scrolling up
+or down through the list, or by typing the letter next to the command.
+A command may be deleted from this list via the Del key.
+<br>&nbsp;
+<p><a NAME="Special Keystrokes"></a><u>Special Keystrokes</u>
+<p>Special keystrokes available from the command line include:
+<br>&nbsp;
+<table BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<tr>
+<td VALIGN=TOP><a NAME="ESC"></a>ESC</td>
+
+<td VALIGN=TOP>Continue processing. Equivalent to the <a href="swatcmd.htm#G">Go</a>
+command.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F1"></a>F1</td>
+
+<td VALIGN=TOP>Display a help screen with submenus.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F3"></a>F3</td>
+
+<td VALIGN=TOP>Display LDT entries.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F4"></a>F4</td>
+
+<td VALIGN=TOP>Display IDT entries.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F5"></a>F5</td>
+
+<td VALIGN=TOP>Display PTE entries.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F6"></a>F6</td>
+
+<td VALIGN=TOP>Display search screen.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F7"></a>F7</td>
+
+<td VALIGN=TOP>Display memory. While this display is active, <a href="#c-B">Ctl-B</a>
+displays in byte format, <a href="#c-W">Ctl-W</a>, in word format, <a href="#c-D">Ctl-D</a>
+in dword format, <a href="#c-V">Ctl-V</a> in vector format, <a href="#c-G">Ctl-G</a>
+in GDT format, <a href="#c-I">Ctl-I</a> in IDT format, and <a href="#c-T">Ctl-T</a>
+in TSS format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F8"></a>F8</td>
+
+<td VALIGN=TOP>Display TSS entries.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F9"></a>F9</td>
+
+<td VALIGN=TOP>Display the instruction disassembly screen.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F10"></a>F10</td>
+
+<td VALIGN=TOP>Display screen on entry to debugger.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F11"></a>F11</td>
+
+<td VALIGN=TOP>Single-step the current instruction (see <a href="#Padplus">Padplus</a>).
+This key as well as <a href="#F12">F12</a> are useful on systems without
+a <a href="#Padplus">Padplus</a>/<a href="#Padminus">Padminus</a> key,
+or ones for which those keys are difficult to type such as some laptops.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="F12"></a>F12</td>
+
+<td VALIGN=TOP>Single-skip the current instruction (see <a href="#Padminus">Padminus</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="s-F1"></a>s-F1</td>
+
+<td VALIGN=TOP>Goto the immediate CALL or JMP address of the instruction
+at the top of the screen and save the address of the current instruction
+(see <a href="swatbmrk.htm">Disassembly Bookmarks</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="s-F2"></a>s-F2</td>
+
+<td VALIGN=TOP>Return from the previous <a href="#s-F1">s-F1</a> goto (see
+<a href="swatbmrk.htm">Disassembly
+Bookmarks</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="s-F3"></a>s-F3</td>
+
+<td VALIGN=TOP>Goto the instruction on the top line (see <a href="#Padstar">Padstar</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="s-F4"></a>s-F4</td>
+
+<td VALIGN=TOP>Display the last <a href="swataflt.htm">AutoFault</a> message.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="s-F5"></a>s-F5</td>
+
+<td VALIGN=TOP>Display the Real Mode Interrupt Vector Table.</td>
+</tr>
+
+<tr>
+<td><a NAME="s-F10"></a>s-F10</td>
+
+<td>Save the current screen into the last screen buffers.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F1"></a>a-F1</td>
+
+<td VALIGN=TOP>Toggle intercept of INTs 01h/03h. The current state appears
+below the segment/selector register display as 01 or blank, 03 or blank.
+The default state is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPDEBUG">TRAPDEBUG</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F2"></a>a-F2</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 02h. The current state appears below
+the segment/selector register display as 02 or blank. The default state
+is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPNMI">TRAPNMI</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F3"></a>a-F3</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 0Dh. The current state appears below
+the segment/selector register display as 0D or blank. The default state
+is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPGENP">TRAPGENP</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F4"></a>a-F4</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 0Eh. The current state appears below
+the segment/selector register display as 0E or blank. The default state
+is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPPAGE">TRAPPAGE</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F5"></a>a-F5</td>
+
+<td VALIGN=TOP>Toggle stack display state between two columns of words
+and one column of dwords. The tick marks appear every 16 bytes.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F6"></a>a-F6</td>
+
+<td VALIGN=TOP>Toggle screen save state (eliminates screen flicker when
+single-stepping over instructions which don't write to the screen). The
+current state appears below the segment/selector register display as <tt><font size=+1>SS=ON</font></tt>
+or <tt><font size=+1>SS=OFF</font></tt>.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F7"></a>a-F7</td>
+
+<td VALIGN=TOP>Toggle video base (switch debugging screens in a two-monitor
+system).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F8"></a>a-F8</td>
+
+<td VALIGN=TOP>Display NDP (floating point) register screen. Use the same
+keystroke to remove the NDP screen.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F9"></a>a-F9</td>
+
+<td VALIGN=TOP>Display debug register screen. This screen remains active
+until it is replaced by another screen. That is, you may type on the command
+line, etc. while the debug register screen is displayed.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F10"></a>a-F10</td>
+
+<td VALIGN=TOP>Display previous debugging screens. This option can be used
+to compare changes over a single-step or single-skip. Up to sixteen previous
+screens can be displayed in this manner using the <a href="#Up">Up</a>
+and <a href="#Down">Down</a> arrows. To change from the default value of
+sixteen, use the keyword <tt><font size=+1><a href="swatpro.htm#SAVESCREEN">SAVESCREEN</a></font></tt>(see
+above).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F11"></a>a-F11</td>
+
+<td>Display MMX and SSE2 register screen.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-F"></a>a-F</td>
+
+<td VALIGN=TOP>Goto the far return address at <tt><font size=+1>SS:SP</font></tt>
+or <tt><font size=+1>SS|eSP</font></tt> (depending upon the current mode).
+If the current code segment is USE16, the far return address is assumed
+to be word:word (or word|word); if it's USE32, the format is assumed to
+be word<tt><font size=+1>:</font></tt>dword (or word<tt><font size=+1>|</font></tt>dword).
+This shortcut is equivalent to typing <tt><font size=+1><a href="swatcmr.htm#.RETF">G
+.RETF</a></font></tt> at the command line.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="a-N"></a>a-N</td>
+
+<td VALIGN=TOP>Goto the near return address at <tt><font size=+1>SS:SP</font></tt>
+or <tt><font size=+1>SS|eSP</font></tt> (depending upon the current mode).
+If the current code segment is USE16, the near return address is assumed
+to be word; if it's USE32, the format is assumed to be dword. This shortcut
+is equivalent to typing <tt><font size=+1><a href="swatcmr.htm#.RETN">G
+.RETN</a></font></tt> at the command line.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="a-<"></a>a-&lt;</td>
+
+<td>Retrieve the previous command from the <a href="#Command Line Recall">command
+history</a> buffer.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="a->"></a>a-></td>
+
+<td>Retrieve the next command from the <a href="#Command Line Recall">command
+history</a> buffer.</td>
+</tr>
+
+<tr VALIGN=TOP>
+<td><a NAME="a-?"></a>a-?</td>
+
+<td>Display the <a href="#Command Line Recall">command history</a> buffer.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F1"></a>c-F1</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 01h only. The current state appears
+below the segment/selector register display as 01 or blank. The default
+state is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPSTEP">TRAPSTEP</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F2"></a>c-F2</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 03h only. The current state appears
+below the segment/selector register display as 03 or blank. The default
+state is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPSKIP">TRAPSKIP</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F3"></a>c-F3</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 06h. The current state appears below
+the segment/selector register display as 06 or blank. The default state
+is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPINV">TRAPINV</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F4"></a>c-F4</td>
+
+<td VALIGN=TOP>Toggle intercept of INT 0Ch. The current state appears below
+the segment/selector register display as 0C or blank. The default state
+is controlled by the presence or absence of the <tt><font size=+1><a href="swatpro.htm#TRAPSTACK">TRAPSTACK</a></font></tt>keyword.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F5"></a>c-F5</td>
+
+<td VALIGN=TOP>Display PDE entries.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F6"></a>c-F6</td>
+
+<td VALIGN=TOP>Display symbols.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F7"></a>c-F7</td>
+
+<td VALIGN=TOP>Display file browser.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F8"></a>c-F8</td>
+
+<td VALIGN=TOP>Enter <a href="swatcmd.htm#CHAT">CHAT</a> mode. This allows
+two connected machines to test the serial port connection. What you type
+is displayed on the lower screen and sent to the other system; whatever
+is received is displayed on the top screen. If only garbage characters
+appear the two machines may not have the same data transfer rate set.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F9"></a>c-F9</td>
+
+<td VALIGN=TOP>Attempt to connect for remote debugging. See the section
+at the end of this document on remote debugging.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F10"></a>c-F10</td>
+
+<td VALIGN=TOP>Display error log.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-F11"></a>c-F11</td>
+
+<td VALIGN=TOP>Single-step INT-like instruction in VM to PM, otherwise
+just single-step (same as <a href="#c-Padplus">c-Padplus</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-Up"></a>c-Up</td>
+
+<td VALIGN=TOP>Decrement the location pointer to the previous entry. This
+change has a different effect depending upon the type of information being
+displayed. If used in a data display, it moves back one data item (byte,
+word, dword, etc.). If used in a TSS display, the I/O ports in the I/O
+bit permission map scroll up.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-Down"></a>c-Down</td>
+
+<td VALIGN=TOP>Increment the location pointer to the next entry. This change
+has a different effect depending upon the type of information being displayed.
+If used in a data display, it moves forward one data item (byte, word,
+dword, etc.). If used in a TSS display, the I/O ports in the I/O bit permission
+map scroll down.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-Home"></a>c-Home</td>
+
+<td VALIGN=TOP>Place the current instruction at the top of the screen.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-B"></a>c-B</td>
+
+<td VALIGN=TOP>Display memory in byte (xx) format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-D"></a>c-D</td>
+
+<td VALIGN=TOP>Display memory in dword (xxxxxxxx) format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-G"></a>c-G</td>
+
+<td VALIGN=TOP>Display memory in GDT format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-I"></a>c-I</td>
+
+<td VALIGN=TOP>Display memory in IDT format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-K"></a>c-K</td>
+
+<td VALIGN=TOP>Display Windows Kernel Debugger Structures menu. This menu
+may be displayed only when running under Windows as a kernel debugger.&nbsp;
+See <a href="winkdbg.htm#c-K">WINKDBG.DOC</a>.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-M"></a>c-M</td>
+
+<td VALIGN=TOP>Display memory allocation chain entries based at the value
+assigned to <tt><font size=+1><a href="swatcmd.htm#MACBASE">MACBASE</a></font></tt>.
+By default, this value is the initial value of <tt><font size=+1><a href="swatcmr.htm#.DMAC">.DMAC</a></font></tt>.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-T"></a>c-T</td>
+
+<td VALIGN=TOP>Display memory in TSS format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-V"></a>c-V</td>
+
+<td VALIGN=TOP>Display memory in vector (xxxx:xxxx) format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-W"></a>c-W</td>
+
+<td>Display memory in word (xxxx) format.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-Z"></a>c-Z</td>
+
+<td VALIGN=TOP>Zap (convert to NOPs) the instruction at the top of the
+instruction disassembly window.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-ESC"></a>c-ESC</td>
+
+<td VALIGN=TOP>Same as ESC, but if you're on an INT 03h, it skips over
+it first and then continues. If the current instruction is not an INT 03h,
+this keystroke behaves identically to <a href="#ESC">ESC</a>.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="Padplus"></a>Padplus</td>
+
+<td VALIGN=TOP>Single-step the current instruction (same as <a href="#F11">F11</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="c-Padplus"></a>c-Padplus</td>
+
+<td VALIGN=TOP>Single-step INT-like instruction in VM to PM, otherwise
+just single-step (same as <a href="#c-F11">c-F11</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="Padminus"></a>Padminus</td>
+
+<td VALIGN=TOP>Single-skip the current instruction (same as <a href="#F12">F12</a>).
+That is, execute the current instruction and put a breakpoint on the instruction
+following. This is used to execute but not single-step through a CALL or
+LOOP instruction.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="Padstar"></a>Padstar</td>
+
+<td VALIGN=TOP>Goto the instruction on the top line (same as <a href="#s-F3">s-F3</a>).</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="Up"></a>Up</td>
+
+<td VALIGN=TOP>Scroll the screen up one line. This key has the same effect
+in almost all screen displays.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="Down"></a>Down</td>
+
+<td VALIGN=TOP>Scroll the screen down one line. This key has the same effect
+in almost all screen displays.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="PgUp"></a>PgUp</td>
+
+<td VALIGN=TOP>Scroll the screen up one page. This key has the same effect
+in almost all screen displays.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="PgDown"></a>PgDown</td>
+
+<td VALIGN=TOP>Scroll the screen down one page. This key has the same effect
+in almost all screen displays.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="s-PrtSc"></a>s-PrtSc</td>
+
+<td VALIGN=TOP>Print the screen. Note that if either the previous application
+screen (<a href="#F10">F10</a>) or one of the previous debugging screens
+(<a href="#a-F10">a-F10</a>) is currently displayed, that screen is sent
+to the printer. The I/O port in the BIOS data area which corresponds to
+LPT1 is used.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP><a NAME="Ctl-Alt-Del"></a>Ctl-Alt-Del</td>
+
+<td VALIGN=TOP>Reboot the system.</td>
+</tr>
+</table>
+<!--#include virtual="/footer.htm" -->
+</body>
+</html>

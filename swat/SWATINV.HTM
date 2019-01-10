@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/x-server-parsed-html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Invoking 386SWAT</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Invoking 386SWAT</FONT></B></CENTER>
+
+
+<P>Generally, the debugger lies in the background waiting for some catastrophic
+event to occur.
+
+<P>To bring up the debugger from the keyboard, press Ctl-Alt-Pad5. That
+is, with the Ctl- and Alt-keys held down, pressing the 5 key on the numeric
+pad invokes the debugger. This mechanism is useful when your program is
+stuck somewhere. Remember, the keyboard and the keyboard interrupt must
+be enabled for this to work. On systems for which the Pad5 key is inconvenient
+to use (such as some laptops), the sequence Ctl-Alt-SysReq also brings
+up the debugger.
+
+<P>It is also handy to install an NMI switch for when the system really
+gets locked up.&nbsp; Be sure to put the keyword <TT><FONT SIZE=+1><A HREF="swatpro.htm#TRAPNMI">TRAPNMI</A></FONT></TT>
+in the 386SWAT profile.
+
+<P>To run a particular program through the debugger, use the <TT><FONT SIZE=+1><A HREF="swatsym.htm#SWATRUN">SWATRUN</A>
+</FONT></TT>utility.
+
+<P>If remote debugging is active (see <TT><FONT SIZE=+1><A HREF="swatpro.htm#SETCOM">SETCOM</A></FONT></TT>
+profile option and <TT><FONT SIZE=+1><A HREF="swatcmd.htm#SETCOM">SETCOM</A></FONT></TT>
+command) the debugger may also be activated by sending <TT><FONT SIZE=+1>SWT!</FONT></TT>
+followed by a break signal. This is done by pressing Ctl-6 in the CHAT
+screen.
+
+<P>The utility <TT><FONT SIZE=+1><A HREF="swatsym.htm#SWATCMD">SWATCMD</A></FONT></TT>
+(loaded via <TT><FONT SIZE=+1>Device=</FONT></TT> or from the DOS command
+line) may be used to pass commands to 386SWAT.&nbsp; Invoking <TT><FONT SIZE=+1>SWATCMD</FONT></TT>
+with no options brings up 386SWAT at an INT 03h (assuming <TT><FONT SIZE=+1><A HREF="swatpro.htm#TRAPSKIP">TRAPSKIP</A>
+</FONT></TT>or <TT><FONT SIZE=+1><A HREF="swatpro.htm#TRAPDEBUG">TRAPDEBUG</A>
+</FONT></TT>is active).
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

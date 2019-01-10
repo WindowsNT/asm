@@ -1,0 +1,46 @@
+Documentation for KEYBIN.COM
+
+Use this program on an international keyboard to help the author of
+386SWAT support your keyboard.
+
+First try out the program to see how it works (note Space bar to
+Exit).	Next redirect the program's output to a file and type all keys
+(blindly).
+
+Type every key on your keyboard except for function, arrow, and keypad
+keys.  Type every key in unshifted state as well as with the Shift-,
+Control-, and Alt-keys.  If your keyboard distinguishes between the
+left and right Shift-, Control-, and/or Alt-keys be sure to test all
+states for all keys.
+
+After exiting the program, annotate the output file with any comments
+you consider appropriate.  Finally, e-mail the file to the author (see
+the address at the bottom of the 386SWAT.DOC file).
+
+For reference, supported keyboard layouts include
+
+GR129	Germany
+SP172	Spain
+
+The keyboard layouts to which I have access and don't currently
+support are as follows:
+
+BE120	Belgium
+CF058	Canada (French)
+DK159	Denmark
+SU153	Finland
+FR120	France
+FR189	France
+IS197	Iceland
+IT142	Italy
+LA171	Latin America
+NL143	Netherlands
+NO155	Norway
+PO163	Portugal
+SF150	Switzerland (French)
+SG150	Switzerland (German)
+TR179	Turkey
+UK166	United Kingdom
+YU234	Yugoslavia (Latin)
+
+

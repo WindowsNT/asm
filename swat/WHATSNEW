@@ -1,0 +1,1094 @@
+Version 6.04
+
+* Implement UNREAL as keyword in the 386SWAT.PRO file.
+
+
+Version 6.03
+
+* Support for display of MMX & SSE instructions
+* Display MMX and SSE registers via Alt-F11.
+* Support for display of FCMOVcc, FCOMI, FUCOMI, FCOMIP, FUCOMIP
+  instructions
+* Implement FSONLY keyword to allow SWAT to install in Windows w/o
+  DVGA or MDA because you promise to bring up SWAT in a Full Screen
+  DOS window only.
+* Implement X15 keyword to tell SWAT to pass through INT 15h memory
+  size calls (thus not protecting its own allocated memory).  This is 
+  a debugging keyword only, not for general use.
+* Fix bug where all Family 6 CPUs were thought to support the Last
+  Branch/Exception feature, whereas, in fact, only Intel CPUs do.  
+  This would cause SWAT to reboot during initialization on certain 
+  Cyrix CPUs.
+* Display + or - sign after jcc instruction if a Branch Hint prefix
+  (2Eh or 3Eh) is present.
+
+
+Version 6.02
+
+* Support MDA hidden by PCI VGA or PCI AGP controller, and secondary
+  PCI VGA adapter.	 See SWATIDSP.HTM for more details.
+* Support 4MB pages in PTE display as well as the PTE and SPTE
+  commands.
+* Fix bug when using BC on current instruction and G to another
+  instruction.
+* Fix bug in display of MOV r32,[EBP*n+disp32].
+* Display appropriate comments on PCI calls (INT 1Ah).
+* Emulate references to the debug registers (DRn) if the GD bit is set
+  in DR7.
+* Implement search for not a value, e.g., S addr addr ~val.
+* Implement DLG16 & DLG32 commands to display dialogs when in Windows.
+
+* Extend monitor expressions to BD and BC commands.
+* Implement BP command to break on page references.
+
+
+Version 6.01
+
+* Implement UNREAL command to allow debugging of Unreal Mode.  This
+  mode is a variant of Real Mode in which any segment register can
+  access all of the 4GB address space.	That is, instead of the normal
+  64KB length of a segment, the length is 4GB.	This command can
+  enable all or just some of the segment registers for Unreal Mode.
+  See SWATCMD.HTM for more details.
+
+
+Version 6.00.002
+
+* Implement s-F10 to save the current screen into the last screen
+  buffers.
+* Fix various bugs in 386SWAT's RM Windows support.
+* Implement QS command to display nearest symbol at or before a given
+  address.
+* Implement DTE command to display Descriptor Table Entry on the
+  command line.
+* Implement MDB command to display a Windows Module Database.
+* Implement TDB command to display a Windows Task Database.
+* Implement .MDB to return Sel|0 of current MDB.
+* Implement .TDB to return Sel|0 of current TDB.
+* Display PDE and PTE bits with PTE command.
+
+
+Version 6.00.001
+
+* Code reorganization to accommodate logged in versions 5.10.071-9
+* Documentation moved over to HTML format.
+
+
+Version 6.00.000
+
+* Implement support for Windows kernel debugging.  This major upgrade
+  is described (to some degree) in WINKDBG.DOC; also see 386SWAT.DOC
+  and SWATVXD.DOC.
+
+
+Version 5.10.079
+
+* Add More Service Routine Text
+
+  Add service routine text displays for Win95 VMM routines.  This text
+  is displayed when decoding INT 20h calls.
+
+
+Version 5.10.078
+
+* Fix .VMSTK and .VMRET Commands
+
+  For some reason, the implementations of the .VMSTK and .VMRET
+  commands didn't work, so now they do.  Moreover, .VMSTK is now
+  called .VMCRS (for Client Register Struc).
+
+
+Version 5.10.077
+
+* Implement Time Stamp Counter Display
+
+  On CPUs which support it (TSC bit set in CR4), display the # clocks
+  executed since the last time 386SWAT was entered.  There is a
+  certain amount of overhead in each entry to 386SWAT, so the numbers
+  displayed will never be at the level of single instruction clock
+  counts, but it is a good measure of time over a longer set of
+  instructions.
+
+
+Version 5.10.076
+
+* Handle New Windows Keyboard Keys
+
+  The Microsoft Natural keyboard contains three new keys:
+
+  * Left Windows key
+  * Right Windows key
+  * Application key
+
+  These keys have new scan codes which our keyboard handler now
+  recognizes, although we don't do much with them as yet.  The left
+  and right Windows keys are meant to be modifiers just as Shift,
+  Ctl-, and Alt-keys are modifiers.  The Application key is meant to
+  be an actual keystroke, so I've assigned arbitrary key codes to it
+  in its Unshifted, Shift-, Ctl-, and Alt-states.
+
+  For the moment, until someone can think of something better, the
+  Application key invokes the Help menu.
+
+
+Version 5.10.075
+
+* Miscellaneous internal changes
+
+
+Version 5.10.074
+
+* Use Ctrl-Shift-PrtSc To Print Instruction Window Only
+
+  When printing multiple instruction screens, repeating the register
+  display and other information on the second and subsequent screens
+  is unnecessary.  To this end, the key combination Ctrl-Shift-PrtSc
+  prints the instruction portion of the display only, assuming the
+  instruction window is displayed (if not, the entire screen is
+  printed as usual).
+
+
+Version 5.10.073
+
+* Implement Saved Register Clear Command
+
+  In case you do not need to restore a saved register set, the saved
+  state can be cleared with the RC command.
+
+* In the operand analysis display for an IRETd with NT=1, the back
+  link TSS selector is omitted as there's no room for it and all of
+  the other information being displayed.
+
+
+Version 5.10.072
+
+* Implement Command Recall
+
+  Commands entered on the command line are saved in a ring buffer
+  whose length can be changed from the default of 1024 via the profile
+  keyword CMDHIST=nnn.
+
+  Previous commands can be retrieved via the keystrokes Alt-<
+  (previous command) and Alt-> (next command).	Pressing either of
+  these keys repeatedly scrolls through the buffer in the chosen
+  direction.  The keystroke Alt-?  displays a history of (up to 25)
+  commands from which a command can be chosen by scrolling up or down
+  through the list, or by typing the letter next to the command.  A
+  command may be deleted from this list via the Del key.
+
+* A bug was fixed when running under Windows where a jump was taken
+  with the wrong sense (JZ vs.	JNZ) if Win386 services are available.
+
+* A new help screen to describe the various searching options is
+  defined.
+
+
+Version 5.10.071
+
+* Fix Bug When Searching For Bytes
+
+  In an earlier TWT, when handling Page Faults, the ZF flag was
+  cleared without realizing that subsequent code depended upon it
+  being set.  The effect was that searches for bytes were never found.
+  This change fixes that.
+
+
+Version 5.10.070
+
+* Implement INSERT Command
+
+  To debug Windows at the lowest level, we need to be able to insert
+  ourselves into Windows startup shortly after it enters PM.  To this
+  end, the INSERT command is available.  It is used from the 386SWAT
+  command line at the point just before Windows enters PM.
+
+
+Version 5.10.069
+
+* Allow Fill Command On Physical Memory
+
+  The Fill (F) command used to change data in memory now allows an
+  optional trailing P also optionally followed by a CR3, just as the
+  Unassemble and other commands allow.
+
+
+Version 5.10.068
+
+* Fix Bug In Implicit Stack References
+
+  When displaying the data (if any) pointed to by the current
+  instruction, if the instruction used an implicit stack reference
+  (such as the PUSH instruction) we sometimes would use the wrong base
+  register (ESP vs. SP).  This TWT fixes that bug.
+
+
+Version 5.10.067
+
+* AutoFault for GP Faults
+
+  The Autofault facility has been extended to GP Faults.  This means
+  that an attempt is made to interpret each GP Fault intercepted by
+  386SWAT in a short sentence.	Type Shift-F4 to see the last
+  Autofault error message.	Because GP Faults are many and varied,
+  some cases will be missed (marked as unknown) or mistaken.  Please
+  notify the author as you encounter such cases with the exact
+  circumstances of the GP Fault so they may be corrected.
+
+
+Version 5.10.066
+
+* When Running Under Windows, Map In/Out VM's First Megabyte
+
+  Previously, when our local keyboard handler was active, we avoided
+  checking and setting the keyboard values in the BIOS data area if
+  Windows was active because we couldn't be sure that that memory
+  region was mapped in.  Now that I have discovered Win386 (INT 22h)
+  services, we can map in/out that region around references to it.
+
+
+Version 5.10.065
+
+* Set the GD Bit In DR7
+
+  Because some programs get a kick out of resetting the debug
+  registers which we've carefully setup, this change has 386SWAT
+  automatically set the Global Debug (GD) bit in DR7 on startup so
+  that we can stop such programs before they can do any harm.  Perhaps
+  it doesn't surprise you that Windows is the chief reason for this
+  feature.
+
+
+Version 5.10.064
+
+* Display Real Mode Interrupt Vector Table
+
+  As it's a very common data structure to view, the keystroke Shift-F5
+  now displays the RM IVT.
+
+
+Version 5.10.063
+
+* Filter Leading Text From Symbols
+
+  Some symbols, especially from Windows programs written in C, are
+  prefaced with text such as "__imp__", "_", and the like which adds
+  the symbol's length but not understanding.  This feature allows you
+  to specify in the 386SWAT profile leading text which is to be
+  stripped from each symbol.
+
+	 SYMFILTER = text1 [text2 [...]]
+
+  The default settings are
+
+	 SYMFILTER=__imp__ _
+
+  Up to 128 characters can be specified in this way.
+
+
+Version 5.10.062
+
+* Fix Bug When Displaying Long Symbol Names
+
+  When we display a symbol names of 50 chars or greater at the top of
+  a data screen, we're off by one in our calculations which can cause
+  the name to fold to the next line.
+
+
+Version 5.10.061
+
+* Fix Bug In The Stack Width Change Calculation
+
+  Previously, the calculation of when to change stack width (words or
+  dwords) occurred only when the code selector changed.  In fact, it
+  should be checked when the stack selector changes (duh!).
+
+
+Version 5.10.060
+
+* Fix Bug With Mis-aligned Stack In GP Fault Handler
+
+  If the user hooks GP Faults, the handler in LCL_INT0D uses a stack
+  structure which is missing one word in the middle.  It's amazing it
+  has worked at all so far.
+
+
+Version 5.10.059
+
+* Implement Support For P6 Features
+
+  Two P6 features are supported by this TWT.
+
+  1.  The Branch Trace Facility (BTF) can be turned on and off via the
+	  command line BTF ON/OFF.
+
+  2.  The Last Branch/Exeception From/To registers can be displayed at
+	  all times in the lower right corner of the screen.  This feature
+	  can be turned on and off via the command line LBR ON/OFF.
+
+* Skip Over Read/Write From/To Debug Registers If GD Bit Is Set
+
+  When the GD bit in DR7 is set, any read from or write to a debug
+  register triggers a Debug Fault (and the CPU clears the GD bit from
+  DR7 so the Debug Fault handler can use those registers).
+
+  Some environments (Microsoft Windows comes to mind) clear the debug
+  registers upon entry (and at other times) thus making it difficult
+  debug in that context.  With this change, setting the GD bit traps
+  reads and writes of those registers and handles them transparently.
+  A read from a debug register returns the actual value.  A write to a
+  debug register is ignored.  The GD bit can be set from the 386SWAT
+  command line via
+
+	R DR7.GD=1
+
+  If you desire this behavior to be the default, use SWATCMD with the
+  above argument.
+
+
+Version 5.10.058
+
+* Add .VM addresses for Windows debugging
+
+  Especially when debugging calls from a Windows app down to a VM
+  interrupt handler, it is sometimes useful to know where we'll come
+  back to in Windows on the other side of the ARPL wall.  .VMRET will
+  often work if the call was made via DPMI SIMVMI (function 0300h) or
+  an INT instruction emulated by the DPMI host (Windows).
+
+* Add Go Monitor command and .CSIP to 386SWAT
+
+  The GM (go monitor) command takes an expression which will be
+  evaluated as the CPU single-steps (equivalent to Pad-plus or F11).
+  No display will occur until 1) the monitor expression evaluates TRUE
+  or 2) 386SWAT is invoked by some other means (GP fault, NMI, Ctrl-
+  Alt-Pad5, etc.)
+
+  Boolean expressions may be constructed using the dyadic operators
+  &&, ||, <, <=, ==, >=, and >.  Operator precedence is the same as
+  the C language.
+
+  For example:
+
+  GM ah
+	 executes until AH is non-zero.
+
+  GM [.csip == 21cd && ah!=9
+	 executes until the current instruction is INT 21 and AH is any
+	 value other than 9 (DOS display string).
+
+  GM cx == 0
+	 executes until CX is 0.
+
+  GM
+	executes until the last expression specified with GM is TRUE.
+
+  There are some limitations:
+
+	1. Currently, GM does not single-step across mode switches via INT
+	   (but will handle any mode switch handled by Pad Plus).
+	2. It is slow as molasses.
+	3. With the addition of boolean operators like && and ||
+	   precedence becomes more of something one would reasonably
+	   expect.
+	4. GM will not work in TSS mode currently (non-critical, failure
+	   mode is the expression doesn't trigger).
+
+
+Version 5.10.057
+
+* Fix Bug When Testing For Extended Memory
+
+  Due to an oversight, when I put in the code to determine the amount
+  of extended memory using the INT 15h/0E801h call, I put it in after
+  the INT 15h/0DA88h, instead of before.  Because of a bug in Phoenix
+  4.04 BIOSes, which crash on the 0DA88h call, the order is important.
+
+  Also, when setting up the IDT entry for VCPI debugging using TSSes,
+  we used to set the offset to -1 (because the IDT selector is a TSS
+  and the offset isn't used).  For convenience, I'm now setting the
+  low-order byte of the offset to the interrupt #.	That way, when
+  looking at the IDT in memory (not via F4) it's easy to tell which
+  interrupt it covers.
+
+
+Version 5.10.056
+
+* Workaround Feature In Win95
+
+  Because of a quirk in Win95 (what, only one!), when we blast in the
+  PTEs for 386SWAT to address the monochrome and color video buffers
+  from local addresses, we need to preserve the AVL bits and set the
+  accessed bit so this PTE won't be thought of as one available for
+  allocation.
+
+
+Version 5.10.055
+
+* Handle Large Size 386SWAT With VCPI Clients
+
+  If the resident portion of 386SWAT becomes too large (perhaps a
+  large SYMSIZE or SAVESCREEN), then we might not be able to debug
+  VCPI clients because our footprint exceeds the 4MB limit (one page
+  directory) for VCPI.	If this happens, we should at least warn the
+  user in case s/he intends to debug VCPI clients.
+
+* Fix Bug With Unused GDT Entry
+
+  When 386SWAT loads via the 386MAX profile, it is passed its linear
+  address when it is a VCPI client in the third of the three GDT
+  entries allocated for load modules.  This is done because 386SWAT's
+  PTEs are part of 386MAX's and get relocated by 386MAX when a VCPI
+  client loads.
+
+  When 386SWAT intrudes into a Memory Manager, we don't use the third
+  GDT entry in the same way, and in some cases we might not even
+  allocate a third GDT entry if we have found existing GDT entries for
+  an all memory selector and one which maps CR3.  In this case (I
+  encountered it when intruding into QEMM), we can mistakenly
+  reference the third GDT entry.  This TWT fixes that.
+
+* Check For Additional Autofault Errors For TSS Faults
+
+  If a TSS fault occurs, there are some additional reasons for it
+  which we now test for and report on, such as invalid selectors in
+  the back link TSS when a return from a nested TSS occurs.
+
+  At the same time, I included some additional fault error messages
+  which occur when we're using TSSs ourselves (typically when we're
+  debugging VCPI clients) which we we're checking for before.  This
+  also involves moving that error message text from the data to the
+  code segment to match where the Autofault code expects it.
+
+  Also, I changed references to $PTE_0 to $PTE_G as that's its new
+  definition, and checked for Page Fault problems related to that bit
+  if PTE Global Extensions are enabled in CR4.
+
+
+Version 5.10.054
+
+* Handle Multiple GDTs When VCPI Debugging
+
+  While tracking down a bug in the CDROM game The 11th Hour, I found
+  that 386SWAT needed to handle intruding into multiple GDTs as this
+  game appear to use up to three different ones, alternating between
+  two quite frequently.  We now support up to eight alternating GDTs.
+
+  At the same time, I fixed a bug where 386SWAT was not correctly
+  recognizing whether or not it had already intruded into a GDT.  This
+  had the effect of filling up the GDT with 386SWAT's TSS selectors
+  which crashed the system in quick order.
+
+  Finally, while running VCPITEST to see if I had broken anything in
+  the process, I decided to remove the check for VMSINT=ON from the
+  VCPI call DE01 (Get PM Interface) in order to allow Intrude 386SWAT
+  to work with a cooperating VCPI client without having to set that
+  variable.  This means that Intrude 386SWAT will insert its PTEs into
+  every such call, but that should be harmless.  The VMSINT=ON setting
+  still controls whether or not 386SWAT intrudes into the VCPI call
+  DE0C (Switch From VM To PM).
+
+
+Version 5.10.053
+
+* Enable Debugging Extensions (If Supported) At Virtual Init Time
+
+  The Pentium CPU's debugging extensions are supported in 386SWAT via
+  the BD command on an I/O port at which time the $DE bit is set in
+  CR4.	This change enables them at an earlier time so any other
+  program (such as 386MAX) can modify its behavior depending upon
+  whether or not the $DE bit is set.
+
+
+Version 5.10.052
+
+* Make Device Driver 386SWAT Sensitive to Another Extended Memory
+  Function
+
+  The recent change to 386MAX to support the 0E801h Extended Memory
+  function call needs to be copied to device-loading 386SWAT not only
+  so it can detect how much extended memory is in the system, but also
+  so it can lie to any subsequent program requesting the extended
+  memory size through that interface.
+
+
+Version 5.10.051
+
+* Implement Show PTE Command
+
+  Strolling through a large set of Page Tables such as under Windows
+  can be tiresome, hence there's a new command.  The SPTE command
+  works exactly likely the PTE command (displaying the Linear
+  address/PDE/PTE on the command line) as well as displaying the
+  corresponding PTE (as if you had pressed F5 and scrolled down to the
+  appropriate entry).
+
+  At the same time, I allowed Ctrl-Up and -Down to scroll through the
+  PDEs/PTEs one entry at a time (Up and Down scroll through one line
+  at a time).
+
+
+Version 5.10.050
+
+* Fix Bug When Using TSS For Faults
+
+  A previous TWT changed a local routine to be more self-sufficient by
+  setting DS within the routine instead of relying upon the caller to
+  set this register.  Alas, that was a mistake as in some cases we
+  rely upon the Invisible Descriptor Cache, particularly when we're
+  accessing selector values in the caller's LDT.  This TWT fixes that
+  to use two routines, one which assumes the global DS has been set,
+  one which does not.
+
+  At the same time, I fixed a problem with device-loading 386SWAT
+  where software INTs 01h, 02h, 03h, and 68h are not being enabled if
+  VME is.
+
+
+Version 5.10.049
+
+* Fix Bug With DEBUG=PMI And Device-Loading 386SWAT
+
+  If we're loading as Device 386SWAT at startup, INIT_PROT is called
+  at the point where 386SWAT is a temporary VCPI client of the MM.
+  Thus the active IDT is that of the VCPI client and INIT_PROT is
+  setting up the MM's IDT where the VCPI client has calculated the
+  IDT's linear address in the VCPI client's linear address space.
+
+  All this is background to say that we can't signal an INT 01h if
+  DEBUG=PMI is specified because the active IDT (that of the VCPI
+  client) does not have its IDT entries setup for debugging unless
+  there's a preceding 386SWAT in the picture.  This changes enforces
+  that condition.
+
+
+Version 5.10.048
+
+* Call REST_PROT/INIT_PROT On Windows Entry/Exit With Device-Loading
+  386SWAT
+
+  When 386SWAT is loaded as a device driver (whether it was intruding
+  into an existing memory manager or loading as VCPI SWAT), previously
+  it wasn't handling the transitions into and out of Windows.
+
+  When Windows starts up, 386SWAT needs to disable itself (by calling
+  its REST_PROT entry point) so that it is in the proper state when
+  the 386SWAT VxD calls 386SWAT's INIT_PROT entry point after Windows
+  loads.  Correspondingly, when Windows terminates, the VxD calls
+  386SWAT at its REST_PROT and 386SWAT needs to call its INIT_PROT
+  entry point to re-enable it.
+
+  When 386SWAT is loaded from within 386MAX, MAX handles calling the
+  proper REST_PROT/INIT_PROT entry points.	When 386SWAT is loaded as
+  a device driver, these calls were not made.
+
+  Now they are.
+
+
+Version 5.10.047
+
+* Swap Out Local IDT Entries Around TOGINT Call
+
+  When 386SWAT is active, it hooks various interrupts for its own use
+  such as the timer, keyboard, cascade, and mouse (the latter two in
+  case there's a PS/2-style mouse which goes through the keyboard
+  controller).
+
+  When we toggle an interrupt via command line (TOGINT xx xx ...), or
+  keystroke (Alt-F1, etc.), we need to swap out our local entries
+  around the toggle so that we save the new entry in the proper
+  (global) location.  In particular, this affects TOGINT 0A which is
+  hooked locally.
+
+
+Version 5.10.045 & 5.10.046
+
+* Allow Search Command Of PTEs
+
+  When tracking down a bug in Win95, I found it useful to extend the
+  search command to search through the PTEs for a specific value.  The
+  new syntax is
+
+	 S	addr addr	# PTE
+	 S	addr L expr # PTE
+
+   where PTE can be any expression.
+
+   At the same time, I fixed a bug where a Page Fault during the
+   display of the searched for data caused a crash.
+
+* Miscellaneous Changes
+
+  1.  Display appropriate comment on DPMI interrupt lines.	This also
+	  involves defining a new segment to hold the DPMI function values
+	  (as words).
+
+  2.  For display of PTEs, note the PDE which contains the top line of
+	  the display as well as the range of linear addresses covered by
+	  the top line.
+
+  3.  For display of PDEs, note the range of linear addresses covered
+	  by the top line.
+
+  4.  Display display of PTEs and PDEs, handle not present entries by
+	  displaying "????????".
+
+  5.  Change the initial mask for memory display to allow 32-bit
+	  values.
+
+  6.  Change the number of entries displayed in dword format to eight
+	  by squeezing the entries together.  Note that the previous width
+	  can be obtained via the dd/4 command.
+
+  7.  Save the previous d?/?? value for later use separately for each
+	  width.
+
+  8.  If the selector passed to any routine which calls GETARWBASE is
+	  not present, return with CF=1 to indicate an error.  This change
+	  is needed by WINSWAT to avoid displaying an incorrect label for
+	  not present selectors.  As it turns out, without this change and
+	  with the new KRNL386, USER, GDI symbol display in WINSWAT the
+	  label displayed for not present selectors is that of the Windows
+	  routine BOZOSLIVEHERE.
+
+
+Version 5.10.044
+
+* Prepare for Winswat
+
+  A feature needed by WINSWAT is the ability to set a temporary
+  breakpoint from a Windows program.  This requires that we fill in
+  the rest of the fields where else this feature is used.
+
+  A feature needed by WINSWAT is the ability to refresh debug hooks
+  when a selector's linear address changes.
+
+
+Version 5.10.043
+
+* Make Device Driver 386SWAT Sensitive to PCI Extended Memory Function
+
+  The recent change to 386MAX to support the PCI Extended Memory
+  function call needs to be copied to device-loading 386SWAT not only
+  so it can detect how much extended memory is in the system, but also
+  so it can lie to any subsequent program requesting the extended
+  memory size through that interface.
+
+
+Version 5.10.042
+
+* Implement Data Width Switch
+
+  When displaying data via the Dx command, a new switch allows you to
+  specify the number of elements to be displayed per line.	For
+  example, to display five (instead of the usual eight) words per
+  line, use DW/5.
+
+  This feature is a stopgap until I implement a more general data
+  record display as in the Periscope debugger.
+
+
+Version 5.10.041
+
+* Use Monochrome Adapter If Present
+
+  Rather than switch to the mono adapter every time I startup the
+  system, I thought it easier to implement a keyword to do the same.
+  With this keyword (MONO) present, if a monochrome adapter is present
+  in the system, it becomes the initial display screen for 386SWAT.
+  The monochrome adapter has always been supported by 386SWAT -- this
+  just makes it the initial display screen as opposed to the color
+  monitor.
+
+
+Version 5.10.040
+
+* Allow TSS Debugging In VM
+
+  If a program enters PM from RM and asks 386SWAT to enter its GDT and
+  IDT, as usual we setup TSS selectors for the interrupts we manage.
+  If this program subsequently enters VM, we need to handle the
+  interrupt via a TSS from VM differently as the stack and register
+  interpretation (segments vs. selectors) are different.  Previously,
+  our TSS interrupt code expected to be entered from PM only, so a
+  change is needed.
+
+  Also, when debugging such a RM program where the user sets a
+  breakpoint shortly after entering PM (via setting the PE bit in CR0)
+  but before setting TR, I found that 386SWAT failed miserably because
+  it was depending upon there being a valid back link in the local
+  TSS.	Thus, more changes were needed to handle an invalid back link.
+  In conjunction with this change, the register set command (R) is
+  enhanced to allow TR and LDTR (a.k.a.  LDT) to be read and set, so
+  the user can setup a valid back link should the need arise.
+
+  Also, when 386SWAT is installed as a RM debugger, avoid setting TR
+  to our local TSS as that changes it from an invalid value to a valid
+  value.  Unfortunately, this doesn't prevent another program from
+  doing the same, but at least we're not the culprit.  BTW, unlike the
+  LDTR, there seems to be no way to clear (and thus invalidate) the
+  Task Register once it's set.  Setting TR to zero (which is after all
+  its initial state), causes a GP Fault even though the current value
+  of TR may be already be invalid.	Thus, once TR is set to an invalid
+  (and possibly non-zero) value, it stays that way until set to a
+  valid value.
+
+* Clear NT bit in EPM.ASM
+
+  After switching into PM, the code in EPM.ASM should clear the NT bit
+  in case a subsequent IRET/D occurs (as it does) in order to avoid a
+  TSS Fault.  Thanks to John Fine for pointing this out.
+
+
+Version 5.10.039
+
+* Support Spain 172 Keyboard Layout
+
+  Thanks to Roberto Deza Asensio, 386SWAT now supports this keyboard
+  layout.
+
+
+Version 5.10.038
+
+* Include Function-Specific Text in INT 21h Comments
+
+  Because they occur so often in code, the display of INT 21h
+  instructions which are the current instruction now includes
+  function-specific text (e.g., "Write File (handle)").
+
+
+Version 5.10.037
+
+* Calculate SYMSIZE based upon the size of the loaded symbol table
+
+  Previously, I had attempted to calculate SYMSIZE based upon the size
+  of the incoming .SSF file and it didn't work.  This time it does.
+  The effect is that you don't need to use SYMSIZE with a LOADSYM,
+  thus reducing wasted space in 386SWAT's symbol table as well as
+  perhaps avoiding a mistake when calculating SYMSIZE and finding it
+  is too small.
+
+* Fix Bug In MAPSSF
+
+  Due to a bug in my linker, certain far calls weren't fixed up
+  properly.
+
+
+Version 5.10.036
+
+* Support International Keyboards
+
+  One of 386SWAT's design goals is to be as unassuming about the
+  system as possible, intruding into the system at an absolute
+  minimum.	As part of achieving this goal, 386SWAT has its own
+  keyboard handler so it can debug keyboard actions within the BIOS as
+  well as not depend upon the system's keyboard routines or data being
+  intact and functional.
+
+  One consequence of this is that 386SWAT needs to be changed in order
+  to support international keyboards which is what this TWT
+  accomplishes.
+
+  To this end, the keyword KEYB= is recognized in the 386SWAT profile.
+  At the start, the only keyboard supported is the German one -- its
+  keyboard layout is 129, so the KEYB= value is GR129.	Others can be
+  supported as the need arises.  See file 386SWAT.DOC under the KEYB=
+  entry for the list of supported keyboards.
+
+  Thanks to Armin Kunaschik, 386SWAT now supports this keyboard
+  layout.
+
+
+Version 5.10.035
+
+* Include INT 03h and INTO in GPSKIP=INT Processing
+
+  When I put in GPSKIP=INT, I checked for the INT xxh opcode (0CDh),
+  but forgot about INT 03h (0CCh) and INTO (0CEh).	These cases are
+  now covered.
+
+
+Version 5.10.034
+
+* Implement Return Address and Goto Return Address
+
+  A common address to jump to is the (near or far) return address of a
+  subroutine.  This is made easier by using shortened forms of the
+  commands one might use to extract these addresses.  For details, see
+  the "Common Memory References" section in 386SWAT.DOC.
+
+
+Version 5.10.033
+
+* Make NORMLIDT The Default
+
+  I've encountered enough circumstances debugging RM where RM LIDT
+  redirection has gotten in the way, that I've decided that it's best
+  to make NORMLIDT the default and use the (new) keyword RMLIDT to
+  enable it when necessary.
+
+
+Version 5.10.032
+
+* Parse I/O Command line Instructions as LVALs
+
+  For greater generality, the command line I/O instructions now allow
+  an LVAL instead of just an atom.	Also, the IMR command line action
+  displays the original values not the ones set by 386SWAT.
+
+
+Version 5.10.031
+
+* Validate Back Link In Operand Analysis Display for IRET/D
+
+  On occasion, I've had the system go poof on an IRET/D when the NT
+  bit was set (and I didn't notice that) and the back link TSS was
+  invalid for some reason (either bad TSS selector, or something was
+  wrong with the TSS, such as the CR3 value was invalid).  This TWT
+  checks for that condition and reports it as part of the operand
+  analysis display for the IRET/D instructions.
+
+
+Version 5.10.030
+
+* Ensure Default Options Set If No Profile
+
+  If the user omits a profile on the 386SWAT device line, we skip out
+  before setting default options.  Now we don't.
+
+
+Version 5.10.029
+
+* Handle Invalid Symbol Selectors
+
+  If we upload symbols with an invalid selector (say, the *.WSG file
+  is for another context -- DPMI vs.  VCPI vs.	RM), the call to
+  GETBASE returns an error along with EAX=-1.  If this value is used
+  for the linear address, the symbol is marked as invalid and the
+  address hash code gets confused.	This change checks for the above
+  eventuality and sets the pseudo-linear address to zero to avoid this
+  problem.	BTW, the symptom is that (say) SWATRUN hangs when
+  uploading symbols if it has two or more symbols with the same
+  (invalid) linear address, e.g.  300|0.
+
+* At the same time, I upgraded the grammar for LS and PS to accept
+  lvals instead of just atoms, thus allowing a wider variety of ways
+  of specifying the arguments to these commands.  Others in this same
+  vein to follow.
+
+
+Version 5.10.028
+
+* Make INTRUDE The Default Option
+
+  Now that INTRUDE is reasonably well debugged, I'm making it the
+  default option so users don't need to remember to use it (which has
+  happened several times).	This will reduce the number of tech
+  support questions I get from users of 386SWAT on the Internet.  In
+  case the user needs to use the VCPI client version of 386SWAT, the
+  disabling option VCPISWAT is defined.
+
+
+Version 5.10.027
+
+* Fix Bug When Running in RM
+
+  An earlier TWT introduced a bug (for RM SWAT only) which set the
+  B-bit in the stack selector.	The problem is that I forgot to reset
+  that bit when returning to RM.  The solution is to define a new
+  selector which has the same characteristics as DTE_SS, except with
+  the B-bit is clear.  Before returning to RM, we switch to this new
+  selector so as to return to an environment which is compatible with
+  RM.
+
+
+Version 5.10.026
+
+* Handle SIGINT 1/3
+
+  While debugging an incompatibilty with ViruSafe, I needed a minor
+  enhancement to SIGINT to overcome their attempts to fool a RM
+  debugger.  They used many tricks including self-modifying code, as
+  well as installing their own INT 01h/03h handlers.  At one point
+  their code signals INT 01h which 386SWAT intercepts, of course.  I
+  needed to signal this interrupt to them, but SIGINT 1 invoked it as
+  a PM interrupt, which proceeded to crash the system.	The solution
+  was to signal INT 01h/03h as a VM interrupt, as well as ensure that
+  TF is set in the return flags if it's INT 01h from a single-step (as
+  opposed to a software interrupt INT 01h).
+
+* At the same time, I needed to save the incoming value of DR6 which
+  triggered another change (and bug fix).  The bug fixed is an
+  incorrect data value width in a struc missed when I changed the code
+  segment from USE16 to USE32.
+
+* A related change cleaned up (and documented) the tests which handle
+  the case where 386SWAT is entered other than through a debug
+  exception, but with the GD bit set.
+
+
+Version 5.10.025
+
+* Display MAC Entries
+
+  After many years of wading through MAC entries, I decided to
+  implement a separate display screen for them (actually, Win95 pushed
+  me over the edge -- this is a variant of "The devil made me do it").
+
+  The keyboard combination of Ctl-M brings up this screen.
+
+* There's also a separate command MACBASE which allows you to set the
+  base address of the MAC chain in case it's different from .DMAC.
+  This is handy when displaying the DOS subsegment chain.
+
+
+Version 5.10.024
+
+* Fix Bug In PATH= Profile Routine
+
+  When converting over to USE32 data, I missed a place where I should
+  have cleared the high-order word of a 32-bit register.
+
+  Also, in the process of debugging this problem, I put in several
+  more Shift debugging messages.
+
+
+Version 5.10.023
+
+* Fix Bug With VCPI Get Protected Mode Interface Calls
+
+  In order for us to provide debugging services to VCPI clients, we
+  need to insert our PTEs into the VCPI client's address space.  There
+  are several contexts in which this might occur:
+
+  1.  386SWAT is loaded via LOAD= with 386MAX:	our PTEs are
+	  automatically copied to the VCPI client's address space as part
+	  of 386MAX's response to the Get Protected Mode Interface (GPMI
+	  -- DE01h) call.
+
+  2.  386SWAT is loaded as a VCPI client to a memory manager:
+	  previously we didn't handle this case.  Now we use the newly
+	  defined RMDEV_GPMITAIL label in low DOS memory which this
+	  TWT defines an return point in order to catch the tail of
+	  the GPMI call.  At this point, we switch back to our code in
+	  extended memory, and copy our PTEs to the end of the GPMI
+	  caller's PTE buffer.
+
+  3.  386SWAT intruded into a MM (possibly 386MAX):  previously we
+	  placed a PM return address on the stack and passed control
+	  on to the MM.  This doesn't work with all MMs as some check
+	  the VM bit in the flags when interpreting the segment
+	  registers saved on the stack.  Now we use the newly defined
+	  DEV_GPMITAIL label which this TWT defines as a return point
+	  in order to catch the tail of the GPMI call.	At this point,
+	  we switch back to our code in extended memory, and copy our
+	  PTEs to the end of the GPMI caller's PTE buffer.
+
+
+Version 5.10.022
+
+* Avoid Page Fault on LIN2PPTE Accesses
+
+  The LIN2PPTE subroutine translates a linear address to a pointer to
+  the corresponding PTE according to a specific CR3.  Sometimes we
+  need to read more than one PTE from the Page Directory which doesn't
+  always work (because the subroutine doesn't know how many PTEs to
+  map in the case we're not mapping relative to the current CR3).  A
+  solution to this is to tell the subroutine how many PTEs are to be
+  mapped in.
+
+
+Version 5.10.021
+
+* Compatibility With PMODE
+
+  There is a popular shareware DOS extender available on the Internet
+  called PMODE which is used to create PM programs.  When it is run as
+  a VCPI client, it allocates selectors from the top down in the GDT
+  -- the same as 386SWAT does.	PMODE uses the AVL bit in the DTE to
+  mark a selector as in use, so this change has us set that bit in the
+  selectors we allocate so PMODE doesn't write on top of our
+  selectors.
+
+
+Version 5.10.020
+
+* Fix Bug When Swapping INTs
+
+  When we swap IDT entries (say when displaying the IDT via F4) so we
+  see or act upon the global IDT entries, we don't swap INTs 74h and
+  76h.	Now we do.
+
+
+Version 5.10.019
+
+* Use Same DPL When Hooking Interrupts
+
+  Some memory managers (pssst, it's EMM386) set the DPL of various
+  entries in the IDT to zero expecting the CPU to signal a GP Fault if
+  the corresponding software interrupt occurs.	When we intrude into
+  their PL0 context, previously we were setting the DPL to three
+  because we didn't expect to encounter a MM which had a fetish with
+  GP Faults.  Now we retain the same DPL as the original IDT entry
+  except for INTs 01h and 03h.	They are handled differently so we can
+  issue the corresponding software interrupts and gain control
+  immediately instead of having to hook the GP Fault handler and pick
+  them off there.
+
+
+Version 5.10.018
+
+* Fix Disappearing Cursor Bug
+
+  For years we've put up with this bug.  Now it's fixed.
+
+  The problem occurs in any of three contexts:
+
+  * when reviewing last screens (Alt-F10),
+  * when switching between color and mono adapters (Alt-F7), or
+  * when swapping screens (say, when exiting 386SWAT).
+
+  The problem occurs because not all programs maintain a consistent
+  set of data values in the BIOS data area on which we rely (e.g., the
+  dependence between the cursor type and the cursor emulation bit).
+
+  The fix is to read the cursor start and end line values upon entry
+  and restore those values in the above circumstances.	A new routine,
+  GET6845 is defined for the read starting value part.	I seem to
+  recall that the original definition of the 6845 registers was that
+  they were write-only, but apparently they are now readable as well.
+
+  At the same time, while testing the different contexts in which
+  386SWAT changes the cursor type, I noticed that the Enter command
+  handles the INS key, but not the XINS key, so I changed it.
+
+
+Version 5.10.017
+
+* Implement Exit Command
+
+  A common command line sequence is to set AH to 4C, SIGINT 21, and G.
+  This is now done via a command called EXIT.
+
+
+Version 5.10.016
+
+* Add Debugging Displays To 386SWAT During Initialization
+
+  To help me figure out why 386SWAT wasn't installing under Win95, I
+  made several changes:
+
+  * Add some debugging displays (press and hold either shift key when
+	386SWAT is loading ala Shift-MAX).
+  * If there are no VCPI services (DEBUG=NOVCPI in 386MAX), fail
+	gracefully.
+  * Ensure interrupts are re-enabled upon returning from VCPI/PM.
+  * Ensure that the B-bit is set in our stack selector.
+  * Avoid calling CHECK_I92 if we're in VM as it can reboot the system
+	(learned the hard way).
+  * Put in a check to avoid calling OLDINT67_VEC if it's zero (who can
+	argue with that?).
+  * Avoid a bug in MASM 5.10b which generates a word fixup when it
+	should generate a dword fixup.	Any questions on why I want to
+	write my own assembler?
+
+

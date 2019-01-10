@@ -1,0 +1,616 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>386SWAT Profile Options</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>386SWAT Profile Options</FONT></B></CENTER>
+
+
+<P>The following profile options are recognized by 386SWAT.&nbsp; Options
+may be entered in upper and/or lower case.&nbsp; See the file <A HREF="swatdef.htm">386SWAT</A>
+for a list you can use already in profile format.
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>[</FONT></TT><I>section name</I><TT><FONT SIZE=+1>]</FONT></TT></TD>
+
+<TD VALIGN=TOP>For versions of DOS which support MultiConfig, this option
+limits profile processing to the matching MultiConfig section in CONFIG.SYS.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="ADDRHBITS"></A><TT><FONT SIZE=+1>ADDRHBITS=</FONT></TT><I>n</I></TD>
+
+<TD VALIGN=TOP>Bits to use for address hashing (<TT><FONT SIZE=+1>8</FONT></TT>-<TT><FONT SIZE=+1>12</FONT></TT>;
+default <TT><FONT SIZE=+1>12</FONT></TT>).&nbsp; See <A HREF="swatsym.htm#ADDRHBITS">SWATSYM.DOC</A>.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="ALTSCR"></A><TT><FONT SIZE=+1>ALTSCR</FONT></TT></TD>
+
+<TD VALIGN=TOP>Display debugging information on the screen other than the
+current one being used. That is, in a two monitor system, if the current
+screen uses the color adapter, display debugging data on the monochrome
+screen and vice versa. This option is valid only if we detect that there
+are both a color and monochrome adapter in the system. Otherwise, it is
+ignored. Note that the screens can be swapped via <A HREF="swatscr.htm#a-F7">Alt-F7</A>.
+An alias for this option is <TT><FONT SIZE=+1>/A</FONT></TT>.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="BUCKETS"></A><TT><FONT SIZE=+1>BUCKETS=</FONT></TT><I>n</I></TD>
+
+<TD VALIGN=TOP>Specify the number of name hashing blocks to allocate (about
+1K each).&nbsp; See <A HREF="swatsym.htm#BUCKETS">SWATSYM.DOC</A>.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="CMDHIST"></A><TT><FONT SIZE=+1>CMDHIST=</FONT></TT><I>nnn</I></TD>
+
+<TD VALIGN=TOP>Specify the size of the command history buffer used by <A HREF="swatscr.htm#Command Line Recall">command
+lie recall</A>. Default is 1024.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="COLDBOOT"></A><TT><FONT SIZE=+1>COLDBOOT</FONT></TT></TD>
+
+<TD VALIGN=TOP>Don't write <TT><FONT SIZE=+1>1234h </FONT></TT>to warm
+boot flag location when rebooting system from within 386SWAT.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="DEBUG=TRIP"></A><TT><FONT SIZE=+1>DEBUG=TRIP</FONT></TT></TD>
+
+<TD VALIGN=TOP>Use triple fault method of rebooting. Sometimes a system
+doesn't reboot when using the 8042 method (the default), so here's another
+way to skin the cat.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="DVGA"></A><TT><FONT SIZE=+1>DVGA</FONT></TT></TD>
+
+<TD VALIGN=TOP>Use a Dual VGA screen as the secondary monitor.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="GPSKIP"></A><TT><FONT SIZE=+1>GPSKIP=</FONT></TT><I>key[,key]</I></TD>
+
+<TD VALIGN=TOP>If a GP Fault occurs on any of the instructions named in
+the list, do not signal this to 386SWAT. This option allows you to trap
+GP Faults but filter out ones which may commonly occur but not be of interest.
+The key values (GP Skip instructions) supported are&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><B>Keyword</B></TD>
+
+<TD VALIGN=TOP><B>Instruction(s)</B></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>CLI</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>CLI</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>CRn</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>MOV </FONT></TT><I>r32</I><TT><FONT SIZE=+1>,CRn&nbsp;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>MOV CRn,</FONT></TT><I>r32</I></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>HLT</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>HLT</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>IND</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>IN AL,DX</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>IN AX,DX</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>IN EAX,DX</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>INI</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>IN AL,</FONT></TT><I>immed</I>&nbsp;
+<BR><TT><FONT SIZE=+1>IN AX,</FONT></TT><I>immed</I>&nbsp;
+<BR><TT><FONT SIZE=+1>IN EAX,</FONT></TT><I>immed</I></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>INT</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>INT</FONT></TT> <I>xx</I></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>IRET</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>IRET&nbsp;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>IRETD</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>OUTD</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>OUT DX,AL</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>OUT DX,AX</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>OUT DX,EAX</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>OUTI</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>OUT</FONT> </TT><I>immed</I><TT><FONT SIZE=+1>,AL</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>OUT </FONT></TT><I>immed</I><TT><FONT SIZE=+1>,AX</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>OUT </FONT></TT><I>immed</I><TT><FONT SIZE=+1>,EAX</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>PPF</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>PUSHF&nbsp;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>POPF&nbsp;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>PUSHFD&nbsp;</FONT></TT>&nbsp;
+<BR><TT><FONT SIZE=+1>POPFD</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>STI</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>STI</FONT></TT></TD>
+</TR>
+</TABLE>
+The keyword ALL covers all of the above options.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="INTRUDE"></A><TT><FONT SIZE=+1>INTRUDE</FONT></TT></TD>
+
+<TD VALIGN=TOP>Attempt to intrude into another memory manager's PL0 context.
+If this is successful, 386SWAT appears as a PL0 debugger in the context
+of the memory manager. This option is now the default. To disable this
+option, use <TT><FONT SIZE=+1><A HREF="#VCPISWAT">VCPISWAT</A></FONT></TT>.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="KEYB"></A><TT><FONT SIZE=+1>KEYB=</FONT></TT><I>cclay</I></TD>
+
+<TD VALIGN=TOP>Use international keyboard whose country code/layout is
+<I>cclay</I>. Possible values are&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD><B><I>cclay</I></B></TD>
+
+<TD><B>Country</B></TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>GR129</FONT></TT></TD>
+
+<TD>Germany</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>SP172</FONT></TT></TD>
+
+<TD>Spain</TD>
+</TR>
+</TABLE>
+If your international keyboard is not in this list, read the file <A HREF="keybin.htm">KEYBIN.TXT</A>
+to see how you can help.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="LCD"></A><TT><FONT SIZE=+1>LCD</FONT></TT></TD>
+
+<TD VALIGN=TOP>Specify that an LCD screen is present (and 386SWAT uses
+the LCD screen attributes). Does anyone know how to detect this case under
+program control? I would prefer not to require the user to tell us what
+the screen is like.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="LOADLOW"></A><TT><FONT SIZE=+1>LOADLOW</FONT></TT></TD>
+
+<TD VALIGN=TOP>Tell 386MAX it's not OK to load us into extended memory
+after INIT_REAL and to relocate our INIT_VIRT code. It's highly unlikely
+you'll need this option.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="LOADSYM"></A><TT><FONT SIZE=+1>LOADSYM=</FONT></TT><I>filename
+[optional]</I></TD>
+
+<TD VALIGN=TOP>Load specified symbol file with optional arguments:&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>/b=</FONT></TT><I>xxxxxxxx</I>&nbsp;</TD>
+
+<TD>Optional physical base address in hex</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>/h</FONT></TT>&nbsp;</TD>
+
+<TD>Optional HPDA flag (enable DPMI services)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>/li-</FONT></TT></TD>
+
+<TD>Optional disable of line numbers</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>/xl</FONT></TT></TD>
+
+<TD>Disable larger comparison w/<TT><FONT SIZE=+1><A HREF="#SYMSIZE">SYMSIZE</A></FONT></TT></TD>
+</TR>
+</TABLE>
+&nbsp;</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="LOGSIZE"></A><TT><FONT SIZE=+1>LOGSIZE=</FONT></TT><I>nnnnn</I></TD>
+
+<TD VALIGN=TOP>Define size of error log in bytes. Default is 4096.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="MONO"></A><TT><FONT SIZE=+1>MONO</FONT></TT></TD>
+
+<TD VALIGN=TOP>Use monochrome adapter if present.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="NOGD"></A><TT><FONT SIZE=+1>NOGD</FONT></TT></TD>
+
+<TD VALIGN=TOP>Because some programs may reset the debug registers which
+you've carefully setup, 386SWAT automatically sets the Global Debug (GD)
+bit in DR7 on startup so that we can stop such programs before they can
+do any harm. In case you don't want 386SWAT to do this, use this keyword.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="NORMLIDT"></A><TT><FONT SIZE=+1>NORMLIDT</FONT></TT></TD>
+
+<TD VALIGN=TOP>Disable Real Mode LIDT redirection. Device 386SWAT uses
+a separate IDT to handle nasty bugs which write into the Real Mode IDT
+at 0:0 such as DOS 6.x does during its transient CONFIG.SYS processing.
+This is the default state.&nbsp; Use <TT><FONT SIZE=+1><A HREF="#RMLIDT">RMLIDT</A></FONT></TT>
+to find this kind of bug.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="NOSWAP"></A><TT><FONT SIZE=+1>NOSWAP</FONT></TT></TD>
+
+<TD VALIGN=TOP>Don't restore the previous underlying screen when single-stepping.
+This option is useful in conjunction with the <TT><FONT SIZE=+1><A HREF="#ALTSCR">ALTSCR</A></FONT></TT>
+option. This option specifies the initial state only. It can be toggled
+via <A HREF="swatscr.htm#a-F6">Alt-F6</A>.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><A NAME="NOWINK"></A><TT><FONT SIZE=+1>NOWINK</FONT></TT></TD>
+
+<TD>Disable <A HREF="swatwkd.htm">Windows Kernel Debugging</A>.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="PASSTHROUGH"></A><TT><FONT SIZE=+1>PASSTHROUGH=</FONT></TT><I>xx,xx,xx,...</I></TD>
+
+<TD VALIGN=TOP>Allow one or more hardware interrupts to be passed through
+to the previous protected mode handler while 386SWAT is active. Currently,
+these are limited to <TT><FONT SIZE=+1>76</FONT></TT>, <TT><FONT SIZE=+1>77</FONT></TT>,
+<TT><FONT SIZE=+1>0B</FONT></TT>, and <TT><FONT SIZE=+1>0C</FONT></TT>.
+THIS OPTION SHOULD NOT BE USED UNLESS NECESSARY. For example, when the
+IBM PS/2 SCSI adapter (8EFE or 8EFF) is used, staying in 386SWAT for more
+than 1 or 2 minutes will cause the hard disk to lock on the next disk access.
+<TT><FONT SIZE=+1>PASSTHROUGH=76</FONT></TT> will allow one to stay in
+386SWAT indefinitely.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="PATH"></A><TT><FONT SIZE=+1>PATH=</FONT></TT><I>d:\dir1[,d:\dir2[,...]]</I></TD>
+
+<TD VALIGN=TOP>Specify source file search path (see <A HREF="swatsym.htm#PATH">SWATSYM.DOC</A>).</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="PORTINIT"></A><TT><FONT SIZE=+1>PORTINIT=</FONT></TT><I>string</I></TD>
+
+<TD VALIGN=TOP>Initialize serial port. String may contain any character
+except semicolon, including the following escape sequences:&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>\\</FONT></TT>&nbsp;</TD>
+
+<TD>Send backslash.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>\r</FONT></TT></TD>
+
+<TD>Send CR.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>\b</FONT></TT></TD>
+
+<TD>Send a break signal (this is a hardware signal, not a character).</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>\p</FONT></TT></TD>
+
+<TD>Pause for about 250ms.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><TT><FONT SIZE=+1>\1</FONT></TT> - <TT><FONT SIZE=+1>\0</FONT></TT></TD>
+
+<TD>Delay for 1 - 10 seconds.</TD>
+</TR>
+</TABLE>
+<TT><FONT SIZE=+1><A HREF="#SETCOM">SETCOM</A></FONT></TT> must be specified
+to set the parameters for the serial port. On the first entry to 386SWAT
+(which may be remotely triggered) 386SWAT will automatically try to connect
+for remote debugging.&nbsp;</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="PRO"></A><TT><FONT SIZE=+1>PRO=</FONT></TT><I>d:\path\filename.ext</I></TD>
+
+<TD VALIGN=TOP>Read subsequent command line options from a profile. Just
+as with 386MAX, as you append more and more options to the 386SWAT command
+line, you may prefer to collect them all in a 386SWAT profile, one per
+line. These options may be followed by a semicolon and a comment. This
+profile is handled exactly the same way as is the corresponding profile
+for 386MAX.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="PROXSRCH"></A><TT><FONT SIZE=+1>PROXSRCH=</FONT></TT><I>r[,g]</I></TD>
+
+<TD VALIGN=TOP>Set range and granularity for proximity searching on symbol
+addresses.&nbsp; See <A HREF="swatsym.htm#PROXSRCH">SWATSYM.DOC</A>.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="PS4"></A><TT><FONT SIZE=+1>PS4=</FONT></TT><I>xxxx</I></TD>
+
+<TD VALIGN=TOP>Periscope 4 hardware debugger board is installed at I/O
+port <I>xxxx</I> (for reference, the factory setting is 300h). This feature
+allows 386SWAT to manage the traceback buffer and other features of the
+Periscope Company's 386 hardware debugger. *NOTE* this feature isn't finished.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="RMLIDT"></A><TT><FONT SIZE=+1>RMLIDT</FONT></TT></TD>
+
+<TD VALIGN=TOP>Enable Real Mode LIDT redirection. Device 386SWAT uses a
+separate IDT to handle nasty bugs which write into the Real Mode IDT at
+0:0 such as DOS 6.x does during its transient CONFIG.SYS processing.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="SAVESCREEN"></A><TT><FONT SIZE=+1>SAVESCREEN=</FONT></TT><I>nnn</I></TD>
+
+<TD VALIGN=TOP>Specify the number of last screens to save. This keyword
+allows you to control how many screens back <A HREF="swatscr.htm#a-F10">Alt-F10</A>
+can display. The default is sixteen. Each screen consumes 4000 bytes of
+storage in extended memory.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME="SETCOM"></A><TT><FONT SIZE=+1>SETCOM=</FONT></TT><I>port,bps[,itype[,portbase]]</I></TD>
+
+<TD VALIGN=TOP>Specify port to use for remote debugging.&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><I>port</I></TD>
+
+<TD>From <TT><FONT SIZE=+1>1</FONT></TT>-<TT><FONT SIZE=+1>4</FONT></TT>
+for COM1 through COM4.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><I>bps</I></TD>
+
+<TD>Transfer rate, from <TT><FONT SIZE=+1>1</FONT></TT> to <TT><FONT SIZE=+1>115200</FONT></TT>.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><I>itype</I></TD>
+
+<TD>Interrupt mode. May be <TT><FONT SIZE=+1>3</FONT></TT> or <TT><FONT SIZE=+1>4</FONT></TT>
+to specify IRQ (default is IRQ3 for COM2/COM4, IRQ4 for COM1/COM3), <TT>*</TT>
+for default, or <TT><FONT SIZE=+1>p </FONT></TT>for polled operation. Currently,
+an IRQ line is required for remote debugging.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><I>portbase</I></TD>
+
+<TD>UART port base if different from defaults: COM1=<TT><FONT SIZE=+1>3F8</FONT></TT>,
+COM2=<TT><FONT SIZE=+1>2F8</FONT></TT>, COM3=<TT><FONT SIZE=+1>3E8</FONT></TT>,
+COM4=<TT><FONT SIZE=+1>2E8</FONT></TT>.</TD>
+</TR>
+</TABLE>
+&nbsp;</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="SYMFILTER"></A><TT><FONT SIZE=+1>SYMFILTER=</FONT></TT><I>text1
+[text2 [...]]</I></TD>
+
+<TD VALIGN=TOP>Some symbols, especially from Windows programs written in
+C, are prefaced with text such as <TT>"<FONT SIZE=+1>__imp__</FONT>"</TT>,
+<TT>"<FONT SIZE=+1>_</FONT>"</TT>, and the like which adds to the symbol's
+length but not understanding. This feature allows you to specify in the
+386SWAT profile leading text which is to be stripped from each symbol.&nbsp;
+
+<P>The default settings are&nbsp;
+
+<P><TT><FONT SIZE=+1>SYMFILTER=__imp__ _&nbsp;</FONT></TT>&nbsp;
+
+<P>Up to 128 characters can be specified in this way.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="SYMSIZE"></A><TT><FONT SIZE=+1>SYMSIZE=</FONT></TT><I>nnnnn</I></TD>
+
+<TD VALIGN=TOP>Specify the number of bytes to reserve for the symbol table.
+The default size is 4096.&nbsp; See <A HREF="swatsym.htm#SYMSIZE">SWATSYM.DOC</A>.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPBOUND"></A><TT><FONT SIZE=+1>TRAPBOUND</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap BOUND instruction interrupts, ignoring INT 05h.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPDEBUG"></A><TT><FONT SIZE=+1>TRAPDEBUG</FONT></TT></TD>
+
+<TD VALIGN=TOP>Intercept INT 01h/03h at installation time. Normally, 386MAX
+directs protected mode occurrences of INT 01h/03h to 386SWAT and real mode
+occurrences to the real IDT handler. This options causes all such interrupts
+to be handled by 386SWAT. This feature may be toggled via <A HREF="swatscr.htm#a-F1">Alt-F1</A>.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPDIV"></A><TT><FONT SIZE=+1>TRAPDIV</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap divide overflow interrupts.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPGENP"></A><TT><FONT SIZE=+1>TRAPGENP</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap General Protection Faults (toggle via <A HREF="swatscr.htm#a-F3">Alt-F3</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPINV"></A><TT><FONT SIZE=+1>TRAPINV</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap Invalid Opcode interrupts (toggle via <A HREF="swatscr.htm#c-F3">Ctl-F3</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPNMI"></A><TT><FONT SIZE=+1>TRAPNMI</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap Non-Maskable Interrupts. This option is useful in conjunction
+with a hardware breakout switch which can be used to invoke the debugger
+even if all interrupts are disabled (toggle via <A HREF="swatscr.htm#a-F2">Alt-F2</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPPAGE"></A><TT><FONT SIZE=+1>TRAPPAGE</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap Page Faults (toggle via <A HREF="swatscr.htm#a-F4">Alt-F4</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPSEGNP"></A><TT><FONT SIZE=+1>TRAPSEGNP</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap Segment Not Present Faults.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPSKIP"></A><TT><FONT SIZE=+1>TRAPSKIP</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap INT 03h instructions (toggle via <A HREF="swatscr.htm#c-F2">Ctl-F2</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPSTACK"></A><TT><FONT SIZE=+1>TRAPSTACK</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap Stack Faults (toggle via <A HREF="swatscr.htm#c-F4">Ctl-F4</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPSTEP"></A><TT><FONT SIZE=+1>TRAPSTEP</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap INT 01h breakpoints (toggle via <A HREF="swatscr.htm#c-F1">Ctl-F1</A>).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="TRAPTSS"></A><TT><FONT SIZE=+1>TRAPTSS</FONT></TT></TD>
+
+<TD VALIGN=TOP>Trap TSS Faults.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="VCPISWAT"></A><TT><FONT SIZE=+1>VCPISWAT</FONT></TT></TD>
+
+<TD VALIGN=TOP>Do not attempt to intrude into another memory manager's
+PL0 context. This option disables the default <TT><FONT SIZE=+1><A HREF="#INTRUDE">INTRUDE</A>
+</FONT></TT>option.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="VIDEO"></A><TT><FONT SIZE=+1>VIDEO=</FONT></TT><I>d:\path\filename.ext</I></TD>
+
+<TD VALIGN=TOP>Read in/write to video tables. If the specified file exists,
+it is read in and used as video table information. If the file doesn't
+exist, it is created. The information in the video table specifies how
+to switch to particular video modes as well as how to set certain cursor
+types. Use this option if you wish to bring up 386SWAT on top of graphic
+applications on single-monitor systems. *NOTE* this option doesn't fully
+work as yet, so I suggest that you don't use it.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="VMSCOUNT"></A><TT><FONT SIZE=+1>VMSCOUNT=</FONT></TT><I>n</I></TD>
+
+<TD VALIGN=TOP>Used with <TT><FONT SIZE=+1><A HREF="#VMSINT">VMSINT</A></FONT></TT>.&nbsp;
+Limit number of times 386SWAT inserts itself into a VCPI client's GDT/IDT.
+This may be useful when debugging VCPI applications that call Enter Protected
+Mode (<TT><FONT SIZE=+1>AX=DE0C</FONT></TT>) repeatedly, such as a real-mode
+int 08h handler that enters protected mode on every clock tick. The correct
+value may have to be determined by trial and error.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD VALIGN=TOP><A NAME="VMSINT"></A><TT><FONT SIZE=+1>VMSINT</FONT></TT><I>[</I><TT><FONT SIZE=+1>=</FONT></TT><I>xx,xx,...]</I></TD>
+
+<TD VALIGN=TOP>Trap VCPI Enter Protected Mode switches (<TT><FONT SIZE=+1>AX=DE0C</FONT></TT>)
+and blast in sufficient GDT and IDT entries to debug the client application.
+This option is useful when debugging a VCPI application which does not
+follow the preliminary VCPI debugger specification. Use this option with
+care. The argument (if present) limits the intercepted interrupts to the
+values. When <TT><FONT SIZE=+1>VMSINT</FONT></TT> is in effect, it may
+be important to limit the interrupts. For example, some DOS16M apps (such
+as Lotus 1-2-3 Version 3.0) intercept interrupts but don't set the access
+rights byte in the IDT (they assume that it's still set for a 286 interrupt
+gate, as DOS16M setup originally). Thus when 386SWAT blasts its task gate
+entries into the IDT, subsequent DOS16M intercepts leave those entries
+marked as a task gate. This debug option limits us to intercepting those
+faults necessary to catch catastrophic errors, but not everything. Interrupts
+which may be intercepted are <TT><FONT SIZE=+1>00</FONT></TT>, <TT><FONT SIZE=+1>01</FONT></TT>,
+<TT><FONT SIZE=+1>02</FONT></TT>, <TT><FONT SIZE=+1>03</FONT></TT>, <TT><FONT SIZE=+1>05</FONT></TT>,
+<TT><FONT SIZE=+1>06</FONT></TT>, <TT><FONT SIZE=+1>0A</FONT></TT>, <TT><FONT SIZE=+1>0B</FONT></TT>,
+<TT><FONT SIZE=+1>0C</FONT></TT>, <TT><FONT SIZE=+1>0D</FONT></TT>, and
+<TT><FONT SIZE=+1>0E</FONT></TT>.</TD>
+</TR>
+
+<TR>
+<TD><A NAME="WKDLS"></A><TT><FONT SIZE=+1>WKDLS=</FONT></TT><I>nnn</I></TD>
+
+<TD>Reserve space for <I>nnn </I><A HREF="winkdbg.htm#WKDLS">WKD load segment</A>
+entries.</TD>
+</TR>
+</TABLE>
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

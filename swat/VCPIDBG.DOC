@@ -1,0 +1,466 @@
+			 Preliminary Proposal
+				 For
+			 Debugger Extensions
+				  to
+			  VCPI Specification
+			      30 May 89
+			  Amended 22 Aug 90
+			  Amended  9 Aug 94
+
+			    ÚÄÄÄÄÄÄÄÄÄÄÄ¿
+			    ³ Rationale ³
+			    ÀÄÄÄÄÄÄÄÄÄÄÄÙ
+
+The premise is that there is already a resident debugger in the system
+which the client wishes to use.  These calls provide an interface
+between the client and the debugger to allow that to happen.  In order
+for the debugger to support this interface, it should intercept INT
+67h during its initialization and troll for the following calls,
+ignoring most others.  The debugger may wish to troll for the "Set
+8259A Interrupt Vector Mappings" call in order to properly determine
+where the timer and keyboard interrupts start.
+
+
+		    ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		    ³ V86 Mode Program Interface ³
+		    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+			       OVERVIEW
+
+If your program enters PM via DPMI using a memory manager with an
+integrated DPMI host, skip all this as 386SWAT hooks into the host's
+GDT and IDT through the INTRUDE option.  Note that DPMI hosts which
+install as a separate device driver appear to the memory manager (and
+thus to 386SWAT) as a VCPI client, so the above advice to skip this
+document does not apply.  I haven't tried to debug a DPMI client in
+this context, so I'm not sure how to do it.
+
+If your program enters PM via VCPI, use functions DEF0, DE01, DEF4,
+DEF2, and DEF3 in that order so that 386SWAT is properly initialized
+in your program's GDT and IDT.
+
+If your program enters PM from RM and uses paging, use functions DEF0,
+DEF4, DEF2, DEF3, and DEF9 in that order although function DEF9 can be
+executed anytime after function DEF0 executes successfully.
+
+If your program enters PM from RM and does not use paging, use
+functions DEF0, DEF4, DEF2, and DEF3 in that order.
+
+When debugging VCPI clients, be sure to enable the VMSINT flag either
+by putting the keyword VMSINT into your 386SWAT profile, or by typing
+VMSINT ON from the 386SWAT command line.
+
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF0h	 Determine Debugger Presence
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 None.
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		    = 84h if VCPI not supported
+		    = 8Fh if debugger support not present
+		 BH = Debugger specification major version #
+		 BL = ...		     minor ...
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+This call determines whether or not a resident debugger is present in
+the system.  The current specification version number is 5.00; that
+is, BH = 05, BL = 00.  These values are in binary such that if the
+specification version number were 10.12, this call would return BH =
+0Ah, BL = 0Ch.
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF1h	 Get Debugger Information
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 None.
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		 EDX = Physical address of debugger information
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+This call returns the physical address of a certain data structure
+inside 386SWAT for use in conjunction with the 386SWAT Virutal Device
+for Windows 3.	The contents of the structure is as follows:
+
+INFO_LEN	dw	?	; Byte count of structure
+INFO_BASE	dd	?	; Physical base address of SWAT code segment
+SWTINF_VER	dw	?	; Version # of structure
+More fields are defined which are used by SWATVXD.
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF2h	 Initialize Debugger Interface, Task Gate
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 ES:DI ==> GDT entries for debugger support
+		 If ES = 0, EDI ==> ...
+		 BX = initial selector
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		    = 84h if VCPI not supported
+		    = 8Fh if debugger support not present
+		 BX:EDX = Address of protected mode entry point
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+This call allows the debugger to setup its own GDT entries as it
+pleases.  The number of entries it may use is limited to thirty (30)
+so the client can statically allocate space in its GDT.  Each GDT
+entry used by SWAT is a TSS selector, and the IDT entries used (when
+DEF3 is called) are Task Gates (cf. DEFD).  The starting selector
+number in BX is needed so that the "Initialize Debugger IDT Entry"
+call knows what selectors to use when initializing an IDT entry.
+Consequently, this call must precede that call in order to know the
+proper selector value.
+
+If you are writing a PM program which enters PM via VCPI, your call to
+the VCPI Get PM Interface (DE01) must precede this call as 386SWAT
+needs to hook into the latter call in order to ensure that its PTEs
+are visible when the VCPI client is active (and thus know what its new
+linear address is).
+
+The selector and offset returned identify the address of the protected
+mode entry point in the debugger (see below).  This entry point should
+be called via a USE32 far call as it might be a task gate.
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF3h	 Initialize Debugger IDT Entry
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BX = interrupt #
+		 ES:DI ==> IDT entry for interrupt BX
+		 If ES = 0, EDI ==> ...
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		    = 83h if interrupt # not supported by the debugger
+		    = 84h if VCPI not supported
+		    = 8Fh if debugger support not present
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+This call allows the client to selectively activate the debugger's
+interrupt handlers.  Because some debuggers may support more interrupt
+handlers than others, it is recommended that the client call this
+function for all interrupts between 00h and 1Fh.  If the debugger
+doesn't support a particular interrupt number, it will return an error
+code which the caller can ignore.
+
+Some interrupt numbers may be handled wholly by the debugger (not
+passed on to the previous handler).  Some may be chained, with the
+debugger handling only certain situations (as may be the case if the
+8259A's interrupt numbers overlay CPU fault interrupt numbers).  For
+this reason, the client should initialize the IDT entry with a valid
+handler in case the debugger passes along the interrupt.
+
+Because this call may be invoked multiple times on the same interrupt
+number, the debugger must check the existing entry to see if it is the
+same as the value to which it would initialize the entry.  If that's
+the case, the debugger should ignore the call and return a successful
+result code.
+
+If you are writing a PM program which enters PM via VCPI, your call to
+the VCPI Get PM Interface (DE01) must precede this call as 386SWAT
+needs to hook into the latter call in order to ensure that its PTEs
+are visible when the VCPI client is active (and thus know what its new
+linear address is).
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF4h	 Set New Debugger CR3 and Linear Address
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 EBX = new CR3 or -1 if unchanged
+		 EDX = new linear address or -1 if unchanged.
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+This call is used in conjunction with functions DEF2 and DEF3 if your
+program enters PM without using either VCPI or DPMI.  In that case,
+this case must precede the calls to functions DEF2 and DEF3 and you
+must also call function DEF9.  If EDX == -1 on entry, SWAT will return
+the current linear address in EDX upon return.
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF5h	 (Reserved)
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF6h	 Symbol Table Management Functions
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 00h   Append ECX names from DS:ESI
+		 ECX = # names to append
+		 DS:ESI ==> table of names to append (see SYMC_STR)
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		 AH = 88h if not
+		 ECX = # symbols appended
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+SYMC_STR struc
+
+SYMC_FVEC df	 ?		; Seg:Off or Sel|Off
+SYMC_FLAG dw	 ?		; Flags:  see SYMFL_REC below
+SYMC_GRP  dw	 ?		; Group # (arbitray value may be used
+				; with TS command from the command
+				; line to group symbols)
+SYMC_NAMLEN db	 ?		; Length byte
+	 db	 ? dup (?)	; ASCII name (no terminating zero)
+
+SYMC_STR ends
+
+SYMFL_REC record $SYMFL_VM:1,$SYMFL_TYP:5,$SYMFL_RSV:10
+
+@SYMFL_VM equ	 mask $SYMFL_VM ; 1 = symbol is for VM
+				; 0 = ...	    PM
+				; The above flag is meaningful for _DAT and _LN
+				; types only.
+@SYMFL_TYP equ	 mask $SYMFL_TYP ; Data types:	see @SYMTYP_xxx below
+@SYMTYP_DAT equ  0		; Code or data
+@SYMTYP_LN  equ  1		; Line number record constructed by MAPSSF
+@SYMTYP_ABS equ  2		; ABS record
+@SYMTYP_SWT equ  3		; Symbol is for SWAT internal use
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 01h   Search for name DS:ESI
+		 DS:ESI ==> name to search for (see SYMC_STR)
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		 AH = A0h if not found
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 02h   Translate old symbol to new
+		 DS:ESI ==> SYMTRAN_STR (see below)
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Use this call to translate a symbol's segment/selector and group to a
+new segment/selector and base.
+
+SYMTRAN_STR struc
+
+SYMTRAN_OSEL dw  ?		; Old segment/selector
+SYMTRAN_OGRP dw  ?		; Old group #
+SYMTRAN_NFLAG dw ?		; New flags
+SYMTRAN_NSEL dw  ?		; New segment/selector
+SYMTRAN_NBASE dd ?		; New base (to be added to all offsets)
+SYMTRAN_FLAGS dw ?		; Flags for match significance
+
+SYMTRAN_STR ends
+
+; Flags used in SYMTRAN_FLAGS to indicate which elements in SYMTRAN_STR
+; are to be ignored.
+; $SYMFL_ADDVMSEG indicates that the new segment value is to be added
+; to all V86 mode segments.
+SYMTFL_REC record $SYMTFL_IGOSEL:1,$SYMTFL_IGOGRP:1,$SYMTFL_IGNFLAG:1,\
+	$SYMTFL_IGNSEL:1,$SYMTFL_ADDVMSEG:1,$SYMTFL_RSVD:11
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 03h   Flush the symbol table
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 04h   Append without replacing existing symbols
+			    (allow duplicates of existing symbols)
+			    (same as BL=00h)
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 05h   Execute ASCIIZ command in 386SWAT
+		 DS:ESI ==> ASCIIZ string containing a command
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Use this call to execute a command on the 386SWAT command line.  This
+function is used by the SWATCMD.EXE device driver.
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 BL = 06h   Copy ASCIIZ string to error log
+		 DS:ESI ==> ASCIIZ string
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF7h	 (Reserved)
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF8h	 (Reserved)
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEF9h	 Fill in 386SWAT's PTEs
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 ECX = maximum # PTEs ES:DI can hold
+		 ES:DI ==> save area for PTEs
+		 If ES = 0, EDI ==> ...
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		 AH = 8Bh if 386SWAT needs more PTEs than specified
+		 ECX = # additional PTEs 386SWAT needs
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Use this call in conjunction with function DEF4 if your program enters
+PM without using VCPI or DPMI so that 386SWAT's PTEs are visible in
+your program's address space.
+
+To determine how many PTEs SWAT needs without filling them in, call
+this function with ECX = 0, and on return (with AH = 8Bh), ECX has the
+number of PTEs SWAT needs.
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEFAh	 (Reserved)
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEFBh	 (Reserved)
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEFCh	 (Reserved)
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+INT 67h
+AX = 0DEFDh	 Initialize Debugger Interface, Interrupt Gate
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+INPUTS: 	 ES:DI ==> GDT entries for debugger support
+		 If ES = 0, EDI ==> ...
+		 BX = initial selector
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+OUTPUTS:	 AH = 00h if successful
+		    = 84h if VCPI not supported
+		    = 8Fh if debugger support not present
+		 BX:EDX = Address of protected mode entry point
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+This call allows the debugger to setup its own GDT entries as it
+pleases.  The number of entries it may use is limited to four (4) so
+the client can statically allocate space in its GDT.  Each GDT entry
+used by SWAT is a Code, Data, or LDT selector, and the IDT entries
+used (when DEF3 is called) are Interrupt Gates (cf. DEF2).  The
+starting selector number in BX is needed so that the "Initialize
+Debugger IDT Entry" call knows what selectors to use when initializing
+an IDT entry.  Consequently, this call must precede that call in order
+to know the proper selector value.
+
+If you are writing a PM program which enters PM via VCPI, your call to
+the VCPI Get PM Interface (DE01) must precede this call as 386SWAT
+needs to hook into the latter call in order to ensure that its PTEs
+are visible when the VCPI client is active (and thus know what its new
+linear address is).
+
+The selector and offset returned identify the address of the protected
+mode entry point in the debugger (see below).  This entry point should
+be called via a USE32 far call as it might be a task gate.
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+		 ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		 ³ Protected Mode Program Interface ³
+		 ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+For the moment, there are no defined functions.  However, when there
+are, we will require that AH = 0DEh and that the subfunction code be
+in AL.
+
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+		 ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		 ³ Tips On Debugging DPMI Programs ³
+		 ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+If you are using an integrated DPMI host such as 386MAX, no special
+action is needed on your part to debug a DPMI program.	386SWAT
+installs itself as a PL0 extension to the memory manager and thus also
+to the DPMI host.  Place breakpoints in your code as needed as well as
+step right over the far call to the DPMI host which switches from VM
+to PM.
+
+If you using a non-integrated DPMI host such as QDPMI.SYS which is
+distributed with QEMM, then essentially you are debugging a VCPI
+client which provides DPMI services to its clients.  See the next
+section for details on debugging VCPI programs.
+
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+		 ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		 ³ Tips On Debugging VCPI Programs ³
+		 ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+Assuming SWAT has successfully intruded into the MM's (memory
+manager's) PM context, it is on the same level as MM -- that is, you
+should think of it as a PL0 extension of the VCPI host.  This means
+that you need to tell SWAT to intrude into the VCPI client's context.
+
+Some VCPI clients are easy to break into, some are quite hostile (not
+maliciously, it's just that they don't leave any wiggle room).
+There's no magic to this.  Fundamentally, SWAT needs room in the GDT
+for its selectors.  See the above description on how to get your
+program to cooperate with SWAT, but if you want to get up and running
+quickly, you might first try these steps:
+
+* Allocate about 30 selectors at the end of the GDT,
+* Initialize the selectors to all zero,
+* Plant an INT 01h/03h in the PM portion of your code or whatever you
+  prefer,
+* Type VMSINT ON on the SWAT command line,
+* Start your program.
+
+The only tricky part is to ensure that any breakpoints you set to
+which SWAT would respond occur after the stack in the VCPI client has
+been setup (and preferably also DS, ES, FS, and GS).  Typically, this
+means that you can debug through every single instruction except for
+the handful which occur during the handoff from the VCPI host's PM
+context to the VCPI client's PM context.  The reason for this is that
+the VCPI PM handoff depends upon descriptor caching.  In particular,
+the VCPI spec has the client specifying the state of all EGP
+registers, but only the CS segment registers.  Thus the VCPI client
+starts off execution with its own environment (GDT, LDT, IDT, TR, and
+CR3) in effect, but on the VCPI host's stack.  The value of that stack
+selector quite likely is invalid in the client's GDT/LDT, so the VCPI
+client must switch to its own stack ASAP.  Of course, if an
+interrupt/exception occurs before then, when the CPU attempts to use
+the (presumably) invalid stack it would trigger a Double Fault,
+quickly followed by a Triple Fault and system shutdown.
+
+One other sharp corner I've run into is with VCPI clients which assume
+that their TSS won't be used by the CPU, so they "save" a few bytes by
+re-using that data area.  SWAT uses TSS selectors for its IDT entries,
+so when SWAT gains control the CPU saves the preceding context into
+the caller's TSS.  Also, it's a nice touch to save your CR3 into the
+appropriate place in the TSS, but SWAT will do that for you in case
+you forget.  Other debuggers might not be so thoughtful.
+
+Also, if you switch LDTs from the original one, be sure to save the
+current one in the TSS as that field is read-only.  That is, the CPU
+doesn't save the current LDT there when it performs a task switch, so
+SWAT can't "see" your LDT otherwise.
+
+If your program changes the PIC base(s), use the VCPI call (DE0B) to
+inform SWAT of the change.
+
+As far as symbols are concerned, use MAPSSF with a .WSG file.  See the
+SWATSYM.DOC for more details.  After SWAT pops up in PM within your
+program, type TS on the SWAT command line to tell SWAT to recalculate
+the base address of all symbols and symbols should appear.  The .WSG
+file tells SWAT the value of various selectors, but of course it can't
+know at that time the base address.  That's why you need to tell SWAT
+to recalculate.
+
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+		 ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		 ³ Tips On Debugging RM Programs ³
+		 ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+Debugging Real Mode programs is quite similar to debugging VCPI
+programs, except that you must use the debugging interface to allow
+SWAT to gain a foothold into your PM context.  Because there is no
+interrupt (such as INT 67h for VCPI) when a RM programs enters PM,
+your program must cooperate with SWAT in order for it to be of use.
+
+Also note that you cannot trace through the instructions which setup the
+resources the CPU needs to run in PM.  In particular, this includes LGDT,
+LIDT, and MOV CR0,r32 (or LMSW), as well as those instructions which
+setup the segment registers in PM, especially CS and SS (note that CS
+is setup by executing a far jump).
+
+

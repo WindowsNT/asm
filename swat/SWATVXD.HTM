@@ -1,0 +1,258 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (Win95; I) [Netscape]">
+   <TITLE>SWAT VxD Documentation</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>SWATVXD -- A Debugger for WIN386</FONT></B></CENTER>
+
+<CENTER>(C) Copyright 1990-7 Qualitas, Inc.&nbsp; All rights reserved.</CENTER>
+
+
+<P>The SWATVXD.EXE file is the accompanying VxD to 386SWAT.&nbsp; As long
+as it is in the same directory as the debugger file (386SWAT.LOD), it is
+loaded automatically by 386SWAT.&nbsp; If for some reason you don't wish
+that to happen, using the command <TT><FONT SIZE=+1>WIN NOSWAT</FONT></TT>
+prevents the VxD from loading.
+<BR>&nbsp;
+
+<P><B>Switches</B>
+
+<P>The VxD provides Windows services for 386SWAT, and is useful for debugging
+VxDs.
+
+<P>The VxD's operation is controlled by various switches all of which appear
+in the <TT><FONT SIZE=+1>[386SWAT]</FONT></TT> section of your SYSTEM.INI
+file.
+
+<P><TT><FONT SIZE=+1>SWATDualDisplay</FONT></TT>
+<BR>Squirt cool info to the mono display -- you must use this option to
+get the most useful output to the mono screen.
+
+<P><TT><FONT SIZE=+1>SSF=</FONT></TT><I>d:\path\name</I><TT><FONT SIZE=+1>.SSF</FONT></TT>
+<BR>Specify the WIN.SSF file -- this file is generated when 386SWAT VxD
+is built and contains useful symbol information about Windows VxDs.
+
+<P><TT><FONT SIZE=+1>SWATVxDROM</FONT></TT>
+<BR>In Sys_Critical_Init, mark the Page Table Entries of all VxD code segments
+as read-only (normally, they are read-writable!).&nbsp; This feature was
+implemented in an attempt to figure out why Windows was crashing (I thought
+that there might be a bad pointer out there). While I didn't find anything
+in particular, it is handy to rule out this problem.&nbsp; If a VxD code
+segment is written into, an Invalid Page Fault is generated (see below).&nbsp;
+Likely, you'll find that a single IPF due to this feature is generated
+at the start of Windows.&nbsp; The default action (taken by pressing Esc
+at the command line) is to test for a RO page and set the RW bit.&nbsp;
+This clears the IPF for this one page only. From that point on, all IPFs
+should be examined carefully.&nbsp; If this switch is set, the <TT><FONT SIZE=+1>SWATVxDIPF
+</FONT></TT>switch is also set automatically.
+
+<P><TT><FONT SIZE=+1>SWATVxDIPF</FONT></TT>
+<BR>In Sys_Critical_Init, hook the Invalid Page Fault handler.&nbsp; This
+feature, in conjunction with the <A HREF="swatcmd.htm#IPF">IPF</A> command
+in 386SWAT can be useful for debugging these beasts.&nbsp; The mono screen
+contains a formatted message of the incoming data to the IPF hook procedure.&nbsp;
+This feature is preliminary and provides a way to get control at the point
+of the IPF -- after that, you're on your own.&nbsp; If you can suggest
+more things 386SWAT can do to help debug IPFs, I'm very open to suggestions.
+<BR>&nbsp;
+<BR><TT><FONT SIZE=+1>HookIRQ</FONT></TT>
+<BR>Hook IRQ0-7 locally if 386SWAT hooks them.&nbsp; This switch is necessary
+for some VxDs (RAM Doubler in particular) as they don't install correctly
+if they find some IRQs not hooked by selector 28h.&nbsp; Go figure.
+<BR>&nbsp;
+
+<P><B>Debugging VxDs</B>
+
+<P>To debug VxDs at their entry points, use the following switches:
+
+<P><TT><FONT SIZE=+1>HookVxD=</FONT></TT><I>DDB_Name[,#s]</I>
+<BR>Trap at a particular VxD by name.&nbsp; Note that <I>DDB_Name</I> is
+case sensitive, and <I>#</I> specifies message numbers (optional).&nbsp;
+See the <A HREF="#VxD Filenames">VxD Filename</A> and <A HREF="#VxD Message #s">Message
+#</A> tables below.
+
+<P><TT><FONT SIZE=+1>HookPM=</FONT></TT><I>DDB_Name,reg,#</I>
+<BR>Trap at a particular VxD's PM API entry.&nbsp; <I>reg</I> specifies
+a 16-bit register used by the VxD for the function code, and <I>#</I> specifies
+the functions to trap.&nbsp; For example, <TT><FONT SIZE=+1>HookPM=SHELL,DX,3</FONT></TT>
+traps at the WINOLDAP hook
+<BR>&nbsp;
+
+<P><A NAME="VxD Filenames"></A><B>VxD Filenames</B>
+
+<P>Some VxD filenames, DDB names, Device_ID, and their switches:
+
+<P><TT><FONT SIZE=+1>WINA20.386&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'LA20HMA
+' xxxxh</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NOLOW64KPAGING</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NOLOW64KPAGINGPORT</FONT></TT>
+<BR><TT><FONT SIZE=+1>Debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' 0002h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*VPICD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'VPICD&nbsp;&nbsp; ' 0003h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*VDMAD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'VDMAD&nbsp;&nbsp; ' 0004h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*VTD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'VTD&nbsp;&nbsp;&nbsp;&nbsp; ' 0005h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*V86MMGR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'V86MMGR ' 0006h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*PAGESWAP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'PageSwap' 0007h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*VKD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'VKD&nbsp;&nbsp;&nbsp;&nbsp; ' 000Dh</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+INITPS2MOUSEATEXIT=ON/OFF</FONT></TT>
+<BR><TT><FONT SIZE=+1>*DOSMGR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'DOSMGR&nbsp; ' 0015h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*WSHELL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'SHELL&nbsp;&nbsp; ' 0017h</FONT></TT>
+<BR><TT><FONT SIZE=+1>*PAGEFILE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'PageFile' 0021h</FONT></TT>
+<BR><TT><FONT SIZE=+1>386MAX.VXD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'LoadHi&nbsp;
+' 001Ch</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVXD.EXE&nbsp; 'SWATVXD ' 2400h</FONT></TT>
+<BR><TT><FONT SIZE=+1>VDDVGA.386&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'VDD&nbsp;&nbsp;&nbsp;&nbsp;
+' 000Ah</FONT></TT>
+<BR><TT><FONT SIZE=+1>VNETWARE.386 'DOSNET&nbsp; ' 001Ah</FONT></TT>
+<BR><TT><FONT SIZE=+1>PM_BIOS.386&nbsp; 'PMVDD&nbsp;&nbsp; ' 2250h</FONT></TT>
+<BR>&nbsp;
+
+<P><A NAME="VxD Message #s"></A><B>VxD Message #s</B>
+
+<P><TT><FONT SIZE=+1>0000h&nbsp; Sys_Critical_Init&nbsp;&nbsp;&nbsp;&nbsp;
+001Bh Sys_Dynamic_Device_Init</FONT></TT>
+<BR><TT><FONT SIZE=+1>0001h&nbsp; Device_Init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+001Ch Sys_Dynamic_Device_Exit</FONT></TT>
+<BR><TT><FONT SIZE=+1>0002h&nbsp; Init_Complete&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+001Dh Create_Thread</FONT></TT>
+<BR><TT><FONT SIZE=+1>0003h&nbsp; Sys_VM_Init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+001Eh Thread_Init</FONT></TT>
+<BR><TT><FONT SIZE=+1>0004h&nbsp; Sys_VM_Terminate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+001Fh Terminate_Thread</FONT></TT>
+<BR><TT><FONT SIZE=+1>0005h&nbsp; System_Exit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0020h Thread_Not_Executeable</FONT></TT>
+<BR><TT><FONT SIZE=+1>0006h&nbsp; Sys_Critical_Exit&nbsp;&nbsp;&nbsp;&nbsp;
+0021h Destroy_Thread</FONT></TT>
+<BR><TT><FONT SIZE=+1>0007h&nbsp; Create_VM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0022h PNP_New_Devnode</FONT></TT>
+<BR><TT><FONT SIZE=+1>0008h&nbsp; VM_Critical_Init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0023h W32_DeviceIOControl</FONT></TT>
+<BR><TT><FONT SIZE=+1>0009h&nbsp; VM_Init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0024h Sys_VM_Terminate2</FONT></TT>
+<BR><TT><FONT SIZE=+1>000Ah&nbsp; VM_Terminate&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0025h System_Exit2</FONT></TT>
+<BR><TT><FONT SIZE=+1>000Bh&nbsp; VM_Not_Executeable&nbsp;&nbsp;&nbsp;
+0026h Sys_Critical_Exit2</FONT></TT>
+<BR><TT><FONT SIZE=+1>000Ch&nbsp; Destroy_VM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0027h Vm_Terminate2</FONT></TT>
+<BR><TT><FONT SIZE=+1>000Dh&nbsp; VM_Suspend&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0028h Vm_Not_Executeable2</FONT></TT>
+<BR><TT><FONT SIZE=+1>000Eh&nbsp; VM_Resume&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0029h Destroy_VM2</FONT></TT>
+<BR><TT><FONT SIZE=+1>000Fh&nbsp; Set_Device_Focus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+002Ah VM_Suspend2</FONT></TT>
+<BR><TT><FONT SIZE=+1>0010h&nbsp; Begin_Message_Mode&nbsp;&nbsp;&nbsp;
+002Bh End_Message_Mode2</FONT></TT>
+<BR><TT><FONT SIZE=+1>0011h&nbsp; End_Message_Mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+002Ch End_PM_App2</FONT></TT>
+<BR><TT><FONT SIZE=+1>0012h&nbsp; Reboot_Processor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+002Dh Device_Reboot_Notify2</FONT></TT>
+<BR><TT><FONT SIZE=+1>0013h&nbsp; Query_Destroy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+002Eh Crit_Reboot_Notify2</FONT></TT>
+<BR><TT><FONT SIZE=+1>0014h&nbsp; Debug_Query&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+002Fh Close_VM_Notify2</FONT></TT>
+<BR><TT><FONT SIZE=+1>0015h&nbsp; Begin_PM_App&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0030h Get_Contention_Handler</FONT></TT>
+<BR><TT><FONT SIZE=+1>0016h&nbsp; End_PM_App&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0031h Kernel32_Initialized</FONT></TT>
+<BR><TT><FONT SIZE=+1>0017h&nbsp; Device_Reboot_Notify&nbsp; 0032h Kernel32_Shutdown</FONT></TT>
+<BR><TT><FONT SIZE=+1>0018h&nbsp; Crit_Reboot_Notify</FONT></TT>
+<BR><TT><FONT SIZE=+1>0019h&nbsp; Close_VM_Notify</FONT></TT>
+<BR><TT><FONT SIZE=+1>001Ah&nbsp; Power_Event&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT></TT>
+<BR>&nbsp;
+
+<P><B>Message Number Traps</B>
+
+<P>To stop inside 386SWAT at various message numbers, use the following
+switches:
+
+<P><TT><FONT SIZE=+1>SWATSysCriticalInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDeviceInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATInitComplete</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysVMInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysVMTerminate</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSystemExit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysCriticalExit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATCreateVM</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMCriticalInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMTerminate</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMNotExecuteable</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDestroyVM</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMSuspend</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMResume</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSetDeviceFocus</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATBeginMessageMode</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATEndMessageMode</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATRebootProcessor</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATQueryDestroy</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDebugQuery</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATBeginPMApp</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATEndPMApp</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDeviceRebootNotify</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATCritRebootNotify</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATCloseVMNotify</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATPowerEvent</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysDynamicDeviceInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysDynamicDeviceExit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATCreateThread</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATThreadInit</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATTerminateThread</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATThreadNotExecuteable</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDestroyThread</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATPNPNewDevnode</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATW32DeviceIOControl</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysVMTerminate2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSystemExit2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATSysCriticalExit2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMTerminate2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMNotExecuteable2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDestroyVM2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATVMSuspend2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATEndMessageMode2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATEndPMApp2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATDeviceRebootNotify2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATCritRebootNotify2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATCloseVMNotify2</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATGetContentionHandler</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATKernel32Initialized</FONT></TT>
+<BR><TT><FONT SIZE=+1>SWATKernel32Shutdown</FONT></TT>
+<BR>&nbsp;
+
+<P><B>Internal Use Only</B>
+
+<P>The following switches are for internal use only.
+
+<P><TT><FONT SIZE=+1>SSFPrefix=</FONT></TT><I>name</I>
+<BR>Specify device name and DDB prefix.
+<BR>&nbsp;
+<BR><TT><FONT SIZE=+1>SWATDebugThruExit</FONT></TT>
+<BR>Call 386SWAT's INIT_PROT during Sys_Critical_Exit.&nbsp; This allows
+debugging on the way out of 386SWAT.&nbsp; Now that 386SWAT is a Windows
+kernel debugger, this switch is unnecessary.
+
+<P><TT><FONT SIZE=+1>RealModeBreak=ON</FONT></TT>/<TT><FONT SIZE=+1>OFF</FONT></TT>
+<BR>Hit an INT 1 early in RealModeInit.
+<BR>&nbsp;
+<BR><TT><FONT SIZE=+1>Rehook123=ON</FONT></TT>/<TT><FONT SIZE=+1>OFF</FONT></TT>
+<BR>Blast INTs 1, 2, and 3 into the IDT.&nbsp; To avoid trouble with WDEB386.
+Now that 386SWAT is a Windows kernel debugger, there should be less need
+to run WDEB386.&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

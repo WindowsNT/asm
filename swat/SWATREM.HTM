@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/x-server-parsed-html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Remote Debugging</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Remote Debugging</FONT></B></CENTER>
+
+
+<P>Two machines may be connected for remote debugging. The connection may
+be made via a null modem cable connecting the serial ports on both machines,
+or via modem.
+
+<P>The connection is initiated by using the <A HREF="swatcmd.htm#SETCOM">SETCOM</A>
+command to initialize the serial port, then pressing <A HREF="swatscr.htm#c-F9">Ctl-F9</A>
+on each system to attempt to connect. When a connection is established,
+the "Press M to become master" prompt appears. Only one of the two systems
+may become master; the other one then becomes the slave. Processing on
+the slave system then proceeds normally; the master system is now running
+a special terminal program.
+
+<P>Keystrokes typed in the master terminal program are sent to the remote
+system (with some exceptions - see below), and screen output from the remote
+386SWAT system appears on the master terminal screen.
+<BR>&nbsp;
+
+<P><U>Special keys</U>
+
+<P><A HREF="swatscr.htm#Ctl-Alt-Del">Ctl-Alt-Del</A> will NOT be sent to
+the remote system while in the master terminal screen - it will reboot
+the master system.&nbsp; <A HREF="swatscr.htm#c-F9">Ctl-F9</A> invokes
+a menu of special options for the master system:
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP>T</TD>
+
+<TD>Terminate connection with slave immediately.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>G</TD>
+
+<TD>Terminate connection, but have slave go instead of returning to the
+386SWAT command prompt.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>R</TD>
+
+<TD>Terminate connection, have slave go, but have slave automatically attempt
+to re-establish connection on next invocation of 386SWAT.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>B</TD>
+
+<TD>Terminate connection and reboot slave system.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>S</TD>
+
+<TD>Suspend session temporarily. This temporarily exits the terminal program.
+You may exit 386SWAT. <A HREF="swatscr.htm#c-F9">Ctl-F9</A> again resumes
+the connection.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>U</TD>
+
+<TD>Upload program to remote.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>D</TD>
+
+<TD>Download program from remote.</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP>Esc</TD>
+
+<TD>Continue with terminal program</TD>
+</TR>
+</TABLE>
+Other keys are Ctl-6 (interrupt remote) and <A HREF="swatscr.htm#a-F7">Alt-F7</A>
+(send remote screen only to master). <A HREF="swatscr.htm#a-F7">Alt-F7</A>
+is useful for debugging when the remote system is in graphics mode or otherwise
+unable to access the CRT controller.
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

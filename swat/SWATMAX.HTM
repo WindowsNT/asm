@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/x-server-parsed-html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Debugging Aids in 386MAX</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Debugging Aids in 386MAX</FONT></B></CENTER>
+
+
+<P>The following options are recognized by 386MAX and may be useful in
+conjunction with 386SWAT. These options should be placed in your 386MAX
+profile.
+
+<P>To catch even-value stack wraps, use <TT><FONT SIZE=+1>DEBUG=NOWRAP</FONT></TT>.
+This situation occurs when an interrupt is encountered with SP = 2 or 4.
+In this case, the 386 will push the three words onto the stack and wrap
+to the end of the stack segment leaving SP = FFFC or FFFE. Quite likely,
+this is an error as most stack segments aren't meant to be 64 KB in length.
+Technically, this event is not an error as far as the 386 is concerned,
+but logically it almost always is an error. The default behavior of 386MAX
+is to emulate the behavior of the CPU and not signal an error; the <TT><FONT SIZE=+1>DEBUG=NOWRAP</FONT></TT>
+keyword tells 386MAX to trap this case.
+
+<P>To catch writes into unmapped EMS pages, use <TT><FONT SIZE=+1>DEBUG=EMSWRIT</FONT></TT>.
+This option traps with a Page Fault attempts to write into unmapped EMS
+pages as well as after a Save Page Map call. The latter is presumed to
+have been done by a memory-resident program prior to mapping in its own
+pages. To catch reads and/or writes in unmapped EMS pages, use <TT><FONT SIZE=+1>DEBUG=EMSRDWR</FONT></TT>.
+To catch an EMS bug in MS-DOS 4.0x, try this latter option with BUFFERS
+in EMS memory.
+
+<P>To catch unemulated Invalid Opcodes, use <TT><FONT SIZE=+1>DEBUG=I06</FONT></TT>.
+
+<P>To signal an INT 01h on each DPMI error, use <TT><FONT SIZE=+1>DEBUG=DPMIERR</FONT></TT>.
+
+<P>To force a new selector on all selector allocates, use <TT><FONT SIZE=+1>DEBUG=DPMINEWSEL</FONT></TT>.
+This option is useful if your code has a stale selector, that is, you allocate
+a selector and tuck it away for later use, but then, before its last reference,
+you free it and allocate another selector. Without this option you might
+get the old selector number (the one you just freed). When the stale selector
+is used, it might not generate an error, but surely it won't do what you
+expected.
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

@@ -1,0 +1,370 @@
+386SWAT symbolic debugging
+
+This document covers the basics of symbolic debugging support for
+386SWAT.  The 386SWAT API specifics are documented in SYMBOLS.TXT; here we
+will describe actual usage of SWAT for symbolic debugging, and the
+tools needed to load symbols.
+
+There are three sections:
+386SWAT - new profile options and commands
+SWATRUN - program loader for debugging .COM and .EXE files
+MAPSSF	- symbol loader/translator
+
+386SWAT
+Three profile options are new to SWAT:
+
+SYMSIZE=n	This option sets the number of bytes to be used for the
+		SWAT symbol table.  The internal format of SWAT's symbol
+		table is 12 bytes larger than the symbol table used for
+		the SWAT API calls.  Each public or line number occupies
+		23 bytes plus the length of the symbol name.
+
+		SYMSIZE is used to calculate a default value for BUCKETS
+		(described below).  If BUCKETS is not explicitly defined
+		in the profile, it will be set to min (255, max (1,
+		SYMSIZE / 4096)).
+
+		If SYMSIZE is not specified, it will default to 4096 bytes.
+		The default BUCKETS value (if also not specified) will then
+		be 1.  See below for BUCKETS storage requirements.
+
+		Use SYMSIZE=0 to minimize symbol storage requirements.
+		This will save 4K over the default.
+
+BUCKETS=n	Specify number of 1K blocks to be used for symbol name
+		hashing.  Values less than 1 and over 255 are ignored.
+
+		To speed symbol name searches, all names are hashed using
+		the following algorithm:
+
+		extern unsigned int HASHPRIME;
+
+		int hashpjw(char *s)
+		{
+		 char *p;
+		 unsigned long h=0, g;
+
+		 for (p=s; *p; p++) {
+			h = (h << 4) + (unsigned) tolower (*p);
+			if (g = (h & 0xf0000000)) {
+			  h = h ^ (g >> 24);
+			  h = h ^ g;
+			}
+		 }
+
+		 return ((int) (h % HASHPRIME));
+
+		}
+
+		HASHPRIME is derived from a table of prime numbers closest
+		to multiples of 256.  Here are some examples:
+		BUCKETS 	HASHPRIME
+		1		257
+		2		509
+		3		769
+		254		65027
+		255		65287
+
+		The storage occupied by the name hashing table is
+		HASHPRIMES[BUCKETS-1] * 4, or approximately BUCKETS * 1K.
+
+		When a hash value is calculated from a name, that value is
+		shifted left 2 bits and used as an index into the table
+		of dword bucket pointers based at the address contained
+		in SYMNHASH.  A bucket pointer may contain -1 (FFFFFFFF)
+		or an offset from the address contained in SYMBASE.  In
+		this case, a "bucket" actually points to a symbol record.
+		Next name pointers in each symbol record form a linked
+		list which may be traversed to find an exact name match.
+
+		The smaller the BUCKETS value, the longer these bucket
+		chains will be, thus increasing name search time.  This
+		is only likely to be a performance hit when loading
+		symbols, since SWAT checks for existing symbols by name.
+		Searches for symbols entered at the command line would
+		not be visibly impacted by longer searches.
+
+ADDRHBITS=n	Specify number of address bits to use for address hash
+		table.	Values less than 8 and over 12 are ignored.
+
+		Address hash table storage in bytes is 2 ^ (ADDRHBITS + 2).
+		The minimum is therefore 1K and the maximum, 16K.
+
+		ADDRHBITS defaults to 12.  When symbols are present,
+		all possible addresses in the disassembly screen
+		are searched against the address hash table.  Possible
+		hits require traversal of the address hash buckets chain,
+		similar to name hash bucket traversal.	A "next address
+		bucket" pointer is part of the symbol record.  Thus the
+		set of symbol records forms two interleaved linked lists:
+		the address bucket chain and the name bucket chain.
+
+		The number of bits specified by ADDRHBITS are taken from
+		a resolved linear address, shifted left 2 bits, and used
+		as an index into the table of dword pointers based at the
+		address contained in SYMNHASH.	The address pointed to is
+		an offset from the address in SYMBASE, and points to the
+		beginning symbol record in that address bucket chain.  If
+		the value is -1 (FFFFFFFF), there is no such address.
+
+		Smaller address hash tables may significantly impact
+		unassembly.
+
+Using symbols
+
+Any symbol may be used as an effective address.  For example,
+
+dd 180|{SYMHASH
+
+will display the symbol address hash table.  Symbol display will occur
+automatically if the symbols are loaded properly.  See sections below
+on SWATRUN and MAPSSF.
+
+Symbols are displayed in the Unassemble (F9) screen.  Code addresses
+may be displayed as public names or line numbers (if line numbers
+were specified with the linker's /LI option).  Addresses within the
+unassembly are handled as intelligently as possible.  For example,
+
+mov ax,[bx+7c39]
+
+may be displayed as
+
+mov ax,[bx+FOOBAR]
+
+if FOOBAR's offset is 7c39 and the default segment/selector (DS in this case)
+matches the segment/selector specified for the symbol FOOBAR.
+
+SWAT can now resolve addresses CLOSE TO symbols; a construction commonly
+seen in C code might be:
+
+mov [FOOBAR],bx
+mov [7c3b],es
+
+SWAT will disassemble this as
+
+mov [FOOBAR],bx
+mov [FOOBAR+02],es
+
+The PROXSRCH variable determines how far SWAT continues proximity searches
+and with what granularity.  The default is 1 word.  Currently, the only
+way to change this is by editing the memory location where PROXSRCH is
+stored.  The high order byte of PROXSRCH contains the granularity in bytes,
+and the low order byte contains the number of units to search.	The default
+is 0201h.  0108h would do byte granular searches from x+1 to x+8.
+
+Proximity searches should not visibly impact disassembly performance.
+A separate check for an empty symbol table ensures that no time is
+wasted in unnecessary calls to the symbol search routine (which has
+its own check for empty tables).  No proximity searches are done for
+label display and data display; this only affects values within the
+disassembly.
+
+A future enhancement would be to implement a profile option to set
+PROXSRCH.  It should also be settable from the command line.
+
+Another useful feature would be to turn off case sensitivity when searching
+for symbol matches.  This is more of an issue when debugging C code. Again,
+it could be settable in the profile as well as from the command line.
+
+New commands within SWAT
+
+The Translate Symbols (TS) command may be used to adjust segment/selector
+values, as well as to add a constant to symbol offsets, after the symbols
+are loaded.  This is needed for debugging the VXD.  The VXD symbols would
+be loaded with MAPSSF, using a .wsg file to assign selector values and
+group ID's to the different linker groups.  Once SWATVXD has located the
+offsets of the different VXD groups, they may be translated one at a time.
+
+For example, the VXD's DGROUP is assigned selector 28, group ID 2001, and
+IGROUP is assigned selector 30, group ID 2002.	The .WSG file entries are:
+
+  2001	P	28	DGROUP		; Comments
+  2002	P	30	IGROUP		; More comments
+
+We load the .MAP file before entering Windows:
+
+MAPSSF -wVXD.WSG VXD.MAP
+
+We find that the offsets within the Windows flat model segment are
+DGROUP	8001BE24
+IGROUP	8020397C
+
+The TS command is used to translate both groups:
+
+ts 28 2001 P 28 8001BE24
+ts 30 2002 P 30 8020397C
+
+The complete syntax of the TS command is:
+
+TS osel ogrp nflag nsel nbase
+
+osel	Old selector value
+ogrp	Target group value (unless specified in .WSG file, 0)
+nflag	P for PM symbols
+	V for VM symbols
+nsel	New selector value (in above example, unchanged)
+nbase	Base value to be added to all symbol offsets
+
+
+SWATRUN
+
+Syntax: SWATRUN [options] progname [arguments]
+
+SWATRUN is a program loader for debugging V86 mode programs.  It
+creates a breakpoint before the first instruction of the target
+program, and will also attempt to load symbols into SWAT via the
+VCPI debugger API with the appropriate segment fixup.
+
+If no file extension is specified, SWATRUN looks first for a .COM
+file then an .EXE file.  The filename specified is converted into
+a fully qualified pathname including drive letter, directory, and
+extension.  SWATRUN will load this file using the undocumented DOS
+function 4B01 to determine the segment fixup.
+
+SWATRUN will then look for a matching .SSF file, and
+if found, will load it directly into SWAT.  If an .SSF file is not
+found, SWATRUN will look for a matching .MAP file.  If a .MAP file
+is found, SWATRUN will invoke MAPSSF with the proper parameters
+to fixup and load the parsed .MAP file.  See the section on MAPSSF
+for further information on .MAP file formats supported and on
+creation of .SSF files.  .SSF file loading is faster, but does not
+currently report symbol allocation table shortages.  If your
+symbols do not appear to be loaded from an .SSF file, delete
+the .SSF file.	SWATRUN will try to load symbols from the .MAP file
+with MAPSSF.  MAPSSF will report any changes required to the
+386SWAT.PRO file.
+
+
+  Valid SWATRUN options are:
+
+    /b	 Generate Int 1 at beginning of SWATRUN
+	 This is useful only for debugging the loading process
+
+    /mMAPFILE Load MAPFILE instead of progname.map
+	 If no .SSF file is present, SWATRUN constructs a map file
+	 name by taking the path and basename of the .EXE or .COM
+	 file and adding .MAP.	This filename is passed to MAPSSF
+	 if it exists.	This option may be used to specify a map
+	 file on another drive:directory.
+
+    /n	 Do not load symbols
+	 If SWATRUN has already run once, the target program did not
+	 go resident, and symbols were loaded, run SWATRUN with this
+	 option on subsequent invocations.
+
+    /o	 Overwrite existing SWAT symbols
+	 This option is passed to MAPSSF.  Any existing symbols will
+	 be destroyed.
+
+    /sSYMFILE Load SYMFILE instead of progname.ssf
+	 SWATRUN normally constructs a .ssf file name by taking
+	 the path and basename of the .EXE or .COM file and adding
+	 .SSF.	If this file exists and is in the proper format
+	 created by MAPSSF, it will be loaded into 386SWAT.
+
+    /?	 Display this message
+
+
+MAPSSF
+
+This program is called by SWATRUN to load .MAP files on the fly.
+It may also be used to produce .SSF files for loading at CONFIG.SYS time
+(not currently supported by SWAT).  .SSF files may also be loaded
+directly by SWATRUN.  This is faster than calling MAPSSF every time
+symbols are loaded.
+
+Besides reading .MAP files, MAPSSF will also process Windows SYM32 files.
+MAPSSF has been tested with the following .MAP file formats:
+- Microsoft LINK
+- Microsoft LINK386 flat model
+- Borland TLINK
+
+Syntax:
+
+MapSSF [options] fspec1 [fspec2 [...]]
+
+All options are preceded with - or /:
+
+  -g#,# 	restrict symbol group types to specified #'s
+		(SYM32 files only)  Only symbols with group types matching
+		one of these values will be loaded.  The group type in
+		SYM32 files is NOT the same as the group ID defined
+		in a .WSG file.
+
+  -l		ignore line number information in .MAP file
+		This option may be used to suppress loading of line number
+		symbols when space is at a premium.  Typically, line
+		numbers take about 80% of symbol space.
+
+  -o		overwrite existing symbol table (default is append)
+		Normally, new symbols are added to SWAT.  Existing
+		symbols will be updated.  This option forces the
+		symbol table to be flushed at the beginning of MAPSSF.
+
+  -sxxxxm	set selector to xxxx hex, where m is
+		v for V86/real mode
+		v+ for V86/real mode, add value to segment,
+		p for protected mode
+		The -sxxxxv+ form is used by SWATRUN to add a fixup to all
+		segment values.
+
+  -tfname	echo SWAT tables to file fname
+		This option may be used to create a file in SWAT symbol
+		format (.ssf file).
+
+  -wfname[.wsg] read Windows Symbol Group file fname.wsg
+		This feature may be used for .MAP files or for .SYM files.
+		As an example, the QMAX.WSG file contains:
+
+; group mode	sel	group[!segment]
+
+  3000	P	50	PGROUP		; 386MAX code
+  3001	P	18	PGROUP!EDATA	; 386MAX data
+  3001	P	18	PGROUP!VALSEG	; 386MAX data
+  0	D	 0	PGROUP!NCODE	; 386MAX non-resident code
+  0	D	 0	PGROUP!NDATA	; 386MAX non-resident data
+  3002	P      118	IGROUP!ICODE	; 386MAX extra code
+  3003	P      120	IGROUP!IDATA	; 386MAX extra data
+  0	D	 0	XGROUP		; 386MAX non-resident code/data
+  0	D	 0	PSPGRP		; PSP group (non-resident)
+  3004	P	70	PDTGRP		; OFFPDT group (uninitialized)
+
+		Note that all groups listed with unique segment values
+		in the Group section of the MAP file are listed.  The
+		real mode groups XGROUP and PSPGRP will not be loaded.
+
+		Association of public symbols with groups is sometimes
+		not sufficient.  Both code and data are in PGROUP, but
+		different selectors are used.  We therefore specify the
+		individual data segments within PGROUP that will be
+		assigned selector 18 (EDATA and VALSEG).  Since segments
+		are more completely specified in the MAP file than
+		groups, MAPSSF will check for segment matches before
+		checking for group matches.  We also use this mechanism
+		to avoid loading the NCODE and NDATA segments within
+		PGROUP.
+
+		Group matches are made by checking group origin values,
+		which are sorted by value in descending order, against
+		addresses.  ALL groups which COULD include an address,
+		from highest to lowest, are checked for inclusion in
+		the .WSG file.	The first match determines what changes
+		are made to the matching symbol address.
+
+  -v		sort symbols by value (default is by name)
+		This option controls which section of the .MAP file is
+		read.  If included on the command line, the "By Value"
+		section is read.  By default, the "By Name" section is
+		read.  By controlling the order in which symbols are passed
+		to SWAT, the display in SWAT's Ctrl-F6 screen may be
+		sorted by name or by value.
+
+  -x#		set debugging level to # (default is 0 -- no messages)
+		This is useful for debugging only.
+
+  -y		default to recognizing files as SYM32 format
+		Normally, MAPSSF recognizes files as .MAP or .SYM by
+		their extension.  If neither extension is used, this
+		option forces recognition as SYM32.
+
+

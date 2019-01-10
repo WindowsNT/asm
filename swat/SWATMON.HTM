@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/x-server-parsed-html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.03 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Monitor Mode</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Monitor Mode</FONT></B></CENTER>
+
+
+<P>The <TT><FONT SIZE=+1>GM </FONT></TT>(go monitor) command takes an expression
+which will be evaluated as the CPU single-steps (equivalent to <A HREF="swatscr.htm#Padplus">Padplus</A>
+or <A HREF="swatscr.htm#F11">F11</A>). No display will occur until
+
+<P>1) the monitor expression evaluates TRUE, or
+<BR>2) 386SWAT is invoked by some other means (GP fault, NMI, Ctrl-Alt-Pad5,
+etc.)
+
+<P>Boolean expressions may be constructed using the dyadic functions <TT><FONT SIZE=+1>&amp;&amp;</FONT></TT>,
+<TT><FONT SIZE=+1>||</FONT></TT>, <TT><FONT SIZE=+1>&lt;</FONT></TT>, <TT><FONT SIZE=+1>&lt;=</FONT></TT>,
+<TT><FONT SIZE=+1>==</FONT></TT>, <TT><FONT SIZE=+1>>=</FONT></TT>, and
+<TT><FONT SIZE=+1>></FONT></TT>. Function precedence is the same as the
+C language. See <A HREF="swatcmd.htm">Command Line Actions</A>.
+
+<P>For example:
+
+<P><TT><FONT SIZE=+1>gm ah</FONT></TT>
+<BR>will execute until <TT><FONT SIZE=+1>AH </FONT></TT>is non-zero.
+
+<P><TT><FONT SIZE=+1>gm [.csip == 21cd &amp;&amp; ah!=9</FONT></TT>
+<BR>will execute until the current instruction is INT 21 and <TT><FONT SIZE=+1>AH
+</FONT></TT>is any value other than 9 (DOS display string).
+
+<P><TT><FONT SIZE=+1>gm cx == 0</FONT></TT>
+<BR>will execute until <TT><FONT SIZE=+1>CX </FONT></TT>is 0.
+
+<P><TT><FONT SIZE=+1>gm</FONT></TT>
+<BR>will execute until the last expression specified with <TT><FONT SIZE=+1>gm
+</FONT></TT>is TRUE.
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

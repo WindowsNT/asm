@@ -1,0 +1,136 @@
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; Recommended options are
+
+  trapdiv		; Direct INT 00h to 386SWAT (Divide Overflow Fault)
+  trapnmi		; Direct INT 02h to 386SWAT (Non-maskable interrupt)
+  trapbound ; Direct INT 05h to 386SWAT (BOUND Fault)
+  trapinv		; Direct INT 06h to 386SWAT (Invalid Opcode Fault)
+  trapstack ; Direct INT 0Ch to 386SWAT (Stack Fault)
+  x15			; Pass through all INT 15h memory calls
+
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; The default options are
+;
+; addrhbits=12	; Specify bits in addresses to hash (8-12)
+; btbsize=0 ; Specify size of Branch Trace Buffer in kilobytes
+; cmdhist=1024	; Specify the size of the command history buffer
+; intrude		; Attempt to intrude into another memory manager's PL0 context
+; logsize=4096	; Specify size of error log buffer in bytes
+; normlidt		; Disable Real Mode LIDT redirection
+; proxsrch=4,1	; Search symbols for matches within range 4 of units with
+;		 ; granularity 1 (default granularity is 1 for byte).
+; savescreen=16 ; Specify # last screens to save
+; symfilter=__imp__ _ ; Specify leading text to strip from symbols
+; symsize=4096	; Specify # bytes to reserve for the symbol table
+; trapskip		; Direct INT 03h to 386SWAT (Single-skip)
+; trapstep		; Direct INT 01h to 386SWAT (Single-step)
+; wkdls=0		; No Windows Kernel Debugger Load Segment symbols
+;
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; The default services are
+;
+; Windows Kernel Debugger services enabled (disable via nowink)
+;
+;ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; All possible options are
+;
+; [section name] ; Limit profile processing to the matching MultiConfig
+;				; section in CONFIG.SYS
+; addrhbits=nn	; Specify bits in addresses to hash (8-12, default=12)
+; altscr		; Use alternate screen for debugging
+; /a			; Alias for ALTSCR
+; btbsize=nnnnn ; Specify size of Branch Trace Buffer in kilobytes (default=0)
+; buckets=nnn	; Specify # 1K hash bucket blocks (1-255)
+; cmdhist=nnn	; Specify the size of the command history buffer
+; coldboot		; Do not try to warm boot on Ctrl-Alt-Del
+; dvga			; Use Dual VGA screen
+; fsonly		; SWAT available in Fullscreen mode in Windows only
+; gpskip=key[,key] ; GP Skip instructions:	ALL, INT, HLT, OUTD, OUTI, OUTS,
+;				; IND, INI, INS, CLI, STI, IRET, PPF, and CRn so far
+; intrude		; Obsolete option which is now the default
+; keyb=cclay	; Use international keyboard whose country code/layout is cclay.
+;				; Possible values are
+;				;	cclay  Country
+;				; ----------------------
+;				;	GR129  Germany
+;				;	SP172  Spain
+; lcd			; LCD screen present
+; loadhigh		; Obsolete option which is now the default
+; loadlow		; Tell 386MAX it's not OK to load us into extended memory
+;				; after INIT_REAL and to relocate our INIT_VIRT code.
+; loadsym		; Enable command line loading of symbols
+; loadsym=d:\path\filename.ext [optional args] ; Load SSF file at PM init time
+;				; [/b=xxxxxxxx]    Optional physical base address in hex
+;				; [/h]		   Optional HPDA flag (enable DPMI services)
+;				; [/li-]	   Optional disable of line numbers
+;				; [/xl] 	   Disable larger comparison w/SYMSIZE
+; logsize=nnnnn  ; Specify size of error log buffer in bytes (default=4096)
+; mono			; Use monochrome adapter if present
+; nogd			; Don't automatically set the GD bit in DR7
+; normlidt		; Disable Real Mode LIDT redirection
+; noswap		; Don't swap screens over single-step/skip
+; novxd 		; Don't load the VxD
+; nowindpci ; Disable Windows Dual PCI switching
+; nowink		; Disable Windows Kernel Debugger services
+; passthrough=nn,nn,... ; Specify one or more hardware interrupt handlers
+;				; (numbers in hex) to pass through while SWAT is active.
+;				; The only ones currently supported are B, C, 76, and 77.
+; path=dir[,dir2[...]] ; Specify source code search path for symbolic debugging
+;				; (current directory is NOT included by default)
+; portinit=string ; Specify a modem initialization string (setcom must be
+;				; specified as well).  Valid escape sequences are:
+;				; \\ Send a backslash
+;				; \r Send a carriage return
+;				; \b Send a break signal
+;				; \p Pause about 250 ms.
+;				; \1 - \0 Wait 1 - 10 seconds.
+;				; On the first invocation of SWAT, the system will
+;				; automatically attempt to establish connection with a remote
+;				; SWAT system.
+; proxsrch=r[,g] ; Search symbols for matches within range r of units with
+;				; granularity g (default granularity is 1 for byte).
+; ps4=xxxx		; Periscope 4 hardware debugger board is at I/O port xxxx
+; rmlidt		; Enable Real Mode LIDT redirection
+; savescreen=nnn ; Specify # last screens to save (default = 16)
+; setcom=port,bps[,{IRQ|p}[,base]] ; Initialize specified serial port (1-4) for
+;				; remote debugging at specified bps.  Optional IRQ number (3,4)
+;				; overrides default association of ports with IRQs, or p may
+;				; be specified for polled operation.  Optional port base
+;				; may be specified to override BIOS value at 40:0.
+; symfilter=text1 [text2 [...]] ; Specify leading text to strip from symbols
+; symsize=nnnnn ; Specify # bytes to reserve for the symbol table (default=4096)
+; trapbound ; Direct INT 05h to 386SWAT (BOUND Fault)
+; trapdebug ; Direct INT 01h/03h to 386SWAT (Same as TRAPSTEP with TRAPSKIP)
+; trapdiv		; Direct INT 00h to 386SWAT (Divide Overflow Fault)
+; trapgenp		; Direct INT 0Dh to 386SWAT (General Protection Fault)
+; trapinv		; Direct INT 06h to 386SWAT (Invalid Opcode Fault)
+; trapnmi		; Direct INT 02h to 386SWAT (Non-maskable interrupt)
+; trappage		; Direct INT 0Eh to 386SWAT (Page Fault)
+; trapsegnp ; Direct INT 0Bh to 386SWAT (Segment Not Present Fault)
+; trapskip		; Direct INT 03h to 386SWAT (Single-skip)
+; trapstack ; Direct INT 0Ch to 386SWAT (Stack Fault)
+; trapstep		; Direct INT 01h to 386SWAT (Single-step)
+; traptss		; Direct INT 0Ah to 386SWAT (TSS Fault)
+; unreal [+|-][cs|ds|es|fs|gs|ss|all] ; Enable (+) or disable (-) Unreal
+;				; (Flat Real) mode on selected (all) segment registers
+; vcpiswat		; Don't attempt to intrude into a memory manager's PL0 context
+; video=d:\path\filename.ext ; Load/create video tables
+; vmscount=n	; Number of times to intrude on GDT/IDT for VCPI debugging
+; vmsint		; Launder Windows and VCPI mode switches and hook interrupts
+;				; 00, 01, 02, 03, 05, 06, 08, 0A, 0B, 0C, 0D, and 0E.
+; vmsint=nn,nn,... ; Limit VMSINT debugging to these interrupt #s
+; watchdog=nn	; Set watchdog timer to nn timer ticks (0-255)
+; wkdls=nnn ; Define # WKD Load Segment entries
+; x15			; Pass through all INT 15h memory calls
+; xirqcode		; Skip IRQ code
+
+; debug=caps	; Signal NMI if CapsLock pressed at startup
+; debug=ibv ; Use Interrupt mask base Vector for Ctrl-Alt-PAD5
+; debug=int ; Signal INT 03h if CapsLock present at startup
+; debug=pmi ; Signal INT 03h near end of INIT_PROT
+; debug=trip	; Use triple fault method to reboot
+; debug=vmi ; Signal INT 01h on entry to INIT_VIRT
+; debug=wcb	 ; Signal INT 01h on entry to Windows Callback Disable
+; debug=xpushf	; Don't skip over (INT 03h) PUSHF/PUSHFD
+
+

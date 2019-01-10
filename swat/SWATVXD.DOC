@@ -1,0 +1,217 @@
+SWATVXD  -- Version 3.02 -- A Debugger for WIN386
+   (C) Copyright 1990-8 Qualitas, Inc.	All rights reserved.
+
+The SWATVXD.EXE file is the accompanying VxD to 386SWAT.  As long as
+it is in the same directory as the debugger file (386SWAT.LOD), it is
+loaded automatically by 386SWAT.  If for some reason you don't wish
+that to happen, using the command "WIN NOSWAT" prevents the VxD from
+loading.
+
+
+Switches
+--------
+
+The VxD provides Windows services for 386SWAT, and is useful for
+debugging VxDs.
+
+The VxD's operation is controlled by various switches all of which
+appear in the [386SWAT] section of your SYSTEM.INI file.
+
+SWATDualDisplay
+  Squirt cool info to the mono display -- you must use this option to
+get the most useful output to the mono screen.
+
+SSF=d:\path\name.SSF
+  Specify the WIN.SSF file -- this file is generated when SWAT VxD is
+built and contains useful symbol information about Windows VxDs.
+
+SWATVxDROM
+  In Sys_Critical_Init, mark the Page Table Entries of all VxD code
+segments as read-only (normally, they are read-writable!).	This
+feature was implemented in an attempt to figure out why Windows was
+crashing (I thought that there might be a bad pointer out there).
+While I didn't find anything in particular, it is handy to rule out
+this problem.  If a VxD code segment is written into, an Invalid Page
+Fault is generated (see below).  Likely, you'll find that a single IPF
+due to this feature is generated at the start of Windows.  The default
+action (taken by pressing Esc at the command line) is to test for a RO
+page and set the RW bit.  This clears the IPF for this one page only.
+From that point on, all IPFs should be examined carefully.	If this
+switch is set, the SWATVxDIPF and SWATPL0WP switches are also set
+automatically.
+
+SWATVxDIPF
+  In Sys_Critical_Init, hook the Invalid Page Fault handler.  This
+feature, in conjunction with the IPF command in SWAT can be useful for
+debugging these beasts.  The mono screen contains a formatted message
+of the incoming data to the IPF hook procedure.  This feature is
+preliminary and provides a way to get control at the point of the IPF
+-- after that, you're on your own.  If you can suggest more things
+SWAT can do to help debug IPFs, I'm very open to suggestions.
+
+SWATPL0WP
+  In Sys_Critical_Init, set the WP bit in CR0 so we can trap writes
+into Read-Only pages at PL0.
+
+HookIRQ
+  Hook IRQ0-7 locally if SWAT hooks them.  This switch is necessary
+for some VxDs (RAM Doubler in particular) as they don't install
+correctly if they find some IRQs not hooked by selector 28h.  Go
+figure.
+
+
+Debugging VxDs
+--------------
+
+To debug VxDs at their entry points, use the following switches:
+
+HookVxD=DDB_Name[,#s]
+  Trap at a particular VxD by name.  Note that <DDB_Name> is case
+sensitive, and <#> specifies message numbers (optional).  See the VxD
+Filename and Message # tables below.
+
+HookPM=DDB_Name,reg,#
+  Trap at a particular VxD's PM API entry.  <reg> specifies a 16-bit
+register used by the VxD for the function code, and <#> specifies the
+functions to trap.	For example, HookPM=SHELL,DX,3 traps at the
+WINOLDAP hook
+
+
+VxD Filenames
+-------------
+
+Some VxD filenames, DDB names, Device_ID, and their switches:
+WINA20.386	 'LA20HMA ' xxxxh
+			    NOLOW64KPAGING
+			    NOLOW64KPAGINGPORT
+Debug		 '        ' 0002h
+*VPICD		 'VPICD   ' 0003h
+*VDMAD		 'VDMAD   ' 0004h
+*VTD		 'VTD     ' 0005h
+*V86MMGR	 'V86MMGR ' 0006h
+*PAGESWAP	 'PageSwap' 0007h
+*VKD		 'VKD     ' 000Dh
+			    INITPS2MOUSEATEXIT=ON/OFF
+*DOSMGR 	 'DOSMGR  ' 0015h
+*WSHELL 	 'SHELL   ' 0017h
+*PAGEFILE	 'PageFile' 0021h
+386MAX.VXD	 'LoadHi  ' 001Ch
+SWATVXD.EXE  'SWATVXD ' 2400h
+VDDVGA.386	 'VDD     ' 000Ah
+VNETWARE.386 'DOSNET  ' 001Ah
+PM_BIOS.386  'PMVDD   ' 2250h
+
+
+VxD Message #s
+--------------
+
+0000h  Sys_Critical_Init		 001Bh Sys_Dynamic_Device_Init
+0001h  Device_Init				 001Ch Sys_Dynamic_Device_Exit
+0002h  Init_Complete			 001Dh Create_Thread
+0003h  Sys_VM_Init				 001Eh Thread_Init
+0004h  Sys_VM_Terminate 		 001Fh Terminate_Thread
+0005h  System_Exit				 0020h Thread_Not_Executeable
+0006h  Sys_Critical_Exit		 0021h Destroy_Thread
+0007h  Create_VM				 0022h PNP_New_Devnode
+0008h  VM_Critical_Init 		 0023h W32_DeviceIOControl
+0009h  VM_Init					 0024h Sys_VM_Terminate2
+000Ah  VM_Terminate			 0025h System_Exit2
+000Bh  VM_Not_Executeable		 0026h Sys_Critical_Exit2
+000Ch  Destroy_VM				 0027h Vm_Terminate2
+000Dh  VM_Suspend				 0028h Vm_Not_Executeable2
+000Eh  VM_Resume				 0029h Destroy_VM2
+000Fh  Set_Device_Focus 		 002Ah VM_Suspend2
+0010h  Begin_Message_Mode		 002Bh End_Message_Mode2
+0011h  End_Message_Mode 		 002Ch End_PM_App2
+0012h  Reboot_Processor 		 002Dh Device_Reboot_Notify2
+0013h  Query_Destroy			 002Eh Crit_Reboot_Notify2
+0014h  Debug_Query				 002Fh Close_VM_Notify2
+0015h  Begin_PM_App			 0030h Get_Contention_Handler
+0016h  End_PM_App				 0031h Kernel32_Initialized
+0017h  Device_Reboot_Notify	 0032h Kernel32_Shutdown
+0018h  Crit_Reboot_Notify
+0019h  Close_VM_Notify
+001Ah  Power_Event
+
+
+Message Number Traps
+--------------------
+
+To stop inside SWAT at various message numbers, use the following
+switches:
+
+SWATSysCriticalInit
+SWATDeviceInit
+SWATInitComplete
+SWATSysVMInit
+SWATSysVMTerminate
+SWATSystemExit
+SWATSysCriticalExit
+SWATCreateVM
+SWATVMCriticalInit
+SWATVMInit
+SWATVMTerminate
+SWATVMNotExecuteable
+SWATDestroyVM
+SWATVMSuspend
+SWATVMResume
+SWATSetDeviceFocus
+SWATBeginMessageMode
+SWATEndMessageMode
+SWATRebootProcessor
+SWATQueryDestroy
+SWATDebugQuery
+SWATBeginPMApp
+SWATEndPMApp
+SWATDeviceRebootNotify
+SWATCritRebootNotify
+SWATCloseVMNotify
+SWATPowerEvent
+SWATSysDynamicDeviceInit
+SWATSysDynamicDeviceExit
+SWATCreateThread
+SWATThreadInit
+SWATTerminateThread
+SWATThreadNotExecuteable
+SWATDestroyThread
+SWATPNPNewDevnode
+SWATW32DeviceIOControl
+SWATSysVMTerminate2
+SWATSystemExit2
+SWATSysCriticalExit2
+SWATVMTerminate2
+SWATVMNotExecuteable2
+SWATDestroyVM2
+SWATVMSuspend2
+SWATEndMessageMode2
+SWATEndPMApp2
+SWATDeviceRebootNotify2
+SWATCritRebootNotify2
+SWATCloseVMNotify2
+SWATGetContentionHandler
+SWATKernel32Initialized
+SWATKernel32Shutdown
+
+
+Internal Use Only
+-----------------
+
+The following switches are for internal use only.
+
+SSFPrefix=name
+  Specify device name and DDB prefix.
+
+SWATDebugThruExit
+  Call SWAT's INIT_PROT during Critical_Exit.  This allows debugging
+on the way out of SWAT.  Now that SWAT is a Windows kernel debugger,
+this switch is unnecessary.
+
+RealModeBreak=ON/OFF
+  Hit an INT 1 early in RealModeInit.
+
+Rehook123=ON/OFF
+  Blast INTs 1, 2, and 3 into the IDT.	To avoid trouble with WDEB386.
+Now that SWAT is a Windows kernel debugger, there should be less need
+to run WDEB386.
+
+

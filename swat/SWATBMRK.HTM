@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Disassembly Bookmarks</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Disassembly Bookmarks</FONT></B></CENTER>
+
+
+<P>At times you need to browse through some code (sometimes it's even your
+own code) following subroutine calls, conditional jumps, etc. wherever
+they might go. To make this task easier, use the <A HREF="swatscr.htm#s-F1">s-F1</A>
+and <A HREF="swatscr.htm#s-F2">s-F2</A> keys. To disassemble at the target
+of some instruction which transfers control, place the instruction at the
+top of the disassembly window and press s-F1. For example, say at offset
+<TT><FONT SIZE=+1>1234</FONT></TT> in the code segment there is a <TT><FONT SIZE=+1>CALL
+5678</FONT></TT>. Place the <TT><FONT SIZE=+1>CALL</FONT></TT> at the top
+of the disassembly window and press s-F1. The disassembly window now displays
+the code at <TT><FONT SIZE=+1>5678</FONT></TT> with an invisible bookmark
+left at the calling address <TT><FONT SIZE=+1>1234</FONT></TT>. Each time
+s-F1 is used, it leaves a bookmark at the instruction at the top of the
+disassembly window and disassembles at that instruction's target. To return
+to the previous bookmark, press s-F2.&nbsp; 386SWAT supports up to 128
+nested levels of such disassembly.
+
+<P>As another example, you should be able to disassemble almost any interrupt
+(say, <TT><FONT SIZE=+1>U .VMI21</FONT></TT> which disassembles at VM interrupt
+21h), and using the bookmark feature exclusively, go down to the bottom
+of the chain.
+
+<P>This feature is clever, but not that clever. It can figure out where
+(say)<TT><FONT SIZE=+1></FONT></TT>
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; JMP Dword Ptr CS:[1234]</FONT></TT>
+
+<P>is going and disassemble at that target, but it can't figure out the
+same instruction with a <TT><FONT SIZE=+1>DS</FONT></TT> override. Nor
+can it handle effective addresses other than ones with an immediate displacement
+only (i.e., no registers such as <TT><FONT SIZE=+1>[BX+SI]</FONT></TT>).&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

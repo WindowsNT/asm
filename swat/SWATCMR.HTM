@@ -1,0 +1,274 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Common Memory References</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Common Memory References</FONT></B></CENTER>
+
+
+<P>There are a number of points in memory to which it is common to refer,
+e.g., the address of the instruction at the top of the disassembly window.
+These references are made easier by using one of the following shortcuts
+(all of which can be used anywhere on the command line where an address
+is expected such as <TT><FONT SIZE=+1>BD .CODE</FONT></TT>, or <TT><FONT SIZE=+1>BD
+.DATA L4 W</FONT></TT>):
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><A NAME=".EA"></A><TT><FONT SIZE=+1>.EA</FONT>&nbsp;</TT></TD>
+
+<TD>Effective Address of the first (or only) operand to the instruction
+at the top of the disassembly window</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".EA2"></A><TT><FONT SIZE=+1>.EA2</FONT></TT></TD>
+
+<TD>Effective Address of the second operand to the instruction at the top
+of the disassembly window</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".GDT"></A><TT><FONT SIZE=+1>.GDT</FONT></TT></TD>
+
+<TD>GDT base address (using selector zero)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".IDT"></A><TT><FONT SIZE=+1>.IDT</FONT></TT></TD>
+
+<TD>IDT base address (using selector zero)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".LDT"></A><TT><FONT SIZE=+1>.LDT</FONT></TT></TD>
+
+<TD>LDT base address (using selector zero)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".TSS"></A><TT><FONT SIZE=+1>.TSS</FONT></TT></TD>
+
+<TD>TSS base address (using selector zero)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".CMAC"></A><TT><FONT SIZE=+1>.CMAC</FONT></TT></TD>
+
+<TD>Seg:Off of next C MAC entry -- equivalent to <TT><FONT SIZE=+1>.DATA
++ 2 + FFFE &amp; [.DATA</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".CODE"></A><TT><FONT SIZE=+1>.CODE</FONT></TT></TD>
+
+<TD>current code display address</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".CSIP"></A><TT><FONT SIZE=+1>.CSIP</FONT></TT></TD>
+
+<TD>current cs:[e]ip</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".DATA"></A><TT><FONT SIZE=+1>.DATA</FONT></TT></TD>
+
+<TD>current data display address</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".DMAC"></A><TT><FONT SIZE=+1>.DMAC</FONT></TT></TD>
+
+<TD>Seg:0 of first DOS MAC entry</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".NMAC"></A><TT><FONT SIZE=+1>.NMAC</FONT></TT></TD>
+
+<TD>Seg:0 of next DOS MAC entry -- equivalent to <TT><FONT SIZE=+1>((S..DATA)+1+[.DATA+3):0</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".LBRFR"></A><TT><FONT SIZE=+1>.LBRFR</FONT></TT></TD>
+
+<TD>EIP of Last Branch From</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".LBRTO"></A><TT><FONT SIZE=+1>.LBRTO</FONT></TT></TD>
+
+<TD>EIP of Last Branch To</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".LEXFR"></A><TT><FONT SIZE=+1>.LEXFR</FONT></TT></TD>
+
+<TD>EIP of Exception From</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".LEXTO"></A><TT><FONT SIZE=+1>.LEXTO</FONT></TT></TD>
+
+<TD>EIP of Exception To</TD>
+</TR>
+
+<TR>
+<TD><A NAME=".MDB"></A><TT><FONT SIZE=+1>.MDB</FONT></TT></TD>
+
+<TD>Base address of the current Module Database (Windows only)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".PMI"></A><TT><FONT SIZE=+1>.PMI</FONT></TT><I>xx</I></TD>
+
+<TD>Sel|Off of PM Interrupt <I>xx</I>h</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RMI"></A><TT><FONT SIZE=+1>.RMI</FONT></TT><I>xx</I></TD>
+
+<TD>Seg:Off of RM interrupt # <I>xx</I></TD>
+</TR>
+
+<TR>
+<TD><A NAME=".TDB"></A><TT><FONT SIZE=+1>.TDB</FONT></TT></TD>
+
+<TD>Base address of the current Task Database (Windows only)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".VM"></A><TT><FONT SIZE=+1>.VM</FONT></TT></TD>
+
+<TD>Sel|Off of current Windows VM structure</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".VMI"></A><TT><FONT SIZE=+1>.VMI</FONT></TT><I>xx</I></TD>
+
+<TD>Seg:Off of VM interrupt # <I>xx</I></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".VMRET"></A><TT><FONT SIZE=+1>.VMRET</FONT></TT></TD>
+
+<TD>Return CS|EIP saved in <TT><FONT SIZE=+1>.VMSTK</FONT></TT> at <TT><FONT SIZE=+1>.VMSTK+50</FONT></TT>
+(DPMI fn 0300) or <TT><FONT SIZE=+1>.VMSTK+150</FONT></TT> (emulated INT)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".VMSTK"></A><TT><FONT SIZE=+1>.VMSTK</FONT></TT></TD>
+
+<TD>Sel|Off of stack saved in <TT><FONT SIZE=+1>.VM</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".XBDA"></A><TT><FONT SIZE=+1>.XBDA</FONT></TT></TD>
+
+<TD>Seg:Off of XBDA; same as <TT><FONT SIZE=+1>([40:0E):0</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".XBDA2"></A><TT><FONT SIZE=+1>.XBDA2</FONT></TT></TD>
+
+<TD>Seg:Off of 2ndary XBDA; same as <TT><FONT SIZE=+1>((S..XBDA)+[.XBDA+B4):0</FONT></TT></TD>
+</TR>
+</TABLE>
+A common address to jump to is the (near or far) return address of a subroutine.
+This is made easier by using shortened forms of the commands one might
+use to extract these addresses. The various flavors of return addresses
+are (where LaSTK is the address of the current stack pointer -- SS:SP if
+VM, SS|SP if PM and the B-bit in SS is clear, and SS|ESP if PM and the
+B-bit in SS is set):
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 VALIGN="TOP" >
+<TR>
+<TD VALIGN=TOP><B>Keyword&nbsp;</B></TD>
+
+<TD VALIGN=TOP><B>Grammar Equivalent</B></TD>
+
+<TD VALIGN=TOP><B>Meaning</B></TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RETND"></A><TT><FONT SIZE=+1>.RETND</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>{</FONT></TT>LaSTK</TD>
+
+<TD VALIGN=TOP>Near dword</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RETNS"></A><TT><FONT SIZE=+1>.RETNS</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>[</FONT></TT>LaSTK&nbsp;</TD>
+
+<TD VALIGN=TOP>Near word</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RETFD"></A><TT><FONT SIZE=+1>.RETFD</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>:{</FONT></TT>LaSTK or <TT><FONT SIZE=+1>|{</FONT></TT>LaSTK</TD>
+
+<TD VALIGN=TOP>Far word:dword or word|dword (depending upon the VM bit
+in the current EFL)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RETFS"></A><TT><FONT SIZE=+1>.RETFS</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>:[</FONT></TT>LaSTK or <TT><FONT SIZE=+1>|[</FONT></TT>LaSTK</TD>
+
+<TD VALIGN=TOP>Far word:word or word|word (depending upon the VM bit in
+the current EFL)</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RETN"></A><TT><FONT SIZE=+1>.RETN</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>.RETND</FONT></TT> or <TT><FONT SIZE=+1>.RETNS</FONT></TT></TD>
+
+<TD VALIGN=TOP>Depending upon the D-bit in CS</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".RETF"></A><TT><FONT SIZE=+1>.RETF</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>.RETFD</FONT></TT> or <TT><FONT SIZE=+1>.RETFS</FONT></TT></TD>
+
+<TD VALIGN=TOP>Depending upon the D-bit in CS</TD>
+</TR>
+
+<TR>
+<TD VALIGN=TOP><A NAME=".IRET"></A><TT><FONT SIZE=+1>.IRET</FONT></TT></TD>
+
+<TD VALIGN=TOP><TT><FONT SIZE=+1>.RETF</FONT></TT> in VM&nbsp;
+<BR><TT><FONT SIZE=+1>.RETFD</FONT></TT> in PM</TD>
+
+<TD VALIGN=TOP>Also allows mode switch from PM to VM by checking VM bit
+in EFL above return address</TD>
+</TR>
+</TABLE>
+As a common shortcut, <TT><FONT SIZE=+1>.RETN </FONT></TT>and <TT><FONT SIZE=+1>.RETF</FONT></TT>
+refer to one of the above forms depending upon the setting of the D-bit
+in the current CS (that is, whether we're running in a USE16 or USE32 segment).
+Moreover, <TT><FONT SIZE=+1>.IRET</FONT></TT> can be used as a shorthand
+for <TT><FONT SIZE=+1>.RETF</FONT></TT> with the added check on the VM
+bit in the EFL above the return address. If this bit is set, the return
+address is interpreted as a VM address even though the current mode is
+PM.
+
+<P>No magic is invoked to extract the return address if data has been pushed
+onto the stack below the return address, so be sure that LaSTK points to
+the actual return address.
+
+<P>Also note that the keystrokes <A HREF="swatscr.htm#a-F">A-F</A> and
+<A HREF="swatscr.htm#a-N">A-N</A> are defined as shortcuts for the commands
+<TT><FONT SIZE=+1>G .RETF</FONT></TT> and <TT><FONT SIZE=+1>G .RETN</FONT></TT>,
+respectively.&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

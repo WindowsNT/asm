@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <TITLE>Autofault</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Autofault</FONT></B></CENTER>
+
+
+<P>Have you ever been puzzled by some CPU fault as to why it occurred,
+that is, why did the CPU think there was a problem?&nbsp; If so, this feature
+is for you.&nbsp; Whenever 386SWAT is called on the difficult to figure
+out CPU faults (TSS Fault, Stack Fault, GP Fault, or Page Fault), the Autofault
+feature attempts to determine why and to present a short prose description
+of the cause.&nbsp; The description is displayed in the lower lefthand
+corner of the screen. Pressing a key causes the message to disappear.&nbsp;
+To display it again (up to the time another fault occurs), press <A HREF="swatscr.htm#s-F4">s-F4</A>.
+
+<P>This feature is implemented for GP, TSS, and Page Faults, although they
+all could use more tweaking.&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

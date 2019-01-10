@@ -1,0 +1,1238 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <TITLE>386SWAT Grammar</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>Grammar For 386SWAT Command Line</FONT></B></CENTER>
+
+
+<P>// Command lines
+<BR><TT><FONT SIZE=+1>APPKEY</FONT></TT>
+<BR><TT><FONT SIZE=+1>BC</FONT></TT><I>x</I> <I><A HREF="#opt_addr">opt_addr</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+x</I> = {&lt;empty>, <TT><FONT SIZE=+1>*</FONT></TT>, <TT><FONT SIZE=+1>+</FONT></TT>,<TT><FONT SIZE=+1>
+-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>BD</FONT></TT> <I><A HREF="#opt_addr">opt_addr</A></I>
+<BR><TT><FONT SIZE=+1>BD</FONT></TT> <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>L</FONT></TT><I>n</I>
+<TT><FONT SIZE=+1>R&nbsp;</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I>n</I>
+= {&lt;empty>, <TT><FONT SIZE=+1>1</FONT></TT>, <TT><FONT SIZE=+1>2</FONT></TT>,
+<TT><FONT SIZE=+1>4</FONT></TT>}
+<BR><TT><FONT SIZE=+1>BD</FONT></TT> <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>L</FONT></TT><I>n
+</I><TT><FONT SIZE=+1>W&nbsp;&nbsp;&nbsp; </FONT></TT><I>n</I> = {&lt;empty>,
+<TT><FONT SIZE=+1>1</FONT></TT>, <TT><FONT SIZE=+1>2</FONT></TT>, <TT><FONT SIZE=+1>4</FONT></TT>}
+<BR><TT><FONT SIZE=+1>BD</FONT></TT><I>nx</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {<TT><FONT SIZE=+1>*</FONT></TT>, <TT><FONT SIZE=+1>+</FONT></TT>,
+<TT><FONT SIZE=+1>-</FONT></TT>}&nbsp;&nbsp; <I>n</I> = {&lt;empty>, <TT><FONT SIZE=+1>0</FONT></TT>,
+<TT><FONT SIZE=+1>1</FONT></TT>, <TT><FONT SIZE=+1>2</FONT></TT>, <TT><FONT SIZE=+1>3</FONT></TT>}
+<BR><TT><FONT SIZE=+1>BTF</FONT></TT>
+<BR><TT><FONT SIZE=+1>BTF</FONT></TT> {<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>}
+<BR><TT><FONT SIZE=+1>CHAT</FONT></TT>
+<BR><TT><FONT SIZE=+1>D</FONT></TT><I>xy</I><TT><FONT SIZE=+1>-</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>b</FONT></TT>, <TT><FONT SIZE=+1>d</FONT></TT>,
+<TT><FONT SIZE=+1>g</FONT></TT>, <TT><FONT SIZE=+1>i</FONT></TT>, <TT><FONT SIZE=+1>t</FONT></TT>,
+<TT><FONT SIZE=+1>t2</FONT></TT>, <TT><FONT SIZE=+1>t3</FONT></TT>, <TT><FONT SIZE=+1>v</FONT></TT>,
+<TT><FONT SIZE=+1>w</FONT></TT>},
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>y</I> = {&lt;empty>, <TT><FONT SIZE=+1>/</FONT></TT><I>n</I>} where
+<I>n</I> is the data width
+<BR><TT><FONT SIZE=+1>D</FONT></TT><I>xy <A HREF="#opt_addr">opt_addr</A></I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>b</FONT></TT>, <TT><FONT SIZE=+1>d</FONT></TT>,
+<TT><FONT SIZE=+1>g</FONT></TT>, <TT><FONT SIZE=+1>i</FONT></TT>, <TT><FONT SIZE=+1>t</FONT></TT>,
+<TT><FONT SIZE=+1>t2</FONT></TT>, <TT><FONT SIZE=+1>t3</FONT></TT>, <TT><FONT SIZE=+1>v</FONT></TT>,
+<TT><FONT SIZE=+1>w</FONT></TT>},
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>y</I> = {&lt;empty>,<TT><FONT SIZE=+1> /</FONT></TT><I>n</I>} where
+<I>n</I> is the data width
+<BR><TT><FONT SIZE=+1>D</FONT></TT><I>xy <A HREF="#addr">addr</A></I> <TT><FONT SIZE=+1>P</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>b</FONT></TT>, <TT><FONT SIZE=+1>d</FONT></TT>,
+<TT><FONT SIZE=+1>g</FONT></TT>, <TT><FONT SIZE=+1>i</FONT></TT>, <TT><FONT SIZE=+1>t</FONT></TT>,
+<TT><FONT SIZE=+1>t2</FONT></TT>, <TT><FONT SIZE=+1>t3</FONT></TT>, <TT><FONT SIZE=+1>v</FONT></TT>,
+<TT><FONT SIZE=+1>w</FONT></TT>},
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+y = {&lt;empty>, <TT><FONT SIZE=+1>/</FONT></TT><I>n</I>} where <I>n </I>is
+the data width
+<BR><TT><FONT SIZE=+1>D</FONT></TT><I>xy <A HREF="#addr">addr</A></I> <TT><FONT SIZE=+1>P</FONT></TT>
+<I><A HREF="#exp">exp</A></I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I>x</I> =
+{&lt;empty>, <TT><FONT SIZE=+1>b</FONT></TT>, <TT><FONT SIZE=+1>d</FONT></TT>,
+<TT><FONT SIZE=+1>g</FONT></TT>, <TT><FONT SIZE=+1>i</FONT></TT>, <TT><FONT SIZE=+1>t</FONT></TT>,
+<TT><FONT SIZE=+1>t2</FONT></TT>, <TT><FONT SIZE=+1>t3</FONT></TT>, <TT><FONT SIZE=+1>v</FONT></TT>,
+<TT><FONT SIZE=+1>w</FONT></TT>},
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>y</I> = {&lt;empty>, <TT><FONT SIZE=+1>/</FONT></TT><I>n</I>} where
+<I>n</I> is the data width
+<BR><FONT SIZE=+1><TT>DTE</TT> <I><A HREF="#exp">exp</A></I></FONT>
+<BR><TT><FONT SIZE=+1>E</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>E</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> <A HREF="#lvallist">lvallist</A></I>
+<BR><TT><FONT SIZE=+1>EXIT</FONT></TT>
+<BR><TT><FONT SIZE=+1>F</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A></I>
+L <I><A HREF="#lval">lval</A> <A HREF="#lval">lval</A></I>
+<BR><TT><FONT SIZE=+1>F</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> </I>L
+<I><A HREF="#lval">lval</A> <A HREF="#lval">lval</A> </I><TT><FONT SIZE=+1>P</FONT></TT>
+<BR><TT><FONT SIZE=+1>F</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> </I>L
+<I><A HREF="#lval">lval</A> <A HREF="#lval">lval</A> </I><TT><FONT SIZE=+1>P
+</FONT></TT><I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>FS</FONT></TT>
+<BR><TT><FONT SIZE=+1>G</FONT></TT>&nbsp; <I><A HREF="#opt_addr">opt_addr</A></I>
+<BR><TT><FONT SIZE=+1>GM</FONT></TT> <I><A HREF="#opt_boolexp">opt_boolexp</A></I>
+<BR><TT><FONT SIZE=+1>H</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>I</FONT></TT><I>x <A HREF="#lval">lval</A>&nbsp;&nbsp;</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>b</FONT></TT>, <TT><FONT SIZE=+1>d</FONT></TT>,
+<TT><FONT SIZE=+1>w</FONT></TT>}
+<BR><TT><FONT SIZE=+1>IMR</FONT></TT>
+<BR><TT><FONT SIZE=+1>INSERT</FONT></TT> <I>gdtr idtr [cr3 [lapde]]</I>
+<BR><TT><FONT SIZE=+1>INSERT *</FONT></TT> <I>idtr</I>
+<BR><TT><FONT SIZE=+1>IPF</FONT></TT> [<TT><FONT SIZE=+1>/d</FONT></TT>]
+[<TT><FONT SIZE=+1>/s</FONT></TT>] [<TT><FONT SIZE=+1>/r</FONT></TT>] <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>IRR</FONT></TT>
+<BR><TT><FONT SIZE=+1>ISR</FONT></TT>
+<BR><TT><FONT SIZE=+1>LBR</FONT></TT>
+<BR><TT><FONT SIZE=+1>LBR</FONT></TT> {<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>}
+<BR><TT><FONT SIZE=+1>LF</FONT></TT> <I><A HREF="#filename">filename</A></I>
+<BR><TT><FONT SIZE=+1>LI</FONT></TT> <I>x</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {<TT><FONT SIZE=+1>+</FONT></TT>, <TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>LI</FONT></TT> <I><A HREF="#dcon">dcon</A> x&nbsp;</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>+</FONT></TT>, <TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>LS</FONT></TT> <I><A HREF="#filename">filename</A>
+x</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I>x</I> = {&lt;empty>, <I><A HREF="#lval">lval</A></I>}
+<BR><TT><FONT SIZE=+1>M</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>L</FONT></TT>
+<I><A HREF="#lval">lval</A> <A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>MACBASE</FONT></TT> <I><A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>MDB</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>O</FONT></TT><I>x <A HREF="#lval">lval</A> <A HREF="#lval">lval</A></I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>b</FONT></TT>, <TT><FONT SIZE=+1>d</FONT></TT>,
+<TT><FONT SIZE=+1>w</FONT></TT>}
+<BR><TT><FONT SIZE=+1>PATH</FONT></TT><I>x <A HREF="#dirlist">dirlist</A></I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>+</FONT></TT>}
+<BR><TT><FONT SIZE=+1>PS</FONT></TT> <I><A HREF="#lval">lval</A> x&nbsp;</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <I><A HREF="#lval">lval</A></I> (&lt;<TT><FONT SIZE=+1>256</FONT></TT>)}
+<BR><TT><FONT SIZE=+1>PTE</FONT></TT> <I><A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>PTE</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>PTE</FONT></TT> <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>P</FONT></TT>
+<I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>PTE</FONT></TT> <I><A HREF="#exp">exp</A>&nbsp; </I><TT><FONT SIZE=+1>P</FONT></TT>
+<I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>QS</FONT></TT> <I><A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>R</FONT></TT>&nbsp; <I><A HREF="#reg">reg</A></I>
+[<TT><FONT SIZE=+1>=</FONT></TT>] <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>R</FONT></TT>&nbsp; <I><A HREF="#reg">reg</A></I><TT><FONT SIZE=+1>.</FONT></TT><I>str</I>
+[<TT><FONT SIZE=+1>=</FONT></TT>] <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>REMDBG</FONT></TT>
+<BR><TT><FONT SIZE=+1>RC</FONT></TT>
+<BR><TT><FONT SIZE=+1>RR</FONT></TT>
+<BR><TT><FONT SIZE=+1>RS</FONT></TT>
+<BR><TT><FONT SIZE=+1>S</FONT></TT><I>x <A HREF="#addr">addr</A></I> L
+<I><A HREF="#exp">exp</A> <A HREF="#atom">atom</A> x</I> = {&lt;empty>,
+<TT><FONT SIZE=+1>1</FONT></TT>}
+<BR><TT><FONT SIZE=+1>S</FONT></TT><I>x <A HREF="#addr">addr</A> <A HREF="#addr">addr</A>&nbsp;&nbsp;
+<A HREF="#atom">atom</A> x</I> = {&lt;empty>, <TT><FONT SIZE=+1>1</FONT></TT>}
+<BR><TT><FONT SIZE=+1>S</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> <A HREF="#addr">addr</A></I>
+<TT><FONT SIZE=+1>!</FONT></TT><I> instr</I>
+<BR><TT><FONT SIZE=+1>S</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>L</FONT></TT>
+<I><A HREF="#exp">exp</A> </I><TT><FONT SIZE=+1>!</FONT></TT><I> instr</I>
+<BR><TT><FONT SIZE=+1>S</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> <A HREF="#addr">addr</A>&nbsp;&nbsp;
+</I><TT><FONT SIZE=+1>#</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>S</FONT></TT>&nbsp; <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>L</FONT></TT>
+<I><A HREF="#exp">exp</A> </I><TT><FONT SIZE=+1>#</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>SB</FONT></TT><I>x</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {<TT><FONT SIZE=+1>+</FONT></TT>, <TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>SB*</FONT></TT><I>x</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {<TT><FONT SIZE=+1>+</FONT></TT>, <TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>SETCOM</FONT></TT> <I>x</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>SETCOM</FONT></TT> <I>port <A HREF="#bps">bps</A></I>&nbsp;&nbsp;&nbsp;&nbsp;
+<I>port</I> = {<TT><FONT SIZE=+1>1</FONT></TT>, <TT><FONT SIZE=+1>2</FONT></TT>,
+<TT><FONT SIZE=+1>3</FONT></TT>, <TT><FONT SIZE=+1>4</FONT></TT>}
+<BR><TT><FONT SIZE=+1>SETCOM</FONT></TT> <I>xn&nbsp;</I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {<TT><FONT SIZE=+1>RTS</FONT></TT>, <TT><FONT SIZE=+1>DTR</FONT></TT>}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>n</I> = {<TT><FONT SIZE=+1>+</FONT></TT>, <TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>SGH</FONT></TT> [<TT><FONT SIZE=+1>/b</FONT></TT>|<TT><FONT SIZE=+1>/s</FONT></TT>|<TT><FONT SIZE=+1>/h</FONT></TT>|<TT><FONT SIZE=+1>/o</FONT></TT>|<TT><FONT SIZE=+1>/n</FONT></TT>]&nbsp;
+[<TT><FONT SIZE=+1>/c</FONT></TT>] <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>SIGINT</FONT></TT> <I><A HREF="#lval">lval</A></I>
+<BR><TT><FONT SIZE=+1>SPTE</FONT></TT> <I><A HREF="#addr">addr</A></I>
+<BR><TT><FONT SIZE=+1>SPTE</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>SPTE</FONT></TT> <I><A HREF="#addr">addr</A> </I><TT><FONT SIZE=+1>P</FONT></TT>
+<I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>SPTE</FONT></TT> <I><A HREF="#exp">exp</A>&nbsp;
+</I><TT><FONT SIZE=+1>P</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>TDB</FONT></TT> <I><A HREF="#exp">exp</A></I>
+<BR><TT><FONT SIZE=+1>TOGINT</FONT></TT> <I><A HREF="#lvallist">lvallist</A></I>
+<BR><TT><FONT SIZE=+1>TS</FONT></TT>
+<BR><TT><FONT SIZE=+1>TS</FONT></TT> <I><A HREF="#opt_sel">opt_sel</A></I>
+<I><A HREF="#opt_group">opt_group</A></I> x <A HREF="#opt_sel">opt_sel</A><I>n</I>
+<A HREF="#opt_addr">opt_addr</A>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>*</FONT></TT>, <TT><FONT SIZE=+1>P</FONT></TT>,
+<TT><FONT SIZE=+1>V</FONT></TT>}&nbsp; <I>n</I> = {&lt;empty>, <TT><FONT SIZE=+1>+</FONT></TT>,
+<TT><FONT SIZE=+1>-</FONT></TT>}
+<BR><TT><FONT SIZE=+1>U</FONT></TT><I>x</I><TT><FONT SIZE=+1>-</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>16</FONT></TT>, <TT><FONT SIZE=+1>32</FONT></TT>}
+<BR><TT><FONT SIZE=+1>U</FONT></TT><I>x</I> <I><A HREF="#opt_addr">opt_addr</A></I>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>16</FONT></TT>, <TT><FONT SIZE=+1>32</FONT></TT>}
+<BR><TT><FONT SIZE=+1>U</FONT></TT><I>x</I> <I><A HREF="#addr">addr</A></I>
+<TT><FONT SIZE=+1>P</FONT></TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>16</FONT></TT>, <TT><FONT SIZE=+1>32</FONT></TT>}
+<BR><TT><FONT SIZE=+1>U</FONT></TT><I>x</I> <I><A HREF="#addr">addr</A></I>
+<TT><FONT SIZE=+1>P</FONT></TT> <I><A HREF="#exp">exp</A></I>&nbsp;&nbsp;&nbsp;&nbsp;
+<I>x</I> = {&lt;empty>, <TT><FONT SIZE=+1>16</FONT></TT>, <TT><FONT SIZE=+1>32</FONT></TT>}
+
+<P><TT><FONT SIZE=+1>VMSCOUNT</FONT></TT> <I>xx</I>
+<BR><TT><FONT SIZE=+1>VMSINT</FONT></TT> {<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>}
+<BR><TT><FONT SIZE=+1>VMSINT=</FONT></TT><I>xx</I>,<I>xx</I>,...
+
+<P><TT><FONT SIZE=+1>WKD FAULT </FONT></TT>[<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>|<TT><FONT SIZE=+1>SKIP</FONT></TT>]
+<BR><TT><FONT SIZE=+1>WKD LOGERROR </FONT></TT>[<TT><FONT SIZE=+1>ON</FONT></TT>|<TT><FONT SIZE=+1>OFF</FONT></TT>]
+<BR><TT><FONT SIZE=+1>WKD [ON|OFF]</FONT></TT>
+<BR><TT><FONT SIZE=+1>WKD [QUIET|NOISY]</FONT></TT>
+<BR>&nbsp;
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Lval list</B></CAPTION>
+
+<TR>
+<TD><A NAME="lvallist"></A><I>lvallist</I></TD>
+
+<TD><I><A HREF="#lval">lval</A></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A> lvallist</I></TD>
+</TR>
+</TABLE>
+&nbsp;
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Optional addresses</B></CAPTION>
+
+<TR>
+<TD><A NAME="opt_addr"></A><I>opt_addr</I></TD>
+
+<TD>&lt;empty></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#addr">addr</A></I></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Addresses</B></CAPTION>
+
+<TR>
+<TD VALIGN=TOP><A NAME="addr"></A><I>addr</I></TD>
+
+<TD><I><A HREF="#exp">exp</A></I></TD>
+
+<TD>using default segment/selector as per specific command</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#ea">ea</A></I></TD>
+
+<TD></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Optional boolean expression</B></CAPTION>
+
+<TR>
+<TD><A NAME="opt_boolexp"></A><I>opt_boolexp</I></TD>
+
+<TD>&lt;empty></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#exp">exp</A></I></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Expressions on values</B></CAPTION>
+
+<TR>
+<TD><A NAME="exp"></A><I>exp</I></TD>
+
+<TD><TT><FONT SIZE=+1>(</FONT></TT> <I>exp</I> <TT><FONT SIZE=+1>)</FONT></TT></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#mfn">mfn</A></I></TD>
+
+<TD>monadic functions</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#dfn">dfn</A></I></TD>
+
+<TD>dyadic functions</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Monadic functions</B></CAPTION>
+
+<TR>
+<TD><A NAME="mfn"></A>mfn</TD>
+
+<TD><I><A HREF="#atom">atom</A></I></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>[</FONT></TT> <I><A HREF="#ea">ea</A></I></TD>
+
+<TD>extract word at effective address</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>{</FONT></TT> <I><A HREF="#ea">ea</A></I></TD>
+
+<TD>extract dword ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>O.</FONT></TT><I><A HREF="#ea">ea</A></I></TD>
+
+<TD>extract offset from effective address</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>S.</FONT></TT><I><A HREF="#ea">ea</A></I></TD>
+
+<TD>extract segment/selector ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>L.</FONT></TT><I><A HREF="#ea">ea</A></I></TD>
+
+<TD>extract linear address ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>P.</FONT></TT><I><A HREF="#ea">ea</A></I></TD>
+
+<TD>extract physical address ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>+</FONT></TT><I><A HREF="#exp">exp</A></I></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>-</FONT></TT><I><A HREF="#exp">exp</A></I></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>~</FONT></TT><I><A HREF="#exp">exp</A></I></TD>
+
+<TD></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Lefthand values</B></CAPTION>
+
+<TR>
+<TD><A NAME="lval"></A><I>lval</I></TD>
+
+<TD><I><A HREF="#atom">atom</A></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>(</FONT></TT> <I><A HREF="#exp">exp</A></I> <TT><FONT SIZE=+1>)</FONT></TT></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Effective address with segment/selector</B></CAPTION>
+
+<TR>
+<TD><A NAME="ea"></A><I>ea</I></TD>
+
+<TD><I><A HREF="#seg">seg</A></I> <TT><FONT SIZE=+1>:</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#sel">sel</A></I> <TT><FONT SIZE=+1>|</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.EA</FONT></TT></TD>
+
+<TD>Effective Address #1 (or the only one)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.EA2</FONT></TT></TD>
+
+<TD>...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+#2&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.GDT</FONT></TT>&nbsp;</TD>
+
+<TD>GDT base address (using selector zero)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.IDT</FONT></TT></TD>
+
+<TD>IDT ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.LDT</FONT></TT></TD>
+
+<TD>LDT ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.TSS</FONT></TT></TD>
+
+<TD>TSS ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.CMAC</FONT></TT></TD>
+
+<TD>address of next C MAC entry</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.CODE</FONT></TT></TD>
+
+<TD>current code display address</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.CSIP</FONT></TT></TD>
+
+<TD>address of current <TT><FONT SIZE=+1>cs:</FONT></TT>[<TT><FONT SIZE=+1>e</FONT></TT>]<TT><FONT SIZE=+1>ip</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.DATA</FONT></TT></TD>
+
+<TD>current data display address</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.DMAC</FONT></TT></TD>
+
+<TD>segment of first DOS MAC entry</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.NMAC</FONT></TT></TD>
+
+<TD>segment of next&nbsp; DOS MAC entry</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.PMI</FONT></TT><I>xx</I></TD>
+
+<TD>Sel<TT><FONT SIZE=+1>|</FONT></TT>Off of PM Interrupt <I>xx</I>h&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RMI</FONT></TT><I>xx</I></TD>
+
+<TD>Seg:Off of RM interrupt xxh</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.VM</FONT></TT></TD>
+
+<TD>Sel<TT><FONT SIZE=+1>|</FONT></TT>Off of current Windows VM structure</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.VMI</FONT></TT><I>xx</I></TD>
+
+<TD>...&nbsp;&nbsp;&nbsp;&nbsp; VM ...&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.VMRET</FONT></TT></TD>
+
+<TD>return <TT><FONT SIZE=+1>cs|eip</FONT></TT> from Windows VM (<TT><FONT SIZE=+1>|{.vmstk+50</FONT></TT>
+or <TT><FONT SIZE=+1>|{.vmstk+150</FONT></TT>)&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.VMSTK</FONT></TT></TD>
+
+<TD>current <TT><FONT SIZE=+1>ss|esp</FONT></TT> saved in Windows VM structure
+(same as <TT><FONT SIZE=+1>|{.vm+40</FONT></TT>)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.IRET</FONT></TT></TD>
+
+<TD>far word:dword return address on stack allowing a mode switch from
+PM to VM</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RETN</FONT></TT></TD>
+
+<TD>near word or dword return address on stack</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RETND</FONT></TT></TD>
+
+<TD>near dword return address on stack</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RETNS</FONT></TT></TD>
+
+<TD>near word return address on stack&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RETF</FONT></TT></TD>
+
+<TD>far word:word or word:dword return address on stack&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RETFD</FONT></TT></TD>
+
+<TD>far word:dword return address on stack</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.RETFS</FONT></TT></TD>
+
+<TD>far word:word return address on stack</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.XBDA</FONT></TT></TD>
+
+<TD>Seg:Off of XBDA; same as <TT><FONT SIZE=+1>([40:0E):0</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.XBDA2</FONT></TT></TD>
+
+<TD>Seg:Off of 2ndary XBDA; same as <TT><FONT SIZE=+1>((S..XBDA)+[.XBDA+B4):0</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#dotcmd ? exp">dotcmd ? exp</A></I></TD>
+
+<TD>dyadic functions on dot commands (<TT><FONT SIZE=+1>.GDT</FONT></TT>,
+<TT><FONT SIZE=+1>.IDT</FONT></TT>, etc.) where ? is a dyadic function</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>:[</FONT></TT> <I>ea</I></TD>
+
+<TD>extract word:word at effective address</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>:{</FONT></TT> <I>ea</I></TD>
+
+<TD>extract word:dword at effective address</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>|[</FONT></TT> <I>ea</I></TD>
+
+<TD>... word|word ...&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>|{</FONT></TT> <I>ea</I></TD>
+
+<TD>... word|dword ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>|G</FONT></TT> <I>ea</I></TD>
+
+<TD>... ...&nbsp;&nbsp;&nbsp; in GDT-format (using selector zero)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>|I</FONT></TT> <I>ea</I></TD>
+
+<TD>... ...&nbsp;&nbsp;&nbsp; in IDT-format (using IDT selector)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>|L</FONT></TT> <I>ea</I></TD>
+
+<TD>... ...&nbsp;&nbsp;&nbsp; in LDT-format (same as GDT-format)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>|T</FONT></TT> <I>ea</I></TD>
+
+<TD>... ...&nbsp;&nbsp;&nbsp; in TSS-format (using <TT><FONT SIZE=+1>CS|EIP</FONT></TT>)&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I>symbol</I></TD>
+
+<TD>effective address of this symbol</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Dyadic functions on dot commands</B></CAPTION>
+
+<TR VALIGN=TOP>
+<TD><A NAME="dotcmd ? exp"></A><I>dotcmd ? exp</I>&nbsp;
+<BR>&nbsp;</TD>
+
+<TD><TT><FONT SIZE=+1>S.</FONT></TT>dotcmd <TT><FONT SIZE=+1>: O.</FONT></TT>dotcmd
+<I>?</I> <A HREF="#exp">exp</A></TD>
+
+<TD>for VM addresses</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>S.</FONT></TT>dotcmd <TT><FONT SIZE=+1>| O.</FONT></TT>dotcmd
+<I>?</I> <A HREF="#exp">exp</A></TD>
+
+<TD>for PM addresses&nbsp;
+<BR>where <I>?</I> is a dyadic function</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Dyadic Functions</B></CAPTION>
+
+<TR>
+<TD><A NAME="dfn"></A><I>dfn</I></TD>
+
+<TD><I><A HREF="#atom">atom</A></I></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>+</FONT></TT> <A HREF="#exp">exp</A></TD>
+
+<TD>addition</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>-</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>subtraction</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>*</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>multiplication</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>/</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>division (with truncation towards zero)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>&amp;</FONT></TT>
+<I><A HREF="#exp">exp</A></I></TD>
+
+<TD>bitwise AND</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>^</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>bitwise XOR</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>==</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>is equal (eq)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>!=</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>is not equal (ne)&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>&lt;&nbsp;</FONT></TT>
+<I><A HREF="#exp">exp</A></I></TD>
+
+<TD>is less than (lt)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>&lt;=</FONT></TT>
+<I><A HREF="#exp">exp</A></I></TD>
+
+<TD>lt or eq</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>>&nbsp;</FONT></TT>
+<I><A HREF="#exp">exp</A></I></TD>
+
+<TD>is greater than (gt)</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>>=</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>gt or eq</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>&amp;&amp;</FONT></TT>
+<I><A HREF="#exp">exp</A></I></TD>
+
+<TD>logical AND</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#lval">lval</A></I> <TT><FONT SIZE=+1>||</FONT></TT> <I><A HREF="#exp">exp</A></I></TD>
+
+<TD>logical OR</TD>
+</TR>
+</TABLE>
+Because we have usurped the | symbol as the selector separator, it is
+<BR>not available for bitwise OR.&nbsp; To do bitwise OR between A and
+B, use
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <TT><FONT SIZE=+1>(A &amp; ~B) ^ B</FONT></TT>
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Precedence</B></CAPTION>
+
+<TR>
+<TD>Operators</TD>
+
+<TD>Type</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>- ~</FONT></TT></TD>
+
+<TD>Monadic</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>* /</FONT></TT></TD>
+
+<TD>Dyadic</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>+ -</FONT></TT></TD>
+
+<TD>Dyadic</TD>
+</TR>
+
+<TR>
+<TD><I>symbols</I>, <TT><FONT SIZE=+1>.code</FONT></TT>, <TT><FONT SIZE=+1>.data</FONT></TT>,
+etc.</TD>
+
+<TD>Address expression</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>: |</FONT></TT></TD>
+
+<TD>Dyadic (address construction)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>] [ {</FONT></TT></TD>
+
+<TD>Monadic (extraction)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>>> &lt;&lt;</FONT></TT></TD>
+
+<TD>Dyadic (bit shift)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>&lt; &lt;= >= ></FONT></TT></TD>
+
+<TD>Dyadic (relational)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>== !=</FONT></TT></TD>
+
+<TD>Equality</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>&amp;</FONT></TT></TD>
+
+<TD>Dyadic (bitwise AND)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>^</FONT></TT></TD>
+
+<TD>Dyadic (bitwise XOR)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>&amp;&amp;</FONT></TT></TD>
+
+<TD>Dyadic (logical AND)</TD>
+</TR>
+
+<TR>
+<TD><TT><FONT SIZE=+1>||</FONT></TT></TD>
+
+<TD>Dyadic (logical OR)</TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Segment or Selector</B></CAPTION>
+
+<TR>
+<TD><A NAME="seg"></A><I>seg</I></TD>
+
+<TD><I><A HREF="#lval">lval</A></I></TD>
+</TR>
+
+<TR>
+<TD><A NAME="sel"></A><I>sel</I></TD>
+
+<TD><I><A HREF="#lval">lval</A></I></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Optional segment or selector</B></CAPTION>
+
+<TR>
+<TD><A NAME="opt_sel"></A><I>opt_sel</I></TD>
+
+<TD><I>&lt;empty></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>*</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#seg">seg</A></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#sel">sel</A></I></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Optional Group ID</B></CAPTION>
+
+<TR>
+<TD><A NAME="opt_group"></A><I>opt_group</I></TD>
+
+<TD><I>&lt;empty></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>*</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#con">con</A></I></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Atoms</B></CAPTION>
+
+<TR>
+<TD><A NAME="atom"></A><I>atom</I></TD>
+
+<TD><I><A HREF="#con">con</A></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I><A HREF="#reg">reg</A></I></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.LBRFR</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.LBRTO</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.LEXFR</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>.LEXTO</FONT></TT></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Registers</B></CAPTION>
+
+<TR>
+<TD><A NAME="reg"></A><I>reg</I></TD>
+
+<TD><I>GP</I></TD>
+
+<TD><TT><FONT SIZE=+1>AX</FONT></TT>, <TT><FONT SIZE=+1>AL</FONT></TT>,
+<TT><FONT SIZE=+1>AH</FONT></TT>, <TT><FONT SIZE=+1>BX</FONT></TT>, ...&nbsp;</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I>EGP</I></TD>
+
+<TD><TT><FONT SIZE=+1>EAX</FONT></TT>, <TT><FONT SIZE=+1>EBX</FONT></TT>,
+<TT><FONT SIZE=+1>ECX</FONT></TT>, ...</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>CR</FONT></TT><I>n</I></TD>
+
+<TD>Control registers</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>DR</FONT></TT><I>n</I></TD>
+
+<TD>Debug registers</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>TR</FONT></TT><I>n</I></TD>
+
+<TD>Test registers</TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><I>Misc</I></TD>
+
+<TD><TT><FONT SIZE=+1>IP</FONT></TT>, <TT><FONT SIZE=+1>EIP</FONT></TT>,
+<TT><FONT SIZE=+1>FL</FONT></TT>, <TT><FONT SIZE=+1>EFL</FONT></TT>, <TT><FONT SIZE=+1>TR</FONT></TT>,
+<TT><FONT SIZE=+1>LDTR</FONT></TT></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Constants</B></CAPTION>
+
+<TR>
+<TD><A NAME="con"></A><I>con</I></TD>
+
+<TD>&lt;32-bit hex values></TD>
+</TR>
+
+<TR>
+<TD><A NAME="dcon"></A><I>dcon</I></TD>
+
+<TD>&lt;16-bit unsigned decimal values></TD>
+</TR>
+
+<TR>
+<TD><A NAME="filename"></A><I>filename</I></TD>
+
+<TD>&lt;DOS pathname></TD>
+</TR>
+
+<TR>
+<TD><A NAME="dirlist"></A><I>dirlist</I></TD>
+
+<TD>&lt;List of directory names separated by commas (<TT><FONT SIZE=+1>,</FONT></TT>)></TD>
+</TR>
+</TABLE>
+&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<CAPTION><B>Bits per second (BPS) values</B></CAPTION>
+
+<TR>
+<TD><A NAME="bps"></A><I>bps</I></TD>
+
+<TD><TT><FONT SIZE=+1>55</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>110</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>300</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>600</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>1200</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>2400</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>4800</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>9600</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>19200</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>38400</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>76800</FONT></TT></TD>
+</TR>
+
+<TR>
+<TD></TD>
+
+<TD><TT><FONT SIZE=+1>115200</FONT></TT></TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P><B>Examples</B>
+
+<P>* To display the successive entries in the DOS memory allocation chain,
+display one such entry via a <TT><FONT SIZE=+1>DB</FONT></TT> command.&nbsp;
+Then type
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; /D ((S..DATA)+1+[.DATA+3):0</FONT></TT>
+
+<P>&nbsp; Continuing to press Enter displays the successive MAC entries.
+
+<P>* To display the successive entries in the C memory allocation chain,
+display one such entry (at the count word) via a <TT><FONT SIZE=+1>DB</FONT></TT>
+command.&nbsp; Then type
+
+<P><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; /D .DATA + 2 + FFFE &amp; [.DATA</FONT></TT>&nbsp;<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

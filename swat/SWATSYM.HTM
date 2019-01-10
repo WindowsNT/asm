@@ -1,0 +1,675 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Bob Smith">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (Win95; U) [Netscape]">
+   <TITLE>386SWAT Symbols Documentation</TITLE>
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFC0" LINK="#0000FF" VLINK="#800080" ALINK="#FF00FF">
+
+<CENTER><B><FONT SIZE=+2>386SWAT Symbolic Debugging</FONT></B></CENTER>
+
+
+<P>This document covers the basics of symbolic debugging support for 386SWAT.&nbsp; 
+  The 386SWAT API specifics are documented in <a href="vcpidbg.htm#DEF6">VCPIDBG.DOC</a>; 
+  here we will describe actual usage of SWAT for symbolic debugging, and the tools 
+  needed to load symbols. 
+<P><A HREF="#386SWAT Profile Options">386SWAT Profile Options</A>
+
+<P><A HREF="#Using Symbols">Using symbols</A>
+
+<P><A HREF="#New Commands Within 386SWAT">New Commands Within 386SWAT</A>
+
+<P><A HREF="#Utility Programs">Utility Programs</A>
+<CENTER><A NAME="386SWAT Profile Options"></A><B>386SWAT Profile Options</B></CENTER>
+
+
+<P>Several profile options are new to 386SWAT:
+
+<P><A NAME="ADDRHBITS"></A><B><TT><FONT SIZE=+1>ADDRHBITS=</FONT></TT><I>n</I></B>
+
+<P>Specify number of address bits to use for address hash table.&nbsp;
+Values less than 8 and over 12 are ignored.
+
+<P>Address hash table storage in bytes is <TT><FONT SIZE=+1>2 ^ (ADDRHBITS
++ 2)</FONT></TT>.&nbsp; The minimum is therefore 1K and the maximum, 16K.
+
+<P><TT><FONT SIZE=+1>ADDRHBITS</FONT></TT> defaults to 12.&nbsp; When symbols
+are present, all possible addresses in the disassembly screen are searched
+against the address hash table.&nbsp; Possible hits require traversal of
+the address hash buckets chain, similar to name hash bucket traversal.&nbsp;
+A "next address bucket" pointer is part of the symbol record.&nbsp; Thus
+the set of&nbsp; symbol records forms two interleaved linked lists: the
+address bucket chain and the name bucket chain.
+
+<P>The number of bits specified by <TT><FONT SIZE=+1>ADDRHBITS</FONT></TT>
+are taken from a resolved linear address, shifted left 2 bits, and used
+as an index into the table of dword pointers based at the address contained
+in <TT><FONT SIZE=+1>SYMNHASH</FONT></TT>.&nbsp; The address pointed to
+is an offset from the address in <TT><FONT SIZE=+1>SYMBASE</FONT></TT>,
+and points to the beginning symbol record in that address bucket chain.&nbsp;
+If the value is -1 (FFFFFFFF), there is no such address.
+
+<P>Smaller address hash tables may significantly impact unassembly.
+<BR>&nbsp;
+
+<P><A NAME="BUCKETS"></A><B><TT><FONT SIZE=+1>BUCKETS=</FONT></TT><I>n</I></B>
+
+<P>Specify number of 1K blocks to be used for symbol name hashing.&nbsp;
+Values less than 1 and over 255 are ignored.
+
+<P>To speed symbol name searches, all names are hashed using the following
+algorithm:
+
+<P><TT><FONT SIZE=+1>extern unsigned int HASHPRIME;</FONT></TT>
+
+<P><TT><FONT SIZE=+1>int hashpjw(char *s)</FONT></TT>
+<BR><TT><FONT SIZE=+1>{</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; char *p;</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; unsigned long h=0, g;</FONT></TT>
+
+<P><TT><FONT SIZE=+1>&nbsp; for (p=s; *p; p++) {</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h = (h &lt;&lt;
+4) + (unsigned) tolower (*p);</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (g = (h &amp;
+0xf0000000)) {</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+h = h ^ (g >> 24);</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+h = h ^ g;</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; }</FONT></TT>
+
+<P><TT><FONT SIZE=+1>&nbsp; return ((int) (h % HASHPRIME));</FONT></TT>
+<BR><TT><FONT SIZE=+1>}</FONT></TT>
+
+<P><TT><FONT SIZE=+1>HASHPRIME</FONT></TT> is derived from a table of prime
+numbers closest to multiples of 256.&nbsp; Here are some examples:
+
+<P><TT><FONT SIZE=+1>BUCKETS&nbsp;&nbsp;&nbsp; HASHPRIME</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+257</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+509</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+769</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; 254&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 65027</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; 255&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 65287</FONT></TT>
+
+<P>The storage occupied by the name hashing table is <TT><FONT SIZE=+1>HASHPRIMES[BUCKETS-1]
+* 4</FONT></TT>, or approximately <TT><FONT SIZE=+1>BUCKETS * 1K</FONT></TT>.
+
+<P>When a hash value is calculated from a name, that value is shifted left
+2 bits and used as an index into the table of dword bucket pointers based
+at the address contained in <TT><FONT SIZE=+1>SYMNHASH</FONT></TT>.&nbsp;
+A bucket pointer may contain -1 (FFFFFFFF) or an offset from the address
+contained in <TT><FONT SIZE=+1>SYMBASE</FONT></TT>.&nbsp; In this case,
+a "bucket" actually points to a symbol record.&nbsp; Next name pointers
+in each symbol record form a linked list which may be traversed to find
+an exact name match.
+
+<P>The smaller the <TT><FONT SIZE=+1>BUCKETS</FONT></TT> value, the longer
+these bucket chains will be, thus increasing name search time.&nbsp; This
+is only likely to be a performance hit when loading symbols, since 386SWAT
+checks for existing symbols by name.&nbsp; Searches for symbols entered
+at the command line would not be visibly impacted by longer searches.
+<BR>&nbsp;
+
+<P><A NAME="LOADSYM"></A><B><TT><FONT SIZE=+1>LOADSYM</FONT></TT></B>&nbsp;&nbsp;&nbsp;&nbsp;
+Enable file I/O functions within 386SWAT.&nbsp; This is needed for using
+the file browser, and for source level debugging.
+
+<P><B><TT><FONT SIZE=+1>LOADSYM=</FONT></TT></B><I>filename.ssf</I>
+
+<P>Enables file I/O (same as <TT><FONT SIZE=+1>LOADSYM</FONT></TT>).&nbsp;
+Also loads symbols from the specified .SSF file (created by <TT><FONT SIZE=+1><A HREF="#MAPSSF">MAPSSF</A></FONT></TT>)
+at initialization time.
+<BR>&nbsp;
+
+<P><A NAME="PATH"></A><B><TT><FONT SIZE=+1>PATH=</FONT></TT><I>d:\dir1[,d:\dir2[,...]]</I></B>
+
+<P>Specify search path for source browser.&nbsp; If not specified, only
+the current directory is searched.&nbsp; If a path is specified, the current
+directory (.) must be included explicitly.&nbsp; For example, <TT><FONT SIZE=+1>PATH=c:\qui\quilib,c:\qui\inst</FONT></TT>
+will not search the current directory for source files.
+<BR>&nbsp;
+
+<P><A NAME="PROXSRCH"></A><B><TT><FONT SIZE=+1>PROXSRCH=</FONT></TT><I>r</I>[<TT><FONT SIZE=+1>,</FONT></TT><I>g</I>]</B>
+
+<P>Specify how far 386SWAT continues proximity searches and with what granularity.&nbsp;
+The default is 1 word.&nbsp; The high order byte of PROXSRCH contains the
+granularity in bytes, and the low order byte contains the number of units
+to search.&nbsp; The default is <TT><FONT SIZE=+1>0201h</FONT></TT>.&nbsp;
+<TT><FONT SIZE=+1>0108h</FONT></TT> would do byte granular searches from
+x+1 to x+8.
+
+<P>Proximity searches should not visibly impact disassembly performance.&nbsp;
+A separate check for an empty symbol table ensures that no time is wasted
+in unnecessary calls to the symbol search routine (which has its own check
+for empty tables).&nbsp; No proximity searches are done for label display
+and data display; this only affects values within the disassembly.
+
+<P>The command line option <TT><FONT SIZE=+1><A HREF="swatcmd.htm#PS">PS</A></FONT></TT>
+allows these settings to be changed on the fly.
+<BR>&nbsp;
+
+<P><A NAME="SYMSIZE"></A><B><TT><FONT SIZE=+1>SYMSIZE=</FONT></TT><I>n</I></B>
+
+<P>This option sets the number of bytes to be used for the 386SWAT symbol
+table.&nbsp; The internal format of 386SWAT's symbol table is 12 bytes
+larger than the symbol table used for the 386SWAT API calls.&nbsp; Each
+public or line number occupies 23 bytes plus the length of the symbol name.
+
+<P>SYMSIZE is used to calculate a default value for BUCKETS (described
+below).&nbsp; If BUCKETS is not explicitly defined in the profile, it will
+be set to <TT><FONT SIZE=+1>min (255, max (1, SYMSIZE / 4096))</FONT></TT>.
+
+<P>If SYMSIZE is not specified, it will default to 4096 bytes.&nbsp; The
+default BUCKETS value (if also not specified) will then be 1.&nbsp; See
+below for BUCKETS storage requirements.
+
+<P>Use <TT><FONT SIZE=+1>SYMSIZE=0</FONT></TT> to minimize symbol storage
+requirements.&nbsp; This will save 4K over the default.
+<BR>&nbsp;
+<CENTER><A NAME="Using Symbols"></A><B>Using symbols</B></CENTER>
+
+
+<P>Any symbol may be used as an effective address.&nbsp; For example,
+
+<P><TT><FONT SIZE=+1>dd 180|{SYMHASH</FONT></TT>
+
+<P>will display the symbol address hash table.&nbsp; Symbol display occurs
+automatically if the symbols are loaded properly.&nbsp; See sections below
+on <A HREF="#SWATRUN">SWATRUN</A> and <A HREF="#MAPSSF">MAPSSF</A>.
+
+<P>Symbols are displayed in the Unassemble (F9) screen.&nbsp; Code addresses
+may be displayed as public names or line numbers (if line numbers were
+specified with the linker's <TT><FONT SIZE=+1>/LI</FONT></TT> option).&nbsp;
+Addresses within the unassembly are handled as intelligently as possible.&nbsp;
+For example,
+
+<P><TT><FONT SIZE=+1>mov ax,[bx+7c39]</FONT></TT>
+
+<P>may be displayed as
+
+<P><TT><FONT SIZE=+1>mov ax,[bx+FOOBAR]</FONT></TT>
+
+<P>if FOOBAR's offset is <TT><FONT SIZE=+1>7C39</FONT></TT> and the default
+segment/selector (DS in this case) matches the segment/selector specified
+for the symbol FOOBAR.
+
+<P>386SWAT can now resolve addresses CLOSE TO symbols; a construction commonly
+seen in C code might be:
+
+<P><TT><FONT SIZE=+1>mov [FOOBAR],bx</FONT></TT>
+<BR><TT><FONT SIZE=+1>mov [7c3b],es</FONT></TT>
+
+<P>386SWAT will disassemble this as
+
+<P><TT><FONT SIZE=+1>mov [FOOBAR],bx</FONT></TT>
+<BR><TT><FONT SIZE=+1>mov [FOOBAR+02],es</FONT></TT>
+
+<P>Another useful feature would be to turn off case sensitivity when searching
+for symbol matches.&nbsp; This is more of an issue when debugging C code.
+Again, it could be settable in the profile as well as from the command
+line.
+<BR>&nbsp;
+<CENTER><A NAME="New Commands Within 386SWAT"></A><B>New Commands Within
+386SWAT</B></CENTER>
+
+
+<P>The Translate Symbols (<TT><FONT SIZE=+1>TS</FONT></TT>) command may
+be used to adjust segment/selector values, as well as to add a constant
+to symbol offsets, after the symbols are loaded.&nbsp; This is needed for
+debugging the VxD.&nbsp; The VxD symbols would be loaded with <A HREF="#MAPSSF">MAPSSF</A>,
+using a .wsg file to assign selector values and group ID's to the different
+linker groups.&nbsp; Once <A HREF="swatvxd.htm">SWATVXD</A> has located
+the offsets of the different VxD groups, they may be translated one at
+a time.
+
+<P><A NAME=".WSG File"></A>For example, the VxD's <TT><FONT SIZE=+1>DGROUP</FONT></TT>
+is assigned selector <TT><FONT SIZE=+1>28</FONT></TT>, group ID <TT><FONT SIZE=+1>2001</FONT></TT>,
+and <TT><FONT SIZE=+1>IGROUP</FONT></TT> is assigned selector <TT><FONT SIZE=+1>30</FONT></TT>,
+group ID <TT><FONT SIZE=+1>2002</FONT></TT>.&nbsp; The .WSG file entries
+are
+
+<P><TT><FONT SIZE=+1>&nbsp; 2001&nbsp; P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DGROUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; Comments</FONT></TT>
+<BR><TT><FONT SIZE=+1>&nbsp; 2002&nbsp; P&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IGROUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+; More comments</FONT></TT>
+
+<P>We load the .MAP file before entering Windows:
+
+<P><TT><FONT SIZE=+1>MAPSSF -wVXD.WSG VXD.MAP</FONT></TT>
+
+<P>We find that the offsets within the Windows flat model segment are
+
+<P><TT><FONT SIZE=+1>DGROUP&nbsp; 8001BE24</FONT></TT>
+<BR><TT><FONT SIZE=+1>IGROUP&nbsp; 8020397C</FONT></TT>
+
+<P>The TS command is used to translate both groups:
+
+<P><TT><FONT SIZE=+1>ts 28 2001 P 28 8001BE24</FONT></TT>
+<BR><TT><FONT SIZE=+1>ts 30 2002 P 30 8020397C</FONT></TT>
+
+<P>The complete syntax of the TS command is
+
+<P><TT><FONT SIZE=+1>TS </FONT></TT><I>osel ogrp nflag nsel nbase</I>
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<TR VALIGN=TOP>
+<TD><I>osel</I></TD>
+
+<TD>Old selector value</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><I>ogrp</I></TD>
+
+<TD>Target group value (unless specified in .WSG file, <TT><FONT SIZE=+1>0</FONT></TT>)</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><I>nflag</I></TD>
+
+<TD><TT><FONT SIZE=+1>P</FONT></TT> for PM symbols&nbsp;
+<BR><TT><FONT SIZE=+1>V</FONT></TT> for VM symbols</TD>
+</TR>
+
+<TR>
+<TD><I>nsel</I></TD>
+
+<TD>New selector value (in above example, unchanged)</TD>
+</TR>
+
+<TR>
+<TD><I>nbase</I></TD>
+
+<TD>Base value to be added to all symbol offsets</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>The Query Symbol (<TT><FONT SIZE=+1>QS</FONT></TT>) command may be used
+to display on the command line the name and distance from a given address.&nbsp;
+For example,
+
+<P><TT><FONT SIZE=+1>QS .code</FONT></TT>
+
+<P>might display as
+
+<P><TT><FONT SIZE=+1>QS .code = VWIN32_Code0001+00005678</FONT></TT>
+<BR>&nbsp;
+<CENTER><A NAME="Utility Programs"></A><B>Utility Programs</B></CENTER>
+
+
+<P><A NAME="MAPSSF"></A><B>MAPSSF</B>
+
+<P>This program is called by SWATRUN to load .MAP files on the fly.&nbsp;
+It may also be used to produce .SSF files for loading at CONFIG.SYS time
+(not currently supported by SWAT).&nbsp; .SSF files may also be loaded
+directly by SWATRUN.&nbsp; This is faster than calling MAPSSF every time
+symbols are loaded.
+
+<P>Besides reading .MAP files, MAPSSF will also process Windows SYM32 files.&nbsp;
+MAPSSF has been tested with the following .MAP file formats:
+
+<P>- Microsoft LINK
+<BR>- Microsoft LINK386 flat model
+<BR>- Borland TLINK
+
+<P>Syntax:
+
+<P><TT><FONT SIZE=+1>MapSSF </FONT></TT>[<I>options</I>]<I> fspec1 </I>[<I>fspec2
+</I>[...]]
+
+<P>All options are preceded with <TT><FONT SIZE=+1>-</FONT></TT> or <TT><FONT SIZE=+1>/</FONT></TT>
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-g</FONT></TT><I>#</I><TT><FONT SIZE=+1>,</FONT></TT><I>#</I></TD>
+
+<TD>restrict symbol group types to specified #'s (SYM32 files only).&nbsp;
+Only symbols with group types matching one of these values will be loaded.&nbsp;
+The group type in SYM32 files is NOT the same as the group ID defined in
+a .WSG file.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-l</FONT></TT></TD>
+
+<TD>ignore line number information in .MAP file.&nbsp; This option may
+be used to suppress loading of line number symbols when space is at a premium.&nbsp;
+Typically, line numbers take about 80% of symbol space.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-o</FONT></TT></TD>
+
+<TD>overwrite existing symbol table (default is append).&nbsp; Normally,
+new symbols are added to SWAT.&nbsp; Existing&nbsp;
+<BR>symbols will be updated.&nbsp; This option forces the symbol table
+to be flushed at the beginning of MAPSSF.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-s</FONT></TT><I>xxxxm</I></TD>
+
+<TD>set selector to <I>xxxx</I> hex, where <I>m</I> is&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>v</FONT></TT></TD>
+
+<TD>for V86/real mode</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>v+</FONT></TT></TD>
+
+<TD>for V86/real mode, add value to segment,</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>p</FONT></TT></TD>
+
+<TD>for protected mode</TD>
+</TR>
+</TABLE>
+The <TT><FONT SIZE=+1>-s</FONT></TT><I>xxxx</I><TT><FONT SIZE=+1>v+</FONT></TT>
+form is used by SWATRUN to add a fixup to all segment values.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-t</FONT></TT><I>fname</I></TD>
+
+<TD>echo 386SWAT tables to file <I>fname</I>.&nbsp; This option may be
+used to create a file in 386SWAT symbol format (.SSF file).</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-w</FONT></TT><I>fname[.wsg]</I></TD>
+
+<TD>read Windows Symbol Group file fname.wsg.&nbsp; This feature may be
+used for .MAP files or for .SYM files.&nbsp; As an example, the QMAX.WSG
+file contains:&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>group</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>mode</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>sel</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>group[!segment]</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; comment</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>3000</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>P</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>50</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PGROUP</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX code</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>3001</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>P</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>18</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PGROUP!EDATA</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX data</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>3001</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>P</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>18</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PGROUP!VALSEG</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX data</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>D</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PGROUP!NCODE</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX non-resident code</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>D</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PGROUP!NDATA</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX non-resident data</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>3002</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>P</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>118</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>IGROUP!ICODE</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX extra code</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>3003</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>P</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>120</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>IGROUP!IDATA</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX extra data</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>D</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>XGROUP</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; 386MAX non-resident code/data</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>D</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>0</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PSPGRP</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; PSP group (non-resident)</FONT></TT></TD>
+</TR>
+
+<TR ALIGN=RIGHT VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>3004</FONT></TT></TD>
+
+<TD ALIGN=CENTER><TT><FONT SIZE=+1>P</FONT></TT></TD>
+
+<TD><TT><FONT SIZE=+1>70</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>PDTGRP</FONT></TT></TD>
+
+<TD ALIGN=LEFT><TT><FONT SIZE=+1>; OFFPDT group (uninitialized)</FONT></TT></TD>
+</TR>
+</TABLE>
+Note that all groups listed with unique segment values in the Group section
+of the MAP file are listed.&nbsp; The real mode groups a <TT><FONT SIZE=+1>XGROUP</FONT></TT>
+and <TT><FONT SIZE=+1>PSPGRP</FONT></TT> will not be loaded.&nbsp;
+
+<P>Association of public symbols with groups is sometimes not sufficient.&nbsp;
+Both code and data are in <TT><FONT SIZE=+1>PGROUP</FONT></TT>, but different
+selectors are used.&nbsp; We therefore specify the individual data segments
+within <TT><FONT SIZE=+1>PGROUP</FONT></TT> that will be assigned selector
+<TT><FONT SIZE=+1>18h</FONT></TT> (<TT><FONT SIZE=+1>EDATA</FONT></TT>
+and <TT><FONT SIZE=+1>VALSEG</FONT></TT>).&nbsp; Since segments are more
+completely specified in the MAP file than groups, MAPSSF will check for
+segment matches before checking for group matches.&nbsp; We also use this
+mechanism to avoid loading the <TT><FONT SIZE=+1>NCODE</FONT></TT> and
+<TT><FONT SIZE=+1>NDATA</FONT></TT> segments within <TT><FONT SIZE=+1>PGROUP</FONT></TT>.&nbsp;
+
+<P>Group matches are made by checking group origin values, which are sorted
+by value in descending order, against addresses.&nbsp; ALL groups which
+COULD include an address, from highest to lowest, are checked for inclusion
+in the .WSG file.&nbsp; The first match determines what changes are made
+to the matching symbol address.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-v</FONT></TT></TD>
+
+<TD>sort symbols by value (default is by name).&nbsp; This option controls
+which section of the .MAP file is read.&nbsp; If included on the command
+line, the "By Value" section is read.&nbsp; By default, the "By Name" section
+is read.&nbsp; By controlling the order in which symbols are passed to
+SWAT, the display in SWAT's Ctrl-F6 screen may be sorted by name or by
+value.&nbsp;</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-x</FONT></TT><I>#</I></TD>
+
+<TD>set debugging level to <I>#</I> (default is <TT><FONT SIZE=+1>0</FONT></TT>
+-- no messages).&nbsp; This is useful for debugging only.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>-y</FONT></TT></TD>
+
+<TD>default to recognizing files as SYM32 format.&nbsp; Normally, MAPSSF
+recognizes files as .MAP or .SYM by their extension.&nbsp; If neither extension
+is used, this option forces recognition as SYM32.&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P><A NAME="SWATCMD"></A><B>SWATCMD</B>
+
+<P>Syntax:&nbsp; <TT><FONT SIZE=+1>Device=</FONT></TT><I>d:\path\</I>swatcmd.exe
+<I>command</I>
+<BR>&nbsp; or&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; swatcmd <I>command</I>
+
+<P><TT><FONT SIZE=+1>SWATCMD</FONT></TT> can be loaded via <TT><FONT SIZE=+1>Device=</FONT></TT>
+or from the DOS command line.&nbsp; It may be used to pass commands to
+386SWAT under program control.&nbsp; Invoking <TT><FONT SIZE=+1>SWATCMD</FONT></TT>
+with no options brings up 386SWAT at an INT 03h (assuming <TT><FONT SIZE=+1><A HREF="swatpro.htm#TRAPSKIP">TRAPSKIP</A>
+</FONT></TT>or <TT><FONT SIZE=+1><A HREF="swatpro.htm#TRAPDEBUG">TRAPDEBUG</A>
+</FONT></TT>is active).
+<BR>&nbsp;
+
+<P><A NAME="SWATRUN"></A><B>SWATRUN</B>
+
+<P>Syntax: <TT><FONT SIZE=+1>SWATRUN</FONT></TT> <I>[options] progname
+[arguments]</I>
+
+<P>SWATRUN is a program loader for debugging V86 mode programs.&nbsp; It
+creates a breakpoint before the first instruction of the target program,
+and will also attempt to load symbols into 386SWAT via the VCPI debugger
+API (<A HREF="vcpidbg.htm">VCPIDBG.DOC</A>) with the appropriate segment
+fixup.
+
+<P>If no file extension is specified, SWATRUN looks first for a .COM file
+then an .EXE file.&nbsp; The filename specified is converted into a fully
+qualified pathname including drive letter, directory, and extension.&nbsp;
+SWATRUN will load this file using&nbsp; DOS function 4B01 to determine
+the segment fixup.
+
+<P>SWATRUN will then look for a matching .SSF file, and if found, will
+load it directly into 386SWAT.&nbsp; If an .SSF file is not found, SWATRUN
+will look for a matching .MAP file.&nbsp; If a .MAP file is found, SWATRUN
+will invoke MAPSSF with the proper parameters to fixup and load the parsed
+.MAP file.&nbsp; See the section on MAPSSF for further information on .MAP
+file formats supported and on creation of .SSF files.&nbsp; .SSF file loading
+is faster, but does not currently report symbol allocation table shortages.&nbsp;
+If your symbols do not appear to be loaded from an .SSF file, delete the
+.SSF file.&nbsp; SWATRUN will try to load symbols from the .MAP file with
+MAPSSF.&nbsp; MAPSSF will report any changes required to the 386SWAT.PRO
+file.
+<BR>&nbsp;
+<BR>Valid SWATRUN options are
+<BR>&nbsp;
+<TABLE BORDER=0 CELLSPACING=10 >
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>/b</FONT></TT></TD>
+
+<TD>Generate Int 1 at beginning of SWATRUN.&nbsp; This is useful only for
+debugging the loading process</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>/m</FONT></TT><I>MAPFILE</I></TD>
+
+<TD>Load <I>MAPFILE</I> instead of progname.map.&nbsp; If no .SSF file
+is present, SWATRUN constructs a map file name by taking the path and basename
+of the .EXE or .COM file and adding .MAP.&nbsp; This filename is passed
+to MAPSSF if it exists.&nbsp; This option may be used to specify a map
+file on another drive:directory.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>/n</FONT></TT></TD>
+
+<TD>Do not load symbols.&nbsp; If SWATRUN has already run once, the target
+program did not go resident, and symbols were loaded, run SWATRUN with
+this option on subsequent invocations.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>/o</FONT></TT></TD>
+
+<TD>Overwrite existing SWAT symbols.&nbsp; This option is passed to MAPSSF.&nbsp;
+Any existing symbols will be destroyed.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>/s</FONT></TT><I>SYMFILE</I></TD>
+
+<TD>Load SYMFILE instead of progname.ssf.&nbsp; SWATRUN normally constructs
+a .ssf file name by taking the path and basename of the .EXE or .COM file
+and adding .SSF.&nbsp; If this file exists and is in the proper format
+created by MAPSSF, it will be loaded into 386SWAT.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><TT><FONT SIZE=+1>/?</FONT></TT></TD>
+
+<TD>Display a help message.</TD>
+</TR>
+</TABLE>
+<!--#include virtual="/footer.htm" -->
+</BODY>
+</HTML>

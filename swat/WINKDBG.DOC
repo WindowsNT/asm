@@ -1,0 +1,236 @@
+		  Notes on Windows Kernel Debugging
+		  ---------------------------------
+
+Windows implements a low-level debugging interface called Kernel
+Debugging (WKD) which obtains control very early in the startup
+sequence of Windows.  The program WDEB386 shipped with the Windows SDK
+is an example of one such program; 386SWAT is another.
+
+When Windows sees that a kernel debugger is present, it informs the
+debugger about a number of events as they occur, principally parameter
+errors made by running Windows programs as they call Windows API
+functions.	For example, if a program calls EnableWindow with an
+invalid window handle (say, zero), this error is passed on to the WKD
+for processing before returning to the calling program.  In this way,
+a great many errors can be caught before they can cause any harm.
+
+By default, 386SWAT is a WKD.  If, for some reason, you wish to
+disable this feature, place the keyword NOWINK into your 386SWAT
+profile.
+
+At the current time, you must have a monochrome adapter and monitor
+attached to your system in order for WKD services to be allowed by
+386SWAT.  386SWAT tests for a mono card and disables WKD if not found.
+
+
+New Command Line Actions
+------------------------
+
+* To enable or disable WKD services entirely, use
+
+	WKD [ON|OFF]
+
+  This option is available outside Windows only.  If you have
+  specified NOWINK in the 386SWAT profile, this option has no effect
+  -- you must remove that profile option and reboot the system to
+  enable WKD services.
+
+* To change the response to a parameter error, use
+
+	WKD [NOISY|QUIET]
+
+  If NOISY is specified, then each parameter error is followed by the
+  prompt "Break, Ignore, Quiet?" to which you must respond B, I, or
+  Q.
+
+  A response of Q, is equivalent to setting WKD QUIET after which
+  parameter errors are logged to the screen, but execution does not
+  stop for any more parameter errors until you break into 386SWAT and
+  type WKD NOISY on 386SWAT's command line.  This is the default
+  state, so you'll see parameter errors fly past on the mono screen
+  without pause.  I recommend that when you are debugging your own
+  code, use WKD NOISY; otherwise, use WKD QUIET.  This is because many
+  commercial packages contain so many parameter errors that you'll
+  constantly be interrupted with a BIQ prompt.
+
+  A response of I, ignores this one error only and continues
+  execution.
+
+  A response of B, triggers a single step breakpoint at an IRETD
+  inside 386SWAT.  Tracing over this instruction returns to the
+  instruction inside Windows immediately following the call to
+  386SWAT (typically an INT 41h).  Tracing from this point on
+  eventually gets you back to a call to LogError which was called by
+  the Windows API function which encountered the invalid parameter,
+  and then back to the application which called the Windows API with
+  an invalid parameter.  If the application is Win32, then you'll have
+  to trace back through a thunking layer before you get to the
+  application.	This can be quite tricky.  At some point, I'll try to
+  put in some stack tracing to aid this process.
+
+* Sometimes Windows and/or applications make direct calls to LogError
+  as opposed to indirect calls as part of a parameter error.  These
+  calls are uncommon, so there is a separate switch to control
+  386SWAT's response to such an event.  Use
+
+	WKD LOGERROR [ON|OFF]
+
+  to change the response of stopping at an IRETD inside 386SWAT or
+  not.	The default setting is OFF.
+
+* Sometimes an application is bad enough that it triggers an
+  unrecoverable fault (typically a GP or Page Fault) and it must be
+  terminated.  Windows gives the WKD a crack at it first to which
+  386SWAT responds by stopping in the application at the faulting
+  instruction, thus giving you the opportunity to debug the problem.
+  If you wish to tell Windows to handle the fault itself (typically
+  by terminating the application), use
+
+	WKD FAULT SKIP
+
+  If you do not want to receive any more fault messages from Windows,
+  use
+
+	WKD FAULT OFF
+
+  To restart receiving fault messages, use
+
+	WKD FAULT ON
+
+* The keystroke Ctrl-K brings up a menu from which you can choose to
+  display various internal Windows structures.	At the moment, the
+  only one which has been fleshed out is the display of the Windows
+  Global Heap (WGH).  The WGH contains one entry for each globally
+  allocated region of memory.  For example, the various code and data
+  segments of KRNL386.EXE are global allocations and have entries in
+  this table.  To scroll through this table, use the usual up and down
+  arrow keys as well as Page Up and Page Down.
+
+  To search through the WGH for a specific entry, use the SGH command:
+
+  SGH [/b|/s|/h|/o] [/c] expr
+
+  The expression (expr) entered is interpreted as a base address if /b
+  is specified, size if /s, handle if /h, and owner if /o.  If /c is
+  specified, the search continues from the currently displayed entry;
+  otherwise, the search starts at the top of the heap.	If the value
+  is found in the WGH, the WGH is displayed with the matching entry at
+  the top of the screen.  If you wish to repeat the search (perhaps
+  becayse there are multiple entries with the same owner), either
+  retype the command (and specify /c so the search continues with the
+  next entry after the one at the top of the screen), or start the
+  command with a slash so it is not erased after successful execution.
+  If the value is not found in the WGH, an error message is displayed.
+
+* If Invalid Page Faults are being trapped by SWAT's VxD (see
+  SWATVXD.DOC for more details), use the IPF command to control how
+  these events are to be handled.
+
+  IPF [/d] [/s] [/r] expr
+
+  where /d tells SWAT not to display a message on the mono screen
+  describing this event, /s tells SWAT not to stop when this event
+  occurs, /r tells SWAT to remove this entry from its local tables,
+  and expr is an expression which evaulates to a linear address
+  corresponding to the Invalid Page Fault.
+
+* To display the memory pointed to by a selector as a Module Database,
+  use
+
+  MDB expr
+
+* To display the memory pointed to by a selector as a Task Database,
+  use
+
+  TDB expr
+
+* Certain commands usually preceded with a dot are automatically
+  passed to Windows for processing by WIN386, assuming Windows is
+  active and WIN386 services are available.  These commands include
+
+  ?		Display a Help screen with the available commands
+  .?		Display a list of registered dot commands (e.g., .M)
+  .R [#]	Display the registers of the current thread (or thread #)
+  .VM [#]	Display the complete VM status of the current VM (or #)
+  .VC [#]	Display the current VM's (or #) control block
+  .VH [#]	Display a VMM linked list, given list handle
+  .VR [#]	Display the registers of the current VM (or #)
+  .VS [#]	Display the current VM's (or #) virtual stack
+  .VL		Display list of all valid VM handles
+  .DS		Display protected mode stack with labels
+  .VMM		Display menu of VMM state info
+  .<dev_name>	Display device-specific info
+
+
+
+Profile Options
+---------------
+
+Because 386SWAT is a WKD, it is given much more information to
+process.  Much of that data is stored in its internal log file
+(acessible via Ctl-F10) which means that you should increase the log
+file's default size.  You might experiment with different values, but
+I suggest using something on the order of LOGSIZE=100000.
+
+During Windows startup while still in RM/VM, Windows loads the real
+mode portion of all of the VxDs to be used this Windows session.  At
+this time, Windows tells the WKD about these VxDs and where they will
+be loaded in memory when in PM, and 386SWAT logs this information in
+two ways.
+
+The first way is to write a line to the mono display with the data
+about each segment (code or data) of the form
+
+Loaded VxD <VxDname>, module <Modname> at <address> len <length>
+
+The second way is to append a symbol to 386SWAT's symbol table of the
+form <VxDname>_Code<nnnn> or <VxDname>_Data<nnnn>, where <nnnn> is a
+decimal sequence number starting at 1 and is used to distinguigh one
+code/data segment from another.  By convention in Windows, code
+segments are in selector 0028h and data segments are in selector
+0030h.	These symbols are useful when debugging VxDs.
+
+In order to save this information, you need to tell 386SWAT how much
+space to reserve.  The profile option WKDLS (Load Segments) is used
+for this purpose.  The actual value depends upon how many VxD code and
+data segments are loaded on your system.  I use WKDLS=700.	If you
+have no interest in debugging VxDs, omit this profile option as the
+default value is zero which reserves no space.	You might also want to
+increase the profile value for SYMSIZE.  I use SYMSIZE=700000 (you do
+have 32MB of RAM, don't you?).
+
+
+Debugging DLLs
+--------------
+
+The Windows SDK (3.1x or 95) contains separate copies of various
+system DLLs each of which which contain more messages and checks on
+Windows execution.  I haven't played with these much, so you're on
+your own, but it may be very worthwhile.  They also contain symbol
+files which I haven't put in code to load as yet.
+
+
+SWAT VxD
+--------
+
+This version of 386SWAT no longer requires that you load SWATVXD.EXE
+as a resident program (thus saving you a few bytes of DOS memory), but
+the VxD must be in same directory as 386SWAT.LOD.  The VxD is now
+loaded by 386SWAT when Windows starts up.  See the file SWATVXD.DOC
+for more information on how to configure the VxD.
+
+
+Loading 386SWAT
+---------------
+
+If you are running 386MAX as your memory manager, you could load
+386SWAT from the 386MAX profile with the LOAD= keyword.  However,
+because this mechanism doesn't provide for 386SWAT to have a DOS
+footprint and such a footprint is needed for WKDing, I do not
+recommend loading SWAT this way anymore.  Instead, load 386SWAT as a
+device driver on the line which immediately follows the line which
+loads the memory manager.  386SWAT must load in low DOS memory, so
+don't try to load it high.  The low DOS memory footprint of 386SWAT is
+about 2KB.
+
+
