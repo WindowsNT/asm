@@ -11,3 +11,4 @@ powershell -ExecutionPolicy RemoteSigned -File "iso.ps1"
 del .\CD\386swat.lod
 copy swat\386swat.lod .\CD\386swat.lod
 copy /y dos32a\* .\CD\ 
+xcopy /y /s /e /i swat\* .\CD\swat
