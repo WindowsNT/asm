@@ -77,7 +77,7 @@ mov si,MAIN16
 shl esi,16
 mov dx,m4
 mov ax,0x421
-;int 0xF0 Not Yet
+;int 0xF0 ;Not Yet
 
 ; Unlock mutex
 mov ax,0x0503

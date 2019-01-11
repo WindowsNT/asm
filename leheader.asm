@@ -113,26 +113,22 @@ dd 0		       ; Reserved / crap
 
 dd vvpagestotalali dup (0)   ; Crap, one "dd" zero needed per page
 
+macro laddr reg,ofs
+{
+	local thiscall
+	call thiscall
+	thiscall:
+	pop reg
+	add reg,ofs-thiscall
+}
+
+
 ; *** Code, forget about "org", never loads correctly Wink ***
 ; "org" $F0 minimum, always $10 bytes aligned
 
 llcode:
 
-      call  lleipbase
-lleipbase:
-      pop   edx 	     ; Pick "return" address Wink
-      add   edx,tx1b-lleipbase
-      mov   ah,9
-      int   $21 	     ; Call DOS "API" Very Happy
-      jmp   llqq1
-;----------------
-
-tx1b: db $0D,$0A,'Hello from protected mode, using DOS/32A, coded with FASM !!!',$0D,$0A,$24
-
-llqq1:
-      mov   ax,0x4C00	    ; Return to DOS with error code 0
-      int   0x21
-;--------------
+include 'lemain.asm'
 
 llcodeend:
 

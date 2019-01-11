@@ -1,7 +1,7 @@
 del d.iso
 fasm entry.asm
 fasm dmmic.asm
-fasm le.asm le.exe
+fasm leheader.asm le.exe
 REM upx --best entry.exe
 mkdir CD
 copy /y entry.exe .\CD\entry.exe 

@@ -135,7 +135,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">build.bat</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">build.bat</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">build.bat</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">entry.exe</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">entry.exe;dmmic.exe;le.exe</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">entry.exe</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">entry.exe</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">entry.exe</Outputs>
@@ -182,7 +182,8 @@
     <None Include="int32.asm" />
     <None Include="int64.asm" />
     <None Include="iso.ps1" />
-    <None Include="le.asm" />
+    <None Include="leheader.asm" />
+    <None Include="lemain.asm" />
     <None Include="mutex16.asm" />
     <None Include="mutex32.asm" />
     <None Include="mutex64.asm" />
