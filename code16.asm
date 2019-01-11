@@ -56,9 +56,10 @@ start16:
 ; --------------------------------------- Initialization of our segments ---------------------------------------
 cli
 
-mov ax,0x4A00
-mov bx,ENDS
-int 0x21
+; Overriden by HEAP 0 in entry.asm
+;mov ax,0x4A00
+;mov bx,ENDS
+;int 0x21
 
 mov ax,DATA16
 mov ds,ax

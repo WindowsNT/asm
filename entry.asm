@@ -1,4 +1,5 @@
 FORMAT MZ
+HEAP 0
 
 INCLUDE 'config.asm'
 INCLUDE 'struct.asm'
