@@ -182,6 +182,7 @@
     <None Include="int32.asm" />
     <None Include="int64.asm" />
     <None Include="iso.ps1" />
+    <None Include="le.asm" />
     <None Include="mutex16.asm" />
     <None Include="mutex32.asm" />
     <None Include="mutex64.asm" />

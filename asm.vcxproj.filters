@@ -20,6 +20,9 @@
     <Filter Include="DMMI Client">
       <UniqueIdentifier>{3d1fb20d-d4c2-4578-9778-ec0c4531a433}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DPMI Client">
+      <UniqueIdentifier>{19c81409-b80e-4267-80bc-95d0f74ac19d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
@@ -164,6 +167,9 @@
     </None>
     <None Include="guest64.asm">
       <Filter>64 bit code</Filter>
+    </None>
+    <None Include="le.asm">
+      <Filter>DPMI Client</Filter>
     </None>
   </ItemGroup>
 </Project>

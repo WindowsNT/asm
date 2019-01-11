@@ -1,12 +1,12 @@
 del d.iso
 fasm entry.asm
 fasm dmmic.asm
+fasm le.asm le.exe
 REM upx --best entry.exe
 mkdir CD
-del .\CD\entry.exe
-copy entry.exe .\CD\entry.exe
-del .\CD\dmmic.exe
-copy dmmic.exe .\CD\dmmic.exe
+copy /y entry.exe .\CD\entry.exe 
+copy /y dmmic.exe .\CD\dmmic.exe
+copy /y le.exe .\CD\le.exe
 powershell -ExecutionPolicy RemoteSigned -File "iso.ps1"
 del .\CD\386swat.lod
 copy swat\386swat.lod .\CD\386swat.lod
