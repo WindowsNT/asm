@@ -2,6 +2,9 @@
 Welcome to my assembly tutorials.
 
 Articles:
+* Full article (all in one): https://www.codeproject.com/Articles/1273844/The-Intel-Assembly-Manual
+
+Older Articles: 
 * Real/Protected/Long mode : https://www.codeproject.com/Articles/45788/The-Real-Protected-Long-mode-assembly-tutorial-for
 * Virtualization: https://www.codeproject.com/Articles/215458/Virtualization-for-System-Programmers
 * Multicore DOS: https://www.codeproject.com/Articles/889245/Deep-inside-CPU-Raw-multicore-programming
