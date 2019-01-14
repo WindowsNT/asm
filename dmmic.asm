@@ -34,6 +34,12 @@ stx6e:
 stx7 dw 1000 dup(0)
 stx7e:
 
+stx8 dw 1000 dup(0)
+stx8e:
+
+stx9 dw 1000 dup(0)
+stx9e:
+
 nop
 
 ; ---- Protected Mode Thread
@@ -64,7 +70,6 @@ retf
 
 ; Virtualized PM Thread
 v1:
-
 
 ; Int 0xF0 works also in protected mode
 mov ax,0
@@ -119,6 +124,10 @@ int 0xF0
 
 ret
 
+; Virtualized LM Thread
+v2:
+
+vmcall
 
 
 
@@ -257,15 +266,25 @@ linear ecx,stx5e,STACKS
 linear edx,rt2,T32
 int 0xF0
 
-; run a virtualized thread
+; run a virtualized protected mode thread
 push cs
 pop es
 mov ax,0x0103
-mov ebx,0x207
+mov ebx,0x107
 linear edi,stx6e,STACKS
 linear ecx,stx7e,STACKS
 linear edx,v1,T32
 int 0xF0
+
+; run a virtualized long mode thread
+push cs
+pop es
+mov ax,0x0103
+mov ebx,0x207
+linear edi,stx8e,STACKS
+linear ecx,stx9e,STACKS
+linear edx,v2,T64
+;int 0xF0
 
 ; wait mut
 push cs

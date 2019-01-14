@@ -222,8 +222,10 @@ end if
 	jmp vretxx
 
 	; Virtual Machine Here, Protected mode
+	cv64vmode db 0 
 USE32
 	vmentry:
+
 
 	; set the stack
 	mov ax,page32_idx
@@ -233,17 +235,38 @@ USE32
 	linear ebx,idt_PM_start,DATA16
 	lidt [ebx]
 
-	; mov esp,xxxxxxxx
-	db 0xBC
-	cv64vst dd 0 
+	; check mode
+	linear ebx,cv64vmode,CODE16
+	mov bh,[ebx]
 
-	; call the address
-	db  09ah 
-	cv64 dd  0
-	dw  vmx32_idx
+	cmp bh,0
+	jz vmode0 ; Real
 
-	VMCALL ; exit
+	cmp bh,1
+	jz vmode1 ; Protected
 
+	cmp bh,2
+	jz vmode2 ; Long
+
+	vmcall; duh
+
+
+	vmode2: ; long
+	vmcall
+
+	vmode0: ; real
+	vmcall ; 
+
+	vmode1:
+		; mov esp,xxxxxxxx
+		db 0xBC
+		cv64vst1 dd 0 
+
+		; call the address
+		db  09ah 
+		cv64 dd  0
+		dw  vmx32_idx
+	VMCALL 
 USE64
 	vretxx:
 
@@ -364,12 +387,15 @@ int16:
 			; ECX = Linear Stack
 			; EDI = Virtualized Linear Stack
 
-			and ebx,0xFF
 			mov ax,CODE16
 			mov ds,ax
 			mov [cv64],edx
 			mov [cv64st],ecx
-			mov [cv64vst],edi
+			;mov [cv64vst0],edi
+			mov [cv64vst1],edi
+			;mov [cv64vst2],edi
+			mov [cv64vmode],bh
+			and ebx,0xFF
 			linear eax,Thread64CV,CODE16
 			call far CODE16:SendSIPIf
 			IRET
