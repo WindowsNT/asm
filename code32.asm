@@ -120,7 +120,6 @@ end if
     rdmsr ; Read EFER.
     bts eax, 8 ; Set LME=1.
     wrmsr ; Write EFER.
-  
 	; Enable Paging to activate Long Mode
     mov eax, cr0 ; Read CR0.
     or eax,80000000h ; Set PE=1.

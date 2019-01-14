@@ -76,6 +76,7 @@ VMX_Initialize_VMX_Controls:
 	mov eax,0x8401e9f2 ; BIT 31 also set so we also use secondary 
 	vmwrite ebx,eax
 	mov ebx,0x401E ; SECONDARY PROC
+	xor rax,rax
 	mov eax,edx ; BIT 7 - UNRESTRICTED GUEST - BIT 1 - EPT ENABLED
 	vmwrite ebx,eax
 	mov ebx,0x400C ; EXIT
@@ -801,7 +802,9 @@ if TEST_VMX = 1
 	mov [rdi],ebx ; // Put the revision
   
 	call VMX_InitializeEPT
-	mov rdx,0x82
+	xor rdx,rdx
+	bts rdx,1
+	bts rdx,7
 	;mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
 	linear rcx,VMX_VMExit,CODE64
@@ -829,6 +832,7 @@ if TEST_VMX = 1
 	 vmwrite rbx,rax
 
 	; Launch it!!
+	break16
 	VMLAUNCH
 
 end if
