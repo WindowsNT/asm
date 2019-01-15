@@ -1,1 +1,1 @@
-bochs.exe -q -f "%1"
+bochs.exe -f "%1"

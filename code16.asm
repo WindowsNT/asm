@@ -100,7 +100,9 @@ cpuid
 cmp eax, 0x80000001
 jb .NoLongMode         
 mov [LongModeSupported],1
-
+mov dx,supportlm
+mov ax,0x0900
+int 0x21
 
 xor eax,eax
 mov ax,CODE64
@@ -119,6 +121,9 @@ cpuid
 bt edx,26
 jnc .no1gbpg
 mov [Support1GBPaging],1
+mov dx,support1gb
+mov ax,0x0900
+int 0x21
 .no1gbpg:
 .NoLongMode:
 
@@ -193,6 +198,18 @@ end if
 
 ; --------------------------------------- VMX EPT Find Page Entry  ---------------------------------------
 if TEST_VMX > 0 
+
+
+mov [VMXSupported],0
+mov eax,1
+cpuid
+bt ecx,5
+jnc VMX_NotSupported 
+mov [VMXSupported],1
+mov dx,supportvm
+mov ax,0x0900
+int 0x21
+VMX_NotSupported:
 
 if STATIC_PAGEVM = 0
 ; Alloc VMX Pages high, preserve low ram
