@@ -93,6 +93,15 @@ A20AlreadyOn:
 
 if TEST_LONG > 0 
 
+; Supported?
+mov [LongModeSupported],0
+mov eax, 0x80000000 
+cpuid
+cmp eax, 0x80000001
+jb .NoLongMode         
+mov [LongModeSupported],1
+
+
 xor eax,eax
 mov ax,CODE64
 shl eax,4
@@ -111,6 +120,7 @@ bt edx,26
 jnc .no1gbpg
 mov [Support1GBPaging],1
 .no1gbpg:
+.NoLongMode:
 
 end if
 

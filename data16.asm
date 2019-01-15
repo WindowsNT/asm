@@ -23,6 +23,7 @@ FromThread6 db 0
 of0s dw 0
 of0o dw 0
 
+LongModeSupported db 0
 Support1GBPaging db 0 
 
 if STATIC_PAGE32 = 0

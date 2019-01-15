@@ -98,12 +98,14 @@ if TEST_LONG > 0
     
 if TEST_LM_SIPI > 0 
     
-	break32
 	mov ax,data16_idx
 	push gs
 	mov gs,ax
 	mov dl,[gs:Support1GBPaging]
+	mov dh,[gs:LongModeSupported]
 	pop gs
+	cmp dh,1
+	jnz ToBack16
 	cmp dl,1
 	jnz .no1GB
 	call InitPageTable643 ; 1gb pages, map entire 4gb
