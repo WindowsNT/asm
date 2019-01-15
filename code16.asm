@@ -102,6 +102,16 @@ mov bx,CODE32
 mov fs,bx
 mov dword [fs:PutLinearStart64],eax
 pop fs
+
+; And Page 1GB Support
+mov [Support1GBPaging],0
+mov eax,80000001h
+cpuid
+bt edx,26
+jnc .no1gbpg
+mov [Support1GBPaging],1
+.no1gbpg:
+
 end if
 
 
