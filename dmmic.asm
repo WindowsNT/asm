@@ -10,6 +10,14 @@ macro linear reg,trg,seg
 	add reg,trg
 	}
 
+macro rinear reg,trg,seg
+	{
+	xor reg,reg
+	mov reg,seg
+	shl reg,16
+	add reg,trg
+	}
+
 ; --- Thread Stacks
 SEGMENT STACKS
 
@@ -41,6 +49,31 @@ stx9 dw 1000 dup(0)
 stx9e:
 
 nop
+
+
+; ---- Unrestricted vm Mode Thread
+SEGMENT T16 USE16
+
+v0:
+
+sti
+push cs
+pop si
+shl esi,16
+mov dx,m1
+mov bp,0x0900
+mov ax,0x0421
+;int 0xF0
+
+; Unlock mutex
+mov ax,MAIN16
+mov es,ax
+mov di,mut1
+mov ax,0x0503
+int 0xF0
+
+vmcall
+
 
 ; ---- Protected Mode Thread
 SEGMENT T32 USE32
@@ -80,11 +113,12 @@ mov bp,0x0900
 xor esi,esi
 mov si,MAIN16
 shl esi,16
-mov dx,m4
+mov dx,m1
 mov ax,0x421
 ;int 0xF0 ;Not Yet
 
 ; Unlock mutex
+
 mov ax,0x0503
 linear edi,mut1,MAIN16
 int 0xF0
@@ -138,7 +172,7 @@ m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
 m1 db "Hello from real mode thread",0xd,0xa,"$";
 m2 db "Hello from protected mode thread",0xd,0xa,"$";
 m3 db "Hello from long mode thread",0xd,0xa,"$";
-m4 db "Hello from protected mode virtualized thread",0xd,0xa,"$";
+m4 db "Hello from virtualized thread",0xd,0xa,"$";
 mut1 db 0
 
 ; Real mode thread
@@ -266,7 +300,7 @@ linear ecx,stx5e,STACKS
 linear edx,rt2,T32
 int 0xF0
 
-; run a virtualized protected mode thread
+; run a virtualized paged  protected mode thread
 push cs
 pop es
 mov ax,0x0103
@@ -274,17 +308,17 @@ mov ebx,0x107
 linear edi,stx6e,STACKS
 linear ecx,stx7e,STACKS
 linear edx,v1,T32
-int 0xF0
+;int 0xF0
 
-; run a virtualized long mode thread
+; run a virtualized real mode thread
 push cs
 pop es
 mov ax,0x0103
-mov ebx,0x207
-linear edi,stx8e,STACKS
+mov ebx,0x007
+rinear edi,stx8e,STACKS
 linear ecx,stx9e,STACKS
-linear edx,v2,T64
-;int 0xF0
+rinear edx,v0,T16
+int 0xF0
 
 ; wait mut
 push cs

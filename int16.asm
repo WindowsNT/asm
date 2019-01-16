@@ -95,6 +95,9 @@ end if
 	hlt
 	hlt
 
+cv64vmode db 0 
+
+
 if RESIDENT_OWN_LM_STACK > 0
 Thread64PV:	
 	; mov rsp,xxxxxxxx
@@ -165,13 +168,33 @@ end if
 	ret
 	vvr7:
 
-	; Controls init
+
+	linear rax,cv64vmode,CODE16
+	mov al,[rax]
+	cmp al,1
+	jz cPM
+	
+	; Controls init ur
+	xor rdx,rdx
+	bts rdx,1
+	bts rdx,7
+	linear rax,vvr6,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinitcontrols1 dd 0 
+	ret
+
+	cPM:
+
+	; pm init controls
 	mov rdx,0x49
 	linear rax,vvr6,CODE16
 	push rax; for returning
 	db 0x68; push
-	cv64_vmxinitcontrols dd 0 
+	cv64_vmxinitcontrols2 dd 0 
 	ret
+
+
 	vvr6:
 
 
@@ -191,12 +214,31 @@ end if
 	; Guest Init
 	mov r8,raw32_idx
 	mov r9,0
+
+	linear rax,cv64vmode,CODE16
+	mov al,[rax]
+	cmp al,1
+	jz uPM
+
+	; UR
+	mov r10,vmentryx
+	mov r9,CODE16
+	linear rax,vvr5,CODE16
+	push rax; for returning
+	db 0x68; push
+	cv64_vmxinitguest1 dd 0 
+	ret
+
+	uPM:
+	; PM
 	linear r10,vmentry,CODE16
 	linear rax,vvr5,CODE16
 	push rax; for returning
 	db 0x68; push
 	cv64_vmxinitguest2 dd 0 
 	ret
+	
+
 	vvr5:
 
 	; The EPT initialization for the guest
@@ -222,10 +264,8 @@ end if
 	jmp vretxx
 
 	; Virtual Machine Here, Protected mode
-	cv64vmode db 0 
 USE32
 	vmentry:
-
 
 	; set the stack
 	mov ax,page32_idx
@@ -235,38 +275,40 @@ USE32
 	linear ebx,idt_PM_start,DATA16
 	lidt [ebx]
 
-	; check mode
-	linear ebx,cv64vmode,CODE16
-	mov bh,[ebx]
+	; mov esp,xxxxxxxx
+	db 0xBC
+	cv64vst1 dd 0 
 
-	cmp bh,0
-	jz vmode0 ; Real
-
-	cmp bh,1
-	jz vmode1 ; Protected
-
-	cmp bh,2
-	jz vmode2 ; Long
-
-	vmcall; duh
-
-
-	vmode2: ; long
-	vmcall
-
-	vmode0: ; real
-	vmcall ; 
-
-	vmode1:
-		; mov esp,xxxxxxxx
-		db 0xBC
-		cv64vst1 dd 0 
-
-		; call the address
-		db  09ah 
-		cv64 dd  0
-		dw  vmx32_idx
+	; call the address
+	db  09ah 
+	cv64 dd  0
+	dw  vmx32_idx
 	VMCALL 
+
+	; Virtual Machine Here, Unrestricted  mode
+USE16
+	cv64vst0 dd 0 
+	vmentryx:
+
+	mov ax,DATA16
+	mov ds,ax
+
+	; set the IDT
+	mov ebx,idt_RM_start
+	lidt [ebx]
+
+	; set the stack
+	mov eax,[cs:cv64vst0]
+	mov ss,ax
+	shr eax,16
+	mov sp,ax
+
+	; call the address
+	db  09ah 
+	cv64u dd  0
+	VMCALL 
+
+
 USE64
 	vretxx:
 
@@ -382,18 +424,18 @@ int16:
 		jnz .n13
 			; BL = CPU
 			; AL = 3 = Virtualized Thread
-			; BX = mode (Currently 1 only, PM mode)
+			; BH = mode (1 PM mode,0 UG mode)
 			; EDX = Linear Address
 			; ECX = Linear Stack
 			; EDI = Virtualized Linear Stack
 
 			mov ax,CODE16
 			mov ds,ax
+			mov [cv64u],edx
 			mov [cv64],edx
 			mov [cv64st],ecx
-			;mov [cv64vst0],edi
+			mov [cv64vst0],edi
 			mov [cv64vst1],edi
-			;mov [cv64vst2],edi
 			mov [cv64vmode],bh
 			and ebx,0xFF
 			linear eax,Thread64CV,CODE16

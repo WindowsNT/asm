@@ -417,7 +417,7 @@ VMX_Initialize_UnrestrictedGuest:
 	vmwrite rbx,rax
 
 	xor rax,rax
-	mov ax,VMX16
+	mov rax,r9
 	shl rax,4
 	mov ebx,0x6808 ; CS base
 	vmwrite rbx,rax
@@ -425,7 +425,7 @@ VMX_Initialize_UnrestrictedGuest:
 
 	mov ebx,0x681E ; IP
 	xor rax,rax
-	mov ax,StartVM
+	mov rax,r10
 	vmwrite rbx,rax
 
 	; GDTR,IDTR
@@ -484,7 +484,7 @@ VMX_Initialize_UnrestrictedGuest:
 	vmwrite rbx,rax
 	mov ebx,0x481E ; GS access
 	vmwrite rbx,rax
-	mov rax,VMX16
+	mov rax,r9
 	shl rax,4
 	mov ebx,0x6806 ; ES base
 	vmwrite rbx,rax
@@ -638,6 +638,8 @@ if TEST_VMX = 1
 	call VMX_Initialize_VMX_Controls
 	linear rcx,VMX_VMExit,CODE64
 	call VMX_Initialize_Host
+	mov r9,VMX16
+	mov r10,StartVM
 	call VMX_Initialize_UnrestrictedGuest
  
  

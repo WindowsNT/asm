@@ -293,10 +293,13 @@ linear eax,VMX_Initialize_Host,CODE64
 mov [cv64_vmxinithost],eax
 linear eax,VMX_Initialize_Guest2,CODE64
 mov [cv64_vmxinitguest2],eax
+linear eax,VMX_Initialize_UnrestrictedGuest,CODE64
+mov [cv64_vmxinitguest1],eax
 linear eax,VMX_InitializeEPT,CODE64
 mov [cv64_vmxinitept],eax
 linear eax,VMX_Initialize_VMX_Controls,CODE64
-mov [cv64_vmxinitcontrols],eax
+mov [cv64_vmxinitcontrols1],eax
+mov [cv64_vmxinitcontrols2],eax
 
 
 ; --------------------------------------- Find ACPI  ---------------------------------------
