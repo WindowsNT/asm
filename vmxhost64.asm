@@ -169,16 +169,6 @@ VMX_Initialize_Host:
 RET
 
 VMX_InitializeEPT:
-
-	; Initializion of the EPT tables
-	; We want to map our 1st GB as the 1st GB to the guest, so a see-through situation - of course that way the guest can ruin us, but its our guest anyway :)
-
-	; Calculate N, store in EBX
-	mov eax,0x80000008
-	cpuid
-	and rax,0xFF ; Only bits 0-7 have a meaning
-	mov rbx,rax
- 
 	xor rdi,rdi
 	linear rax,PhysicalEptOffset64,DATA16
 	mov rdi,[rax]
@@ -189,12 +179,11 @@ VMX_InitializeEPT:
 	mov ecx,8192
 	rep stosq
 	pop rdi
-
 	; RSI to PDPT
 	mov rsi,rdi
 	add rsi,8*512
 
-	; First PML4T entry
+	; first pml4t entry
 	xor rax,rax
 	mov rax,rsi ; RAX now points to the RSI (First PDPT entry)
 	shl rax,12 ; So we move it to bit 12
@@ -202,176 +191,16 @@ VMX_InitializeEPT:
 	or rax,7 ; Add the RWE bits
 	mov [rdi],rax ; Store the PML4T entry. We only need 1 entry
 
+	
 	; First PDPT entry
 	xor rax,rax
-	mov rax,RSI ; RAX now points to the RSI (First PDPT entry)
 	shl rax,12 ; So we move it to bit 12
 	shr rax,12 ; We remove the lower 4096 bits
 	or rax,7 ; Add the RWE bits
-	mov [rsi],rax ; Store the PMPT entry. We only need 1 entry
- 
-	; First PDT Entry
-	mov rsi,rdi
-	add rsi,8*512
-	add rsi,8*512
-
-	xor rax,rax
-	; Address is 0 because that's the physical guest address we want
-	shl rax,30 ; This is to move it to bit 29 ; Not required (since the address is 0 anyway) but put here for demonstration purposes
-	shr rax,12 ; We remove the lower 4096 bits
-	or rax,7 ; Add the RWE bits
 	bts rax,7 ; Add the 7th "S" bit to tell the CPU that this doesn't refer to a PDT
-	mov [rsi],rax ; Store the PDPT entry to the PDPT
- 
-RET
+	mov [rsi],rax ; Store the PMPT entry. We only need 1 entry
 
-; A Long mode guest
-VMX_Initialize_Guest3:
-	; r10 -> entry
 
-	mov ebx,0x6800 ; CR0
-	mov rax,cr0
-	vmwrite rbx,rax
-	mov ebx,0x6802 ; CR3
-	mov rax,cr3
-	vmwrite rbx,rax
-	mov ebx,0x6804 ; CR4
-	mov rax,cr4
-	vmwrite rbx,rax
-
-	; Flags
-	mov ebx,0x6820 ; RFLAGS
-	mov rax,2
-	vmwrite rbx,rax
-
-	
-	; cs stuff
-	xor rax,rax
-	mov rax,code64_idx
-	mov ebx,0x802 ; CS selector
-	vmwrite rbx,rax
-
-	xor rax,rax
-	mov rax,0xfffff
-	mov ebx,0x4802 ; CS limit
-	vmwrite rbx,rax
-
-	mov rax,0c09fh
-	mov ebx,0x4816 ; CS access
-	vmwrite rbx,rax
-
-	xor rax,rax
-	mov rax,0
-	shl rax,4
-	mov ebx,0x6808 ; CS base
-	vmwrite rbx,rax
-
-	; xchg bx,bx
-	mov ebx,0x681E ; IP
-	xor rax,rax
-	add rax,r10
-	vmwrite rbx,rax
-
-	; GDTR,IDTR
-	mov ebx,0x6816 ; GDTR Base
-	;mov rax,gdt_ptr
-	linear rax,gdt_ptr,DATA16
-	add rax,4
-	vmwrite rbx,rax
-	mov ebx,0x4810 ; Limit
-	mov rax,gdt_size
-	vmwrite rbx,rax
-	mov ebx,0x6818 ; IDTR Base
-	mov rax,idt_LM_ptr
-	vmwrite rbx,rax
-	mov ebx,0x4812 ; Limit
-	mov rax,idtl_size
-	vmwrite rbx,rax
-
-	; DR7
-	mov ebx,0x681A ; DR7
-	mov rax,0x400
-	vmwrite rbx,rax
-
-	; SEGMENT registers
-
-	; es,ds,fs,gs
-	xor rax,rax
-	mov ax,page64_idx
-	mov ebx,0x800 ; ES selector
-	vmwrite rbx,rax
-	mov ebx,0x804 ; SS selector
-	vmwrite rbx,rax
-	mov ebx,0x806 ; DS selector
-	vmwrite rbx,rax
-	mov ebx,0x808 ; FS selector
-	vmwrite rbx,rax
-	mov ebx,0x80A ; GS selector
-	vmwrite rbx,rax
-	mov rax,0xfffff
-	mov ebx,0x4800 ; ES limit
-	vmwrite rbx,rax
-	mov ebx,0x4804 ; SS limit
-	vmwrite rbx,rax
-	mov ebx,0x4806 ; DS limit
-	vmwrite rbx,rax
-	mov ebx,0x4808 ; FS limit
-	vmwrite rbx,rax
-	mov ebx,0x480A ; GS limit
-	vmwrite rbx,rax
-	mov rax,0c093h
-	mov ebx,0x4814 ; ES access
-	vmwrite rbx,rax
-	mov ebx,0x4818 ; SS access
-	vmwrite rbx,rax
-	mov ebx,0x481A ; DS access
-	vmwrite rbx,rax
-	mov ebx,0x481C ; FS access
-	vmwrite rbx,rax
-	mov ebx,0x481E ; GS access
-	vmwrite rbx,rax
-	mov rax,0
-	shl rax,4
-	mov ebx,0x6806 ; ES base
-	vmwrite rbx,rax
-	mov ebx,0x680A ; SS base
-	vmwrite rbx,rax
-	mov ebx,0x680C ; DS base
-	vmwrite rbx,rax
-	mov ebx,0x680E ; DS base
-	vmwrite rbx,rax
-	mov ebx,0x6810 ; GS base
-	vmwrite rbx,rax
-
-	; LDT (Dummy)
-	xor rax,rax
-	mov ax,ldt_idx
-	mov ebx,0x80C ; LDT selector
-	vmwrite rbx,rax
-	mov rax,0xffffffff
-	mov ebx,0x480C ; LDT limit
-	vmwrite rbx,rax
-	mov rax,0x10000
-	mov ebx,0x4820 ; LDT access
-	vmwrite rbx,rax
-	mov rax,0
-	mov ebx,0x6812 ; LDT base
-	vmwrite rbx,rax
-
-	; TR (Dummy)
-	xor rax,rax
-	mov ax,tssd64_idx
-	mov ebx,0x80E ; TR selector
-	vmwrite rbx,rax
-	mov rax,0xff
-	mov ebx,0x480E ; TR limit
-	vmwrite rbx,rax
-	mov rax,0x8b
-	mov ebx,0x4822 ; TR access
-	vmwrite rbx,rax
-	mov rax,0
-	mov ebx,0x6814 ; TR base
-	vmwrite rbx,rax
 
 RET
 
@@ -832,7 +661,6 @@ if TEST_VMX = 1
 	 vmwrite rbx,rax
 
 	; Launch it!!
-	break64
 	VMLAUNCH
 
 end if

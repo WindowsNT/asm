@@ -663,7 +663,7 @@ macro vmxshow vmt,vmm
 }
 vmxshow vmt1,vmm1
 vmxshow vmt2,vmm2
-;vmxshow vmt3,vmm3
+vmxshow vmt3,vmm2
 
 ; A20 off if enabled
 

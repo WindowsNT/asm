@@ -12,7 +12,6 @@ StartVM:
 ; Remember we used a protected mode selector to get here?
 ; Jump to a real mode segment now so CS gets a proper value
 
-; xchg bx,bx
 nop
 nop
 
@@ -20,28 +19,9 @@ db 0eah
 dw PM_VM_Entry,VMX16
 PM_VM_Entry:
 
-nop
-nop
-nop
-nop
-nop
-jmp T_1
-nop
-nop
-EntryByte:
-nop
-nop
-nop
-T_1:
-
-mov ax,cs
+mov ax,DATA16
 mov ds,ax
-mov ss,ax
-mov es,ax
-mov sp,0xFFF0
-
-; Write a test byte here
-mov byte [ds:EntryByte],0xFA
+mov [vmt3],1
 
 vmcall ; Forces exit
 
