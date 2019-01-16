@@ -31,7 +31,7 @@ It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default i
 7. Protected mode thread called from real mode
 8. Long mode thread called from real mode
 9. VMX is there
-10. Spawn a Virtual Machine in Paged Protected Mode
+10. Spawn a Virtual Machine in Unrestricted guest mode. Paged Protected Mode guest also there.
 11. Entry /r which installs as TSR the DMMI services
 12. DMMI startup example taken from https://board.flatassembler.net/topic.php?t=7122
 13. DMMIC app runs which demonstrates DMMI, launching real mode, protected mode, long mode and virtualized protected mode threads
