@@ -201,6 +201,7 @@ if TEST_VMX > 0
 
 
 mov [VMXSupported],0
+mov [VMXUnrestrictedSupported],0
 mov eax,1
 cpuid
 bt ecx,5
@@ -209,6 +210,18 @@ mov [VMXSupported],1
 mov dx,supportvm
 mov ax,0x0900
 int 0x21
+
+; Unrestricted guest also
+xor eax,eax
+xor edx,edx
+mov ecx,0x48B ; IA32_VMX_PROCBASED_CTLS2
+rdmsr
+bt edx,7
+jnc VMX_NoUR
+
+mov [VMXUnrestrictedSupported],1
+
+VMX_NoUR:
 VMX_NotSupported:
 
 if STATIC_PAGEVM = 0
@@ -237,7 +250,7 @@ jz LoopPRMFound5
 inc ecx
 jmp LoopPMR5
 LoopPRMFound5:
-mov [PhysicalEptOffset64],eax
+mov dword [PhysicalEptOffset64],eax
 
 
 end if
@@ -650,6 +663,7 @@ macro vmxshow vmt,vmm
 }
 vmxshow vmt1,vmm1
 vmxshow vmt2,vmm2
+;vmxshow vmt3,vmm3
 
 ; A20 off if enabled
 

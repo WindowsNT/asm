@@ -26,6 +26,7 @@ of0o dw 0
 LongModeSupported db 0
 Support1GBPaging db 0 
 VMXSupported db 0 
+VMXUnrestrictedSupported db 0
 
 if STATIC_PAGE32 = 0
 Paging32InXMS dd 0
@@ -45,9 +46,11 @@ end if
 ; --------------------------------------- VMX tests---------------------------------------
 vmt1 db 0 ; existence
 vmt2 db 0 ; protected mode guest
+vmt3 db 0 ; unrestricted guest
 
 vmm1 db "VMX Exists, OK",0dh,0ah,"$"
 vmm2 db "VMX Launch VM in Protected Mode, OK",0dh,0ah,"$"
+;vmm3 db "VMX Launch VM in Unrestricted Mode OK",0dh,0ah,"$"
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF
@@ -157,10 +160,11 @@ idtl_size=$-(interruptsall64)
 ; --------------------------------------- PAGE ---------------------------------------
 PhysicalPagingOffset32 dd 0
 PhysicalPagingOffset64 dd 0
-PhysicalEptOffset64 dd 0
+PhysicalEptOffset64 dq 0
 
 ; --------------------------------------- Supported ---------------------------------------
 supportlm db "Long Mode Supported",0x0d,0x0a,"$"
 support1gb db "1GB Paging Supported",0x0d,0x0a,"$"
 supportvm db "VM Supported",0x0d,0x0a,"$"
+;supportvmu db "VM Unrestricted Supported",0x0d,0x0a,"$"
 

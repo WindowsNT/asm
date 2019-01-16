@@ -181,7 +181,7 @@ VMX_InitializeEPT:
  
 	xor rdi,rdi
 	linear rax,PhysicalEptOffset64,DATA16
-	mov edi,[rax]
+	mov rdi,[rax]
  
 	; Clear everything
 	push rdi
@@ -544,7 +544,7 @@ VMX_Initialize_Guest2:
 RET
 
 ; A real mode guest
-VMX_Initialize_Guest:
+VMX_Initialize_UnrestrictedGuest:
 
 	; cr0,cr3,cr4 real mode
 	; cs ss:rip
@@ -570,6 +570,7 @@ VMX_Initialize_Guest:
 	vmwrite rbx,rax
 
 	; Startup from VMX16 : StartVM
+
 
 	; cs stuff
 	xor rax,rax
@@ -805,11 +806,10 @@ if TEST_VMX = 1
 	xor rdx,rdx
 	bts rdx,1
 	bts rdx,7
-	;mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
 	linear rcx,VMX_VMExit,CODE64
 	call VMX_Initialize_Host
-	call VMX_Initialize_Guest
+	call VMX_Initialize_UnrestrictedGuest
  
  
 	; The EPT initialization for the guest
@@ -832,7 +832,7 @@ if TEST_VMX = 1
 	 vmwrite rbx,rax
 
 	; Launch it!!
-	break16
+	break64
 	VMLAUNCH
 
 end if
@@ -856,7 +856,6 @@ if TEST_VMX = 2
 	mov [rdi],ebx ; // Put the revision
  
 	; Initializzation
-	call VMX_InitializeEPT
 	mov rdx,0x49
 	call VMX_Initialize_VMX_Controls
 	linear rcx,VMX_VMExit,CODE64
@@ -890,58 +889,6 @@ if TEST_VMX = 2
 
 end if 
 
-
-if TEST_VMX = 3
-
-    ; Long mode guest 
-	; Load the revision
-	linear rdi,VMXRevision,VMXDATA64
-	mov ebx,[rdi];
-
-	; Initialize the region
-	linear rdi,VMXStructureData2,VMXDATA64
-	mov rcx,[rdi];  Get address of data1
-	mov rsi,rdi
-	mov rdi,rcx
-	mov [rdi],ebx ; // Put the revision
-	VMCLEAR [rsi]
-	mov [rdi],ebx ; // Put the revision
-	VMPTRLD [rsi] 
-	mov [rdi],ebx ; // Put the revision
- 
-	; Initializzation
-	call VMX_InitializeEPT
-	mov rdx,0x49
-	call VMX_Initialize_VMX_Controls
-	linear rcx,VMX_VMExit,CODE64
-	call VMX_Initialize_Host
-	linear r10,StartVM3,CODE64
-	call VMX_Initialize_Guest3
- 
-	; The EPT initialization for the guest
-	linear rax,PhysicalEptOffset64,DATA16
-	mov rax,[rax]
-	or rax,0 ; Memory Type 0
-	or rax,0x18 ; Page Walk Length 3
-	mov rbx,0x201A ; EPTP
-	vmwrite rbx,rax
- 
-	; The Link Pointer -1 initialization
-	mov rax,0xFFFFFFFFFFFFFFFF
-	mov rbx,0x2800 ; LP
-	vmwrite rbx,rax
- 
-	; One more RSP initialization of the host
-	xor rax,rax
-	mov rbx,0x6c14 ; RSP
-	mov rax,rsp
-	vmwrite rbx,rax
-
-	; Launch it!!
-	break64
-	VMLAUNCH
-
-end if 
 
 	; If we get here, VMLAUNCH failed
 

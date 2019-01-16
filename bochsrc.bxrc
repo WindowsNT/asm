@@ -31,7 +31,7 @@ cpu: count=2:2:2, ips=4000000, quantum=16, model=bx_generic, reset_on_triple_fau
 cpuid: level=6, stepping=3, model=3, family=6, vendor_string="GenuineIntel", brand_string="              Intel(R) Pentium(R) 4 CPU        "
 cpuid: mmx=1, apic=x2apic, simd=ssse3, sse4a=0, misaligned_sse=0, sep=1, movbe=0, adx=0
 cpuid: aes=1, sha=0, xsave=0, xsaveopt=0, x86_64=1, 1g_pages=1, pcid=0, fsgsbase=0
-cpuid: smep=0, smap=0, mwait=1, vmx=1
+cpuid: smep=0, smap=0, mwait=1, vmx=2
 print_timestamps: enabled=0
 debugger_log: -
 magic_break: enabled=1
