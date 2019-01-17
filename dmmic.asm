@@ -57,6 +57,12 @@ SEGMENT T16 USE16
 v0:
 
 sti
+
+; enter unreal
+mov ax,0x0900
+int 0xF0
+
+
 mov si,MAIN16
 shl esi,16
 mov dx,m4
@@ -168,11 +174,12 @@ SEGMENT MAIN16 USE16
 ORG 0h
 
 m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
-m1 db "Hello from real mode thread",0xd,0xa,"$";
-m2 db "Hello from protected mode thread",0xd,0xa,"$";
-m3 db "Hello from long mode thread",0xd,0xa,"$";
-m4 db "Hello from unrestricted mode virtualized thread",0xd,0xa,"$";
+m1 db "--> Hello from real mode thread",0xd,0xa,"$";
+m2 db "--> Hello from protected mode thread",0xd,0xa,"$";
+m3 db "--> Hello from long mode thread",0xd,0xa,"$";
+m4 db "--> Hello from unrestricted mode virtualized real mode thread",0xd,0xa,"$";
 mut1 db 0
+unr db 0
 
 ; Real mode thread
 rt1:
@@ -234,6 +241,16 @@ int 0x21
 mov ax,0x0900
 int 0xF0
 
+; Check Unrestricted Guest
+xor eax,eax
+xor edx,edx
+mov ecx,0x48B ; IA32_VMX_PROCBASED_CTLS2
+rdmsr
+bt edx,7
+jnc VMX_NoUR
+mov [cs:unr],1
+VMX_NoUR:
+
 ; init mut
 push cs
 pop es
@@ -241,7 +258,8 @@ mov di,mut1
 mov ax,0x0500
 int 0xF0
 
-repeat 6
+
+repeat 4
 	; lock mut 
 	push cs
 	pop es
@@ -259,17 +277,6 @@ mov gs,cx
 mov cx,stx1e
 mov ax,0x0100
 mov ebx,1
-int 0xF0
-
-; run a real mode thread
-push cs
-pop es
-mov dx,rt1
-mov cx,STACKS
-mov gs,cx
-mov cx,stx2e
-mov ax,0x0100
-mov ebx,2
 int 0xF0
 
 ; run a protected thread
@@ -290,16 +297,11 @@ linear ecx,stx4e,STACKS
 linear edx,rt3,T64
 int 0xF0
 
-; run a protected thread
-push cs
-pop es
-mov ax,0x0101
-mov ebx,5
-linear ecx,stx5e,STACKS
-linear edx,rt2,T32
-int 0xF0
+; run a virtualized paged protected mode thread
 
-; run a virtualized paged  protected mode thread
+cmp [cs:unr],1
+je .useUnr
+
 push cs
 pop es
 mov ax,0x0103
@@ -307,9 +309,11 @@ mov ebx,0x107
 linear edi,stx6e,STACKS
 linear ecx,stx7e,STACKS
 linear edx,v1,T32
-;int 0xF0
+int 0xF0
+jmp .AfterV
 
-; run a virtualized real mode thread
+; run a virtualized unrestricted guest -> real mode thread
+.useUnr:
 push cs
 pop es
 mov ax,0x0103
@@ -317,7 +321,10 @@ mov ebx,0x007
 rinear edi,stx8e,STACKS
 linear ecx,stx9e,STACKS
 rinear edx,v0,T16
+mov esi,0 ; Mode 0 -> Real mode
 int 0xF0
+
+.AfterV:
 
 ; wait mut
 push cs

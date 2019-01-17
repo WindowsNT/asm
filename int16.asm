@@ -96,6 +96,7 @@ end if
 	hlt
 
 cv64vmode db 0 
+cv64vmode2 dw 0 
 
 
 if RESIDENT_OWN_LM_STACK > 0
@@ -168,7 +169,6 @@ end if
 	ret
 	vvr7:
 
-
 	linear rax,cv64vmode,CODE16
 	mov al,[rax]
 	cmp al,1
@@ -194,9 +194,7 @@ end if
 	cv64_vmxinitcontrols2 dd 0 
 	ret
 
-
 	vvr6:
-
 
 	; Host Init
 	push gs
@@ -238,7 +236,6 @@ end if
 	cv64_vmxinitguest2 dd 0 
 	ret
 	
-
 	vvr5:
 
 	; The EPT initialization for the guest
@@ -303,10 +300,20 @@ USE16
 	shr eax,16
 	mov sp,ax
 
+	; Check submode
+	mov ax,[cs:cv64vmode2]
+	cmp ax,0
+	je .Unr_0
+
+	VMCALL; Nothing else supported atm
+
+	.Unr_0:
 	; call the address
 	db  09ah 
 	cv64u dd  0
 	VMCALL 
+
+
 
 
 USE64
@@ -425,6 +432,7 @@ int16:
 			; BL = CPU
 			; AL = 3 = Virtualized Thread
 			; BH = mode (1 PM mode,0 UG mode)
+			; SI = submode (0 Unreal mode)
 			; EDX = Linear Address
 			; ECX = Linear Stack
 			; EDI = Virtualized Linear Stack
@@ -437,6 +445,7 @@ int16:
 			mov [cv64vst0],edi
 			mov [cv64vst1],edi
 			mov [cv64vmode],bh
+			mov [cv64vmode2],si
 			and ebx,0xFF
 			linear eax,Thread64CV,CODE16
 			call far CODE16:SendSIPIf
