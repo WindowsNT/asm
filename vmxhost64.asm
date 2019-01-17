@@ -240,7 +240,7 @@ VMX_Initialize_Guest2:
 	mov rax,2
 	vmwrite rbx,rax
 
-	; Startup from VMX32 : StartVM2
+	; Startup from r9 : r10
 
 	; cs stuff
 	xor rax,rax

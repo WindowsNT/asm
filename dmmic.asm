@@ -57,13 +57,12 @@ SEGMENT T16 USE16
 v0:
 
 sti
-push cs
-pop si
+mov si,MAIN16
 shl esi,16
-mov dx,m1
+mov dx,m4
 mov bp,0x0900
 mov ax,0x0421
-;int 0xF0
+int 0xF0
 
 ; Unlock mutex
 mov ax,MAIN16
@@ -172,7 +171,7 @@ m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
 m1 db "Hello from real mode thread",0xd,0xa,"$";
 m2 db "Hello from protected mode thread",0xd,0xa,"$";
 m3 db "Hello from long mode thread",0xd,0xa,"$";
-m4 db "Hello from virtualized thread",0xd,0xa,"$";
+m4 db "Hello from unrestricted mode virtualized thread",0xd,0xa,"$";
 mut1 db 0
 
 ; Real mode thread
