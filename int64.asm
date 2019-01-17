@@ -16,6 +16,8 @@ int64:
 	; AX 0, find interface
 	cmp ax,0
 	jnz .n0
+
+		dh_virtualization;
 		linear rax,numcpus,DATA16
 		mov dl,[rax]
 		mov rax,0xFACE

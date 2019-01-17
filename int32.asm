@@ -14,6 +14,8 @@ int32:
 	; AX 0, find interface
 	cmp ax,0
 	jnz .n0
+
+		dh_virtualization;
 		push ds
 		mov ax,data16_idx
 		mov ds,ax

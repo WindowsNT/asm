@@ -303,15 +303,69 @@ USE16
 	; Check submode
 	mov ax,[cs:cv64vmode2]
 	cmp ax,0
-	je .Unr_0
+	je UR_Mode_0
+	cmp ax,1
+	je UR_Mode_1_P
+	cmp ax,2
+	je UR_Mode_2_P
 
 	VMCALL; Nothing else supported atm
 
-	.Unr_0:
+
+; ------------ Long Submode
+UR_Mode_2:
+USE64
+xchg bx,bx
+vmcall
+
+USE16
+UR_Mode_2_P:
+	; Restore CS (remember it is loaded with a protected mode selector)
+	db 0eah
+	dw PM_VM_Entry4,CODE16
+	PM_VM_Entry4:
+	thread64header 1
+	db 066h
+	db 0eah
+	Thread64Ptr1V dd 0
+	dw code64_idx
+; ------------ 
+
+
+; ------------ Protected Submode
+UR_Mode_1:
+USE16
+	mov     ax,page32_idx          
+	mov     ss,ax  
+	; mov esp,xxxxxxxx
+	db 0x66
+	db 0xBC
+	c32stV dd 0 
+	mov ax,code16_idx
+	mov ds,ax
+	db  066h  
+	db  09ah 
+	c32V dd  0
+	dw  vmx32_idx
+	vmcall
+
+USE16
+UR_Mode_1_P: ; Protected Mode from Unrestricted guest
+	; Restore CS (remember it is loaded with a protected mode selector)
+	db 0eah
+	dw PM_VM_Entry3,CODE16
+	PM_VM_Entry3:
+	EnterProtected UR_Mode_1,code16_idx
+; ------------ 
+
+
+; ------------ Real Submode Mode 
+UR_Mode_0:
 	; call the address
 	db  09ah 
 	cv64u dd  0
 	VMCALL 
+; ------------ 
 
 
 
@@ -361,6 +415,9 @@ int16:
 	; AX 0, find interface
 	cmp ax,0
 	jnz .n0
+
+
+		dh_virtualization;
 		push ds
 		mov ax,DATA16
 		mov ds,ax
@@ -433,15 +490,33 @@ int16:
 			; AL = 3 = Virtualized Thread
 			; BH = mode (1 PM mode,0 UG mode)
 			; SI = submode (0 Unreal mode)
-			; EDX = Linear Address
-			; ECX = Linear Stack
-			; EDI = Virtualized Linear Stack
+			; EDX = Linear Address (or seg:ofs if submode 0)
+			; ECX = Linear Stack 
+			; EDI = Virtualized Linear Stack (or seg:ofs if submode 0)
+
+			; Test existence
+			push eax
+			push ebx
+			push ecx
+			push edx
+			mov eax,1
+			cpuid
+			bt ecx,5
+			pop edx
+			pop ecx
+			pop ebx
+			pop eax
+			JC .okvm
+			iret; duh
+			.okvm:
 
 			mov ax,CODE16
 			mov ds,ax
 			mov [cv64u],edx
 			mov [cv64],edx
 			mov [cv64st],ecx
+			mov [c32V],edx
+			mov [c32stV],ecx
 			mov [cv64vst0],edi
 			mov [cv64vst1],edi
 			mov [cv64vmode],bh

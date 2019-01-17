@@ -8,6 +8,33 @@ macro linear reg,trg,seg = DATA16
 	add reg,trg
 	}
 
+macro dh_virtualization
+{
+		local .nuvmx
+		local .nvmx
+
+		; dh -> 0 no virtualization
+		; dh -> 1 virtualization plain
+		; dh -> 2 virtualization unrestricted guest
+		mov eax,1
+		cpuid
+		xor dx,dx
+		bt ecx,5
+		jnc .nvmx
+		mov dh,1
+		xor eax,eax
+		xor edx,edx
+		mov ecx,0x48B ; IA32_VMX_PROCBASED_CTLS2
+		rdmsr
+		bt edx,7
+		jnc .nuvmx
+		mov dh,2
+		jmp .nvmx
+		.nuvmx:
+		mov dh,1
+		.nvmx:
+}
+
 macro pushadxeax
 	{
 	push ebx

@@ -280,6 +280,10 @@ mov ax,CODE16
 mov ds,ax
 linear eax,Thread64PV,CODE16
 mov [Thread64Ptr4],eax
+mov ax,CODE16
+mov ds,ax
+linear eax,UR_Mode_2,CODE16
+mov [Thread64Ptr1V],eax
 
 mov ax,CODE16
 mov ds,ax

@@ -192,14 +192,41 @@ VMX_InitializeEPT:
 	mov [rdi],rax ; Store the PML4T entry. We only need 1 entry
 
 	
-	; First PDPT entry
+	; First PDPT entry (1st GB)
 	xor rax,rax
-	shl rax,12 ; So we move it to bit 12
-	shr rax,12 ; We remove the lower 4096 bits
 	or rax,7 ; Add the RWE bits
 	bts rax,7 ; Add the 7th "S" bit to tell the CPU that this doesn't refer to a PDT
-	mov [rsi],rax ; Store the PMPT entry. We only need 1 entry
+	mov [rsi],rax ; Store the PMPT entry for 1st GB
 
+	; Second PDPT entry (2nd GB)
+	add rsi,8
+	xor rax,rax
+	mov rax,1024*1024*1024*1
+	shr rax,12
+	shl rax,12
+	or rax,7 ; Add the RWE bits
+	bts rax,7 ; Add the 7th "S" bit to tell the CPU that this doesn't refer to a PDT
+	mov [rsi],rax ; Store the PMPT entry for 2nd GB
+
+	; Third PDPT entry (3rd GB)
+	add rsi,8
+	xor rax,rax
+	mov rax,1024*1024*1024*2
+	shr rax,12
+	shl rax,12
+	or rax,7 ; Add the RWE bits
+	bts rax,7 ; Add the 7th "S" bit to tell the CPU that this doesn't refer to a PDT
+	mov [rsi],rax ; Store the PMPT entry for 3rd GB
+
+	; Fourh PDPT entry (4th GB)
+	add rsi,8
+	xor rax,rax
+	mov rax,1024*1024*1024*3
+	shr rax,12
+	shl rax,12
+	or rax,7 ; Add the RWE bits
+	bts rax,7 ; Add the 7th "S" bit to tell the CPU that this doesn't refer to a PDT
+	mov [rsi],rax ; Store the PMPT entry for 4th GB
 
 
 RET

@@ -58,10 +58,8 @@ v0:
 
 sti
 
-; enter unreal
 mov ax,0x0900
 int 0xF0
-
 
 mov si,MAIN16
 shl esi,16
@@ -106,12 +104,12 @@ int 0xF0
 retf
 
 
-; Virtualized PM Thread
+; Virtualized PM Thread (from Virtualized Paged Mode or Unrestricted Mode )
 v1:
 
-; Int 0xF0 works also in protected mode
-mov ax,0
-int 0xF0
+; Int 0xF0 works also in protected mode (but CPUID not in virtualization)
+	
+xchg bx,bx
 
 ; DOS call
 mov bp,0x0900
@@ -134,6 +132,15 @@ retf
 
 ; ---- Long Mode Thread
 SEGMENT T64 USE64
+
+; Virtualized LM Thread (from Unrestricted Mode )
+v3:
+
+xchg bx,bx
+nop
+nop
+vmcall
+
 
 rt3:
 
@@ -179,7 +186,7 @@ m2 db "--> Hello from protected mode thread",0xd,0xa,"$";
 m3 db "--> Hello from long mode thread",0xd,0xa,"$";
 m4 db "--> Hello from unrestricted mode virtualized real mode thread",0xd,0xa,"$";
 mut1 db 0
-unr db 0
+dhvalue db 0
 
 ; Real mode thread
 rt1:
@@ -236,20 +243,13 @@ int 0x21
 
 .y:
 ; dl = num of cpus
+; dh = virtualization mode
+mov [cs:dhvalue],dh
 
 ; enter unreal
 mov ax,0x0900
 int 0xF0
 
-; Check Unrestricted Guest
-xor eax,eax
-xor edx,edx
-mov ecx,0x48B ; IA32_VMX_PROCBASED_CTLS2
-rdmsr
-bt edx,7
-jnc VMX_NoUR
-mov [cs:unr],1
-VMX_NoUR:
 
 ; init mut
 push cs
@@ -299,9 +299,22 @@ int 0xF0
 
 ; run a virtualized paged protected mode thread
 
-cmp [cs:unr],1
+cmp [cs:dhvalue],2
 je .useUnr
 
+cmp [cs:dhvalue],1
+je .usePmV
+
+; No virtualization supported
+; Release one mutex
+push cs
+pop es
+mov di,mut1
+mov ax,0x0503
+int 0xF0
+jmp .AfterV
+
+.usePmV:
 push cs
 pop es
 mov ax,0x0103
@@ -323,6 +336,28 @@ linear ecx,stx9e,STACKS
 rinear edx,v0,T16
 mov esi,0 ; Mode 0 -> Real mode
 int 0xF0
+
+; Virtualized Unrestricted Guest -> protected mode thread
+push cs
+pop es
+mov ax,0x0103
+mov ebx,0x007
+linear ecx,stx3e,STACKS
+linear edx,v1,T32
+mov esi,1 ; Mode 1 -> Protected mode
+;int 0xF0
+
+; Virtualized Unrestricted Guest -> long mode thread
+push cs
+pop es
+mov ax,0x0103
+mov ebx,0x007
+linear ecx,stx3e,STACKS
+linear edx,v3,T64
+mov esi,2 ; Mode 2 -> Long mode
+;int 0xF0 ; Not working yet because CR3 writing causes VMEXIT
+
+
 
 .AfterV:
 

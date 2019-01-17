@@ -10,11 +10,7 @@ macro thread64header brk=0
 
 	cli
 
-	mov ax,brk
-	cmp ax,1
-	jnz nobrk
-	xchg bx,bx
-	nobrk:
+	
 
 
 	; Stack
@@ -57,6 +53,13 @@ macro thread64header brk=0
 	MOV EDI,[DS:LocalApic]
 	ADD EDI,0x0B0
 	MOV dword [FS:EDI],0
+
+	; Breakpoint
+	mov ax,brk
+	cmp ax,1
+	jnz nobrk
+	xchg bx,bx
+	nobrk:
 
 
 	; Enter Long Mode
