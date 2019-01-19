@@ -187,6 +187,7 @@
     <None Include="mutex16.asm" />
     <None Include="mutex32.asm" />
     <None Include="mutex64.asm" />
+    <None Include="opcodes.asm" />
     <None Include="page16.asm" />
     <None Include="page32.asm" />
     <None Include="Readme.md" />

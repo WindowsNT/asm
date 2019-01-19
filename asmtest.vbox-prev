@@ -6,7 +6,7 @@
 ** Use VBoxManage or the VirtualBox Manager GUI to make changes.
 -->
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.15-windows">
-  <Machine uuid="{a436033c-67f8-4e9f-b0fe-0a7efbadb84d}" name="asmtest" OSType="Other_64" snapshotFolder="Snapshots" lastStateChange="2019-01-06T16:30:31Z">
+  <Machine uuid="{a436033c-67f8-4e9f-b0fe-0a7efbadb84d}" name="asmtest" OSType="Other_64" snapshotFolder="Snapshots" lastStateChange="2019-01-19T01:04:30Z">
     <MediaRegistry>
       <DVDImages>
         <Image uuid="{e6514449-af13-4958-9628-33af9ee8fa81}" location="d.iso"/>
@@ -17,7 +17,7 @@
     </MediaRegistry>
     <ExtraData>
       <ExtraDataItem name="GUI/LastCloseAction" value="PowerOff"/>
-      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="581,218,720,442"/>
+      <ExtraDataItem name="GUI/LastNormalWindowPosition" value="582,260,720,442"/>
     </ExtraData>
     <Hardware>
       <CPU count="3">
@@ -45,7 +45,7 @@
       </Network>
       <AudioAdapter driver="DirectSound" enabled="true" enabledIn="false"/>
       <GuestProperties>
-        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="en_US" timestamp="1546199176614380900" flags=""/>
+        <GuestProperty name="/VirtualBox/HostInfo/GUI/LanguageID" value="en_US" timestamp="1547748163600364900" flags=""/>
       </GuestProperties>
     </Hardware>
     <StorageControllers>

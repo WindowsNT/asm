@@ -11,6 +11,7 @@ INCLUDE 'unreal.asm'
 INCLUDE 'page16.asm'
 INCLUDE 'acpi16.asm'
 INCLUDE 'thread16.asm'
+INCLUDE 'opcodes.asm'
 
 
 macro EnterProtected ofs32 = Start32,codeseg = code32_idx,noinits = 0
@@ -61,6 +62,8 @@ cli
 ;mov bx,ENDS
 ;int 0x21
 
+
+
 mov ax,DATA16
 mov ds,ax
 mov es,ax
@@ -87,6 +90,9 @@ jc A20AlreadyOn
 call EnableA20
 mov [ds:a20enabled],1
 A20AlreadyOn:
+
+; --------------------------------------- Opcode tests ---------------------------------------
+call OpcodeTest
 
 
 ; --------------------------------------- Prepare Long Mode  ---------------------------------------
@@ -161,6 +167,7 @@ inc ecx
 jmp LoopPMR
 LoopPRMFound:
 mov [PhysicalPagingOffset32],eax
+
 
 ; --------------------------------------- Long Mode Find Page Entry  ---------------------------------------
 if TEST_LONG > 0 
@@ -256,6 +263,9 @@ mov dword [PhysicalEptOffset64],eax
 end if
 
 ; --------------------------------------- Quick Unreal ---------------------------------------
+
+
+
 push cs
 cli
 call EnterUnreal

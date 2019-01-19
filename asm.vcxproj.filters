@@ -174,5 +174,8 @@
     <None Include="leheader.asm">
       <Filter>DPMI Client</Filter>
     </None>
+    <None Include="opcodes.asm">
+      <Filter>16 bit code</Filter>
+    </None>
   </ItemGroup>
 </Project>
