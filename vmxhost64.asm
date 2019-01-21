@@ -1,5 +1,26 @@
 USE64
 
+macro vmw16 code,value
+{
+	mov ebx,code
+	xor eax,eax
+	mov ax,value
+	vmwrite ebx,eax
+}
+
+macro vmw32 code,value
+{
+	mov ebx,code
+	mov eax,value
+	vmwrite ebx,eax
+}
+macro vmw64 code,value
+{
+	mov rbx,code
+	mov rax,value
+	vmwrite rbx,rax
+}
+
 
 ; ---------------- Existance test ----------------
 VMX_ExistenceTest: ; RAX 1 if VMX is supported
@@ -66,22 +87,11 @@ RET
 
 VMX_Initialize_VMX_Controls:
     ; edx = 0x82 for unrestricted guestm, 0x2 if simple with EPT
-	mov ebx,0x4012 ; ENTRY
-	mov eax,0x11ff
-	vmwrite ebx,eax
-	mov ebx,0x4000 ; PIN
-	mov eax,0x1f
-	vmwrite ebx,eax
-	mov ebx,0x4002 ; PROC
-	mov eax,0x8401e9f2 ; BIT 31 also set so we also use secondary 
-	vmwrite ebx,eax
-	mov ebx,0x401E ; SECONDARY PROC
-	xor rax,rax
-	mov eax,edx ; BIT 7 - UNRESTRICTED GUEST - BIT 1 - EPT ENABLED
-	vmwrite ebx,eax
-	mov ebx,0x400C ; EXIT
-	mov eax,0x36fff
-	vmwrite ebx,eax
+	vmw32 0x4012,0x11FF ; Entry
+	vmw32 0x4000,0x1F ; PIN
+	vmw32 0x4002,0x8401e9f2; Proc
+	vmw32 0x401E,edx
+	vmw32 0x400C,0x36FFF
 RET
 
 
@@ -95,58 +105,25 @@ VMX_Initialize_Host:
 	; RCX = IP
 
 	; CRX
-	mov rbx,0x6C00 ; cr0
-	mov rax,cr0
-	vmwrite rbx,rax
-	mov rbx,0x6C02 ; cr3
-	mov rax,cr3
-	vmwrite rbx,rax
-	mov rbx,0x6C04 ; cr4
-	mov rax,cr4
-	vmwrite rbx,rax
+
+	vmw64 0x6C00,cr0
+	vmw64 0x6C02,cr3
+	vmw64 0x6C04,cr4
 
 	; CS:RIP
-	xor rax,rax
-	mov rbx,0xC02; CS Selector
-	mov ax,cs
-	vmwrite rbx,rax
-	xor rax,rax
-	mov rbx,0x6c16 ; RIP
-	xor rax,rax
-	mov rax,rcx
-	vmwrite rbx,rax
+	vmw16 0xC02,cs
+	vmw64 0x6C16,rcx
 
 	; SS:RSP
-	xor rax,rax
-	mov rbx,0xC04 ; SS Selector
-	mov ax,ss
-	vmwrite rbx,rax
-	xor rax,rax
-	mov rbx,0x6C14 ; RSP
-	mov rax,rsp
-	vmwrite rbx,rax
+	vmw16 0xC04,ss
+	vmw64 0x6C14,rsp
 
 	; DS,ES,FS,GS,TR
-	xor rax,rax
-	mov rbx,0xC06; DS
-	mov ax,ds
-	vmwrite rbx,rax
-	xor rax,rax
-	mov rbx,0xC00; ES
-	mov ax,es
-	vmwrite rbx,rax
-	xor rax,rax
-	mov rbx,0xC08; FS
-	mov ax,fs
-	vmwrite rbx,rax
-	xor rax,rax
-	mov rbx,0xC0A; GS
-	mov ax,gs
-	vmwrite rbx,rax
-	xor rax,rax
-	mov rbx,0xC0C; TR
-	mov ax,tssd32_idx
-	vmwrite rbx,rax
+	vmw16 0xC06,ds
+	vmw16 0xC00,es
+	vmw16 0xC08,fs
+	vmw16 0xC0A,gs
+	vmw16 0xC0C,tssd32_idx
 
 	; GDTR, IDTR
 	linear rdi,TempData,VMXDATA64
@@ -319,53 +296,34 @@ VMX_Initialize_Guest2:
 
 	; SEGMENT registers
 
-	; es,ds,fs,gs
-	xor rax,rax
-	mov ax,page32_idx
-	mov ebx,0x800 ; ES selector
-	vmwrite rbx,rax
-	mov ebx,0x804 ; SS selector
-	vmwrite rbx,rax
-	mov ebx,0x806 ; DS selector
-	vmwrite rbx,rax
-	mov ebx,0x808 ; FS selector
-	vmwrite rbx,rax
-	mov ebx,0x80A ; GS selector
-	vmwrite rbx,rax
-	mov rax,0xfffff
-	mov ebx,0x4800 ; ES limit
-	vmwrite rbx,rax
-	mov ebx,0x4804 ; SS limit
-	vmwrite rbx,rax
-	mov ebx,0x4806 ; DS limit
-	vmwrite rbx,rax
-	mov ebx,0x4808 ; FS limit
-	vmwrite rbx,rax
-	mov ebx,0x480A ; GS limit
-	vmwrite rbx,rax
-	mov rax,0c093h
-	mov ebx,0x4814 ; ES access
-	vmwrite rbx,rax
-	mov ebx,0x4818 ; SS access
-	vmwrite rbx,rax
-	mov ebx,0x481A ; DS access
-	vmwrite rbx,rax
-	mov ebx,0x481C ; FS access
-	vmwrite rbx,rax
-	mov ebx,0x481E ; GS access
-	vmwrite rbx,rax
-	mov rax,0
-	shl rax,4
-	mov ebx,0x6806 ; ES base
-	vmwrite rbx,rax
-	mov ebx,0x680A ; SS base
-	vmwrite rbx,rax
-	mov ebx,0x680C ; DS base
-	vmwrite rbx,rax
-	mov ebx,0x680E ; DS base
-	vmwrite rbx,rax
-	mov ebx,0x6810 ; GS base
-	vmwrite rbx,rax
+	; es,ss,ds,fs,gs
+	vmw16 0x800,page32_idx
+	vmw16 0x804,page32_idx
+	vmw16 0x806,page32_idx
+	vmw16 0x808,page32_idx
+	vmw16 0x80A,page32_idx
+
+	; Limits
+	vmw32 0x4800,0xFFFFF
+	vmw32 0x4804,0xFFFFF
+	vmw32 0x4806,0xFFFFF
+	vmw32 0x4808,0xFFFFF
+	vmw32 0x480A,0xFFFFF
+
+	; Access
+	vmw16 0x4814,0x0C093
+	vmw16 0x4818,0x0C093
+	vmw16 0x481A,0x0C093
+	vmw16 0x481C,0x0C093
+	vmw16 0x481E,0x0C093
+
+	; base
+	vmw32 0x6806,0
+	vmw32 0x680A,0
+	vmw32 0x680C,0
+	vmw32 0x680E,0
+	vmw32 0x6810,0
+
 
 	; LDT (Dummy)
 	xor rax,rax
@@ -476,53 +434,36 @@ VMX_Initialize_UnrestrictedGuest:
 
 	; SEGMENT registers
 
-	; es,ds,fs,gs
-	xor rax,rax
-	mov ax,data32_idx
-	mov ebx,0x800 ; ES selector
-	vmwrite rbx,rax
-	mov ebx,0x804 ; SS selector
-	vmwrite rbx,rax
-	mov ebx,0x806 ; DS selector
-	vmwrite rbx,rax
-	mov ebx,0x808 ; FS selector
-	vmwrite rbx,rax
-	mov ebx,0x80A ; GS selector
-	vmwrite rbx,rax
-	mov rax,0xffff
-	mov ebx,0x4800 ; ES limit
-	vmwrite rbx,rax
-	mov ebx,0x4804 ; SS limit
-	vmwrite rbx,rax
-	mov ebx,0x4806 ; DS limit
-	vmwrite rbx,rax
-	mov ebx,0x4808 ; FS limit
-	vmwrite rbx,rax
-	mov ebx,0x480A ; GS limit
-	vmwrite rbx,rax
-	mov rax,093h
-	mov ebx,0x4814 ; ES access
-	vmwrite rbx,rax
-	mov ebx,0x4818 ; SS access
-	vmwrite rbx,rax
-	mov ebx,0x481A ; DS access
-	vmwrite rbx,rax
-	mov ebx,0x481C ; FS access
-	vmwrite rbx,rax
-	mov ebx,0x481E ; GS access
-	vmwrite rbx,rax
+
+	; es,ss,ds,fs,gs
+	vmw16 0x800,data32_idx
+	vmw16 0x804,data32_idx
+	vmw16 0x806,data32_idx
+	vmw16 0x808,data32_idx
+	vmw16 0x80A,data32_idx
+
+	; Limits
+	vmw32 0x4800,0xFFFF
+	vmw32 0x4804,0xFFFF
+	vmw32 0x4806,0xFFFF
+	vmw32 0x4808,0xFFFF
+	vmw32 0x480A,0xFFFF
+
+	; Access
+	vmw16 0x4814,0x93
+	vmw16 0x4818,0x93
+	vmw16 0x481A,0x93
+	vmw16 0x481C,0x93
+	vmw16 0x481E,0x93
+
+	; base
 	mov rax,r9
 	shl rax,4
-	mov ebx,0x6806 ; ES base
-	vmwrite rbx,rax
-	mov ebx,0x680A ; SS base
-	vmwrite rbx,rax
-	mov ebx,0x680C ; DS base
-	vmwrite rbx,rax
-	mov ebx,0x680E ; DS base
-	vmwrite rbx,rax
-	mov ebx,0x6810 ; GS base
-	vmwrite rbx,rax
+	vmw64 0x6806,rax
+	vmw64 0x680A,rax
+	vmw64 0x680C,rax
+	vmw64 0x680E,rax
+	vmw64 0x6810,rax
 
 
 	; LDT (Dummy)
