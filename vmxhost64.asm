@@ -87,9 +87,18 @@ RET
 
 VMX_Initialize_VMX_Controls:
     ; edx = 0x82 for unrestricted guestm, 0x2 if simple with EPT
-	vmw32 0x4012,0x11FF ; Entry
-	vmw32 0x4000,0x1F ; PIN
-	vmw32 0x4002,0x8401e9f2; Proc
+
+	vmw32 0x4012,0x11FF ; Entry. Ideally, we must read 0x484 MSR to learn what to put here
+	; bit 9 - Guest is in long mode
+	; bit 10 - Guest is in SMM
+	; bit 11 - Deactivate Dual monitor treatment
+	
+	; We can use also 0x4014 to control MSRs -> if different than the host (mighty)
+
+	vmw32 0x4000,0x1F ; PIN, Intel 3B Chapter 20.6.1
+	; vmw32 0x4002,0x8401e9f2; Proc, Intel 3B Chapter 20.6.2
+	vmw32 0x4002,0x840069F2; Proc, Intel 3B Chapter 20.6.2, Leave CR3 access so we can enable long mode
+
 	vmw32 0x401E,edx
 	vmw32 0x400C,0x36FFF
 RET

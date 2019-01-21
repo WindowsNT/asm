@@ -355,7 +355,7 @@ mov ebx,0x007
 linear ecx,stx3e,STACKS
 linear edx,v3,T64
 mov esi,2 ; Mode 2 -> Long mode
-;int 0xF0 ; Not working yet because CR3 writing causes VMEXIT
+;int 0xF0 ; Not working yet because MSR writing causes VMEXIT, (we haven't yet defined MSR bitmaps in VMX)
 
 
 
