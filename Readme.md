@@ -11,7 +11,7 @@ Older Articles:
 * DMMI: https://www.codeproject.com/Articles/894522/Teh-Low-Level-M-ss-DOS-Multicore-Mode-Interface
 
 At the moment, the first part is implemented (Real/Protected/Long mode), the Protected Mode Virtualization (working in Bochs), the third part (test SIPI multicore, working on Bochs and VMWare)
-and the fourth part almost finished (DMMI). More to follow soon.
+and the fourth part finished (DMMI). More to follow soon.
 
 ## Instructions
 1. Edit build.bat to specify flat assembler (FASM) path.
@@ -57,6 +57,9 @@ Int 0xF0 provides the following functions to all modes (real, protected, long)
     * AL = 2 => Unlock mutex
     * AL = 3 => Wait for mutex
 4. AH = 4, execute real mode interrupt. This function is accessible from all modes. AL is the interrupt number, BP holds the AX value and BX,CX,DX,SI,DI are passed to the interrupt. DS and ES are loaded from the high 16 bits of ESI and EDI.
+4. AH = 9, Switch To Mode.
+	* From real mode: AL = 0 (enter unreal), AL = 2 (enter long, ECX = linear address to start. Code must set IDT found at [rax] on entry)
+	* From long mode: AL = 0, go back to real, ECX = linear. 
 
 Now, if you have more than one CPU, your DOS applications/games can now directly access all 2^64 of memory and all your CPUs, while still being able to call DOS directly. 
 

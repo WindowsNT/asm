@@ -172,3 +172,26 @@ CompatFromLongIntF0:
 	db      0eah
 	dw      TempBackLM
 	dw		code16_idx
+
+
+nnn90Back:
+
+; Disable Paging to get out of Long Mode
+	mov eax, cr0
+	and eax,7fffffffh 
+	mov cr0, eax
+; Deactivate Long Mode
+	mov ecx, 0c0000080h
+	rdmsr
+	btc eax, 8
+	wrmsr
+; Disable PAE
+	mov eax, cr4
+	btc eax, 5
+	mov cr4, eax
+
+; Go Real
+    db		066h
+	db      0eah
+	dw      TempBackLMnnn0
+	dw		code16_idx

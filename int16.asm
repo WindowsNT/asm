@@ -631,7 +631,7 @@ nr4:
 
 	; AX 9, switch to mode
 	cmp ah,9
-	jnz .n9
+	jnz n9
 
 		; AL 0, unreal
 		cmp al,0
@@ -642,11 +642,30 @@ nr4:
 			call EnterUnreal
 			sti
 			IRET
-			
-
 		.n90:
+
+		; AL 2, long
+		; ECX = linear address
+		cmp al,2
+		jnz n92
+
+			mov [cs:Thread64F9],ecx
+
+			thread64header
+
+			linear eax,idt_LM_start
+
+			db 066h
+			db 0eah
+			Thread64F9 dd 0
+			dw code64_idx
+
+
+			IRET
+		n92:
+
 	IRET
-.n9:
+n9:
 
 
 IRET
@@ -768,3 +787,24 @@ TempBackLM:
 	db 0eah
 	Thread64Ptr3 dd 0
 	dw code64_idx
+
+
+TempBackLMnnn0:
+
+	mov     eax,cr0         
+	and     al,not 1        
+	and eax,7FFFFFFFh; Set PE=0
+	mov     cr0,eax         
+	db      0eah
+	dw      .flush_ipq,CODE16
+	.flush_ipq:
+	mov ax, DATA16
+	mov     ds,ax
+	mov     es,ax
+	mov     di,idt_RM_start
+	lidt    [di]
+
+	; jmp 0x1234:0x5678
+	db 0xEA
+	segnnn0 dw 0
+	ofsnnn0 dw 0

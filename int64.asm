@@ -131,4 +131,34 @@ nx4:
 
 .n5:
 
+
+
+	; AX 9, switch to mode
+	cmp ah,9
+	jnz nnn9
+		; AL 0, unreal
+		cmp al,0
+		jnz .nnn90
+
+				linear eax,ofsnnn0,CODE16
+				mov word [eax],cx
+				shr ecx,16
+				linear eax,ofsnnn0,CODE16
+				mov word [eax],cx
+			
+				; Back to Compatibility Mode
+				push code32_idx
+				xor rcx,rcx
+				mov ecx,nnn90Back
+				push rcx
+				retf
+
+			
+			IRETQ
+		.nnn90:
+	IRETQ
+nnn9:
+
+
+
 IRETQ

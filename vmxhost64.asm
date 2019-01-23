@@ -1,5 +1,7 @@
 USE64
 
+; https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2b-manual.html
+; Full 2B manual
 macro vmw16 code,value
 {
 	mov ebx,code
