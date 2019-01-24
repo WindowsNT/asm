@@ -156,7 +156,6 @@ nn4:
 		jnz .nn90
 
 				; Back to real mode, ecx = seg:ofs
-xchg bx,bx
 				mov ax,page32_idx
 				mov ds,ax
 				linear eax,ofsnnn0,CODE16

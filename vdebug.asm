@@ -65,7 +65,7 @@ start16:
 	shl ecx,4
 	add ecx,start32
 	mov ax,0x901
-	int 0xF0
+	;int 0xF0
 
 	; Enter Long
 	xor ecx,ecx
