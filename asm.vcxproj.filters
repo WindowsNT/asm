@@ -186,5 +186,8 @@
     <None Include="vdebug2.asm">
       <Filter>VDebug</Filter>
     </None>
+    <None Include="vdebug64.asm">
+      <Filter>VDebug</Filter>
+    </None>
   </ItemGroup>
 </Project>

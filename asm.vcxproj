@@ -204,6 +204,7 @@
     <None Include="unreal.asm" />
     <None Include="vdebug.asm" />
     <None Include="vdebug2.asm" />
+    <None Include="vdebug64.asm" />
     <None Include="vm.vmx" />
     <None Include="vmxhost64.asm" />
   </ItemGroup>

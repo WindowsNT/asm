@@ -48,7 +48,7 @@ vmt1 db 0 ; existence
 vmt2 db 0 ; protected mode guest
 vmt3 db 0 ; unrestricted guest
 
-vmm1 db "VMX Exists, OK",0dh,0ah,"$"
+vmm1 db "VMX Exists, OK, ","$"
 vmm2 db "VMX Launch VM OK",0dh,0ah,"$"
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
@@ -60,8 +60,8 @@ mut_i21 db 0xFF
 rm1 db "Real mode test, OK",0dh,0ah,"$"
 pm1 db "Protected mode test, OK",0dh,0ah,"$"
 lm1 db "Long mode test, OK",0dh,0ah,"$"
-ap1 db "Apic 1 found",0dh,0ah,"$"
-ap2 db "Apic 2 found",0dh,0ah,"$"
+ap1 db "Apic 1 found ","$"
+ap2 db "Apic 2 found ","$"
 
 cpuf db "CPU $"
 thrm1 db "Message from real mode thread",0dh,0ah,"$"
@@ -162,8 +162,8 @@ PhysicalPagingOffset64 dd 0
 PhysicalEptOffset64 dq 0
 
 ; --------------------------------------- Supported ---------------------------------------
-supportlm db "Long Mode Supported",0x0d,0x0a,"$"
-support1gb db "1GB Paging Supported",0x0d,0x0a,"$"
-supportvm db "VM Supported",0x0d,0x0a,"$"
+supportlm db "[Long Mode] ","$"
+support1gb db "[1GB Paging] ","$"
+supportvm db "[VM] ",0x0d,0x0a,"$"
 ;supportvmu db "VM Unrestricted Supported",0x0d,0x0a,"$"
 

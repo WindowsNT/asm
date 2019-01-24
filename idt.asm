@@ -154,6 +154,8 @@ retf
   cmp ecx,0x21
   jz .y21
 
+  jmp .ef0
+
   .yf0:
   linear eax,int64,CODE64
   jmp .ef0

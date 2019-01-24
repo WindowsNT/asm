@@ -572,6 +572,51 @@ VMX_VMExit:
 	call VMX_Disable
 RET
 
+
+VMXInit:
+	
+	; Load the revision
+	linear rdi,VMXRevision,VMXDATA64
+	mov ebx,[rdi];
+
+	; Initialize the region
+	linear rdi,VMXStructureData2,VMXDATA64
+	mov rcx,[rdi];  Get address of data1
+	mov rsi,rdi
+	mov rdi,rcx
+	mov [rdi],ebx ; // Put the revision
+	VMCLEAR [rsi]
+	mov [rdi],ebx ; // Put the revision
+	VMPTRLD [rsi] 
+	mov [rdi],ebx ; // Put the revision
+
+RET
+
+
+VMXInit2:
+
+	; The EPT initialization for the guest
+	linear rax,PhysicalEptOffset64,DATA16
+	mov rax,[rax]
+	or rax,0 ; Memory Type 0
+	or rax,0x18 ; Page Walk Length 3
+	mov rbx,0x201A ; EPTP
+	vmwrite rbx,rax
+ 
+	; The Link Pointer -1 initialization
+	mov rax,0xFFFFFFFFFFFFFFFF
+	mov rbx,0x2800 ; LP
+	vmwrite rbx,rax
+ 
+	; One more RSP initialization of the host
+	xor rax,rax
+	mov rbx,0x6c14 ; RSP
+	mov rax,rsp
+	add rax,8 ; because we are in a function call
+	vmwrite rbx,rax
+
+RET
+
 ; ---------------- Host Start ----------------
 VMX_Host:
 	linear rbx,vmt1,DATA16
@@ -595,20 +640,7 @@ if TEST_VMX = 1
 
     ; Real mode guest (unrestricted)
 
-	; Load the revision
-	linear rdi,VMXRevision,VMXDATA64
-	mov ebx,[rdi];
-
-	; Initialize the region
-	linear rdi,VMXStructureData2,VMXDATA64
-	mov rcx,[rdi];  Get address of data1
-	mov rsi,rdi
-	mov rdi,rcx
-	mov [rdi],ebx ; // Put the revision
-	VMCLEAR [rsi]
-	mov [rdi],ebx ; // Put the revision
-	VMPTRLD [rsi] 
-	mov [rdi],ebx ; // Put the revision
+	call VMXInit
   
 	call VMX_InitializeEPT
 	xor rdx,rdx
@@ -622,24 +654,8 @@ if TEST_VMX = 1
 	call VMX_Initialize_UnrestrictedGuest
  
  
-	; The EPT initialization for the guest
-	linear rax,PhysicalEptOffset64,DATA16
-	mov rax,[rax]
-	or rax,0 ; Memory Type 0
-	or rax,0x18 ; Page Walk Length 3
-	mov rbx,0x201A ; EPTP
-	vmwrite rbx,rax
- 
-	 ; The Link Pointer -1 initialization
-	 mov rax,0xFFFFFFFFFFFFFFFF
-	 mov rbx,0x2800 ; LP
-	 vmwrite rbx,rax
- 
-	 ; One more RSP initialization of the host
-	 xor rax,rax
-	 mov rbx,0x6c14 ; RSP
-	 mov rax,rsp
-	 vmwrite rbx,rax
+	call VMXInit2
+
 
 	; Launch it!!
 	VMLAUNCH
@@ -649,20 +665,8 @@ end if
 if TEST_VMX = 2
 
     ; Protected mode guest 
-	; Load the revision
-	linear rdi,VMXRevision,VMXDATA64
-	mov ebx,[rdi];
 
-	; Initialize the region
-	linear rdi,VMXStructureData2,VMXDATA64
-	mov rcx,[rdi];  Get address of data1
-	mov rsi,rdi
-	mov rdi,rcx
-	mov [rdi],ebx ; // Put the revision
-	VMCLEAR [rsi]
-	mov [rdi],ebx ; // Put the revision
-	VMPTRLD [rsi] 
-	mov [rdi],ebx ; // Put the revision
+	call VMXInit
  
 	; Initializzation
 	mov rdx,0x49
@@ -674,24 +678,7 @@ if TEST_VMX = 2
 	mov r10,StartVM2
 	call VMX_Initialize_Guest2
  
-	; The EPT initialization for the guest
-	linear rax,PhysicalEptOffset64,DATA16
-	mov rax,[rax]
-	or rax,0 ; Memory Type 0
-	or rax,0x18 ; Page Walk Length 3
-	mov rbx,0x201A ; EPTP
-	vmwrite rbx,rax
- 
-	; The Link Pointer -1 initialization
-	mov rax,0xFFFFFFFFFFFFFFFF
-	mov rbx,0x2800 ; LP
-	vmwrite rbx,rax
- 
-	; One more RSP initialization of the host
-	xor rax,rax
-	mov rbx,0x6c14 ; RSP
-	mov rax,rsp
-	vmwrite rbx,rax
+	call VMXInit2
 
 	; Launch it!!
 	VMLAUNCH

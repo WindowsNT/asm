@@ -677,8 +677,12 @@ nr4:
 
 			thread64header
 
-			linear eax,idt_LM_start
 
+			mov ax,page64_idx
+			mov ss,ax
+			mov es,ax
+			mov ds,ax
+			linear eax,idt_LM_start
 			db 066h
 			db 0eah
 			Thread64F9 dd 0

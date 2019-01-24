@@ -12,6 +12,7 @@ int64:
 
 	jmp .ibegin
 	db 'dmmi'
+	db 10 dup(0x90)
 	.ibegin:
 	; AX 0, find interface
 	cmp ax,0
@@ -132,6 +133,27 @@ nx4:
 .n5:
 
 
+	; AX 8, prepare vmx structures
+	cmp ah,8
+	jnz nnn8
+	 ; r8 host return
+	 ; r9 seg vm
+	 ; r10 ofs vm
+	
+		call VMX_Enable
+		call VMXInit
+		call VMX_InitializeEPT
+		xor rdx,rdx
+		bts rdx,1
+		bts rdx,7
+		call VMX_Initialize_VMX_Controls
+		mov rcx,r8
+		call VMX_Initialize_Host
+		call VMX_Initialize_UnrestrictedGuest
+ 		call VMXInit2
+
+	IRETQ
+nnn8:
 
 	; AX 9, switch to mode
 	cmp ah,9
