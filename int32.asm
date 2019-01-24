@@ -147,6 +147,34 @@ nn4:
 .n5:
 
 
+
+	; AX 9, switch to mode
+	cmp ah,9
+	jnz nn9
+		; AL 0, unreal
+		cmp al,0
+		jnz .nn90
+
+				; Back to real mode, ecx = seg:ofs
+xchg bx,bx
+				mov ax,page32_idx
+				mov ds,ax
+				linear eax,ofsnnn0,CODE16
+				mov word [eax],cx
+				shr ecx,16
+				linear eax,ofsnnn0,CODE16
+				mov word [eax],cx
+
+				push code32_idx
+				mov ecx,nnn90Back
+				push ecx
+				retf
+			
+			IRETD
+		.nn90:
+	IRETD
+nn9:
+
 nop
 iretd
 

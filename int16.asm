@@ -643,7 +643,31 @@ nr4:
 			sti
 			IRET
 		.n90:
+		; AL 1, protected
+		cmp al,1
+		jnz n91
 
+		    mov [cs:n91aa],ecx
+			mov ax,DATA16
+			mov ds,ax
+			mov bx,gdt_start
+			lgdt [bx]
+			mov bx,idt_PM_start
+			lidt [bx]
+			mov eax,cr0
+			or al,1
+			mov cr0,eax 
+			mov ax,page32_idx
+			mov gs,ax
+
+			db  066h  
+			db  0eah 
+			n91aa dd  0
+			dw  vmx32_idx
+
+
+
+		n91:
 		; AL 2, long
 		; ECX = linear address
 		cmp al,2
@@ -808,3 +832,5 @@ TempBackLMnnn0:
 	db 0xEA
 	segnnn0 dw 0
 	ofsnnn0 dw 0
+
+
