@@ -181,10 +181,12 @@ SEGMENT MAIN16 USE16
 ORG 0h
 
 m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
-m1 db "--> Hello from real mode thread",0xd,0xa,"$";
-m2 db "--> Hello from protected mode thread",0xd,0xa,"$";
-m3 db "--> Hello from long mode thread",0xd,0xa,"$";
-m4 db "--> Hello from unrestricted mode virtualized real mode thread",0xd,0xa,"$";
+m1 db "[real] ","$";
+m2 db "[protected] ","$";
+m3 db "[long] ","$";
+m4 db "[virtualized real]","$";
+crlf db 0dh,0ah,"$"
+
 mut1 db 0
 dhvalue db 0
 
@@ -367,6 +369,12 @@ pop es
 mov di,mut1
 mov ax,0x0504
 int 0xF0
+
+push cs
+pop ds
+mov ax,0x0900
+mov dx,crlf
+int 0x21
 
 mov ax,0x4c00
 int 0x21
