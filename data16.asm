@@ -48,8 +48,8 @@ vmt1 db 0 ; existence
 vmt2 db 0 ; protected mode guest
 vmt3 db 0 ; unrestricted guest
 
-vmm1 db "VMX Exists, OK, ","$"
-vmm2 db "VMX Launch VM OK",0dh,0ah,"$"
+vmm1 db "[VMX] ","$"
+vmm2 db "[VMX Launch] ","$"
 
 ; --------------------------------------- 16 bit mutexes ---------------------------------------
 mut_ipi db 0xFF
@@ -57,9 +57,9 @@ mut_1 db 0xFF
 mut_i21 db 0xFF
 
 ; --------------------------------------- Messages ---------------------------------------
-rm1 db "Real mode test, OK",0dh,0ah,"$"
-pm1 db "Protected mode test, OK",0dh,0ah,"$"
-lm1 db "Long mode test, OK",0dh,0ah,"$"
+rm1 db "[Real mode] ","$"
+pm1 db "[Protected mode] ","$"
+lm1 db "[Long mode] ","$"
 ap1 db "Apic 1 found ","$"
 ap2 db "Apic 2 found ","$"
 

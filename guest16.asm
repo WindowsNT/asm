@@ -12,6 +12,7 @@ StartVM:
 ; Remember we used a protected mode selector to get here?
 ; Jump to a real mode segment now so CS gets a proper value
 
+
 nop
 nop
 

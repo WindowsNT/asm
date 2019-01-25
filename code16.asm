@@ -582,10 +582,6 @@ end if
 
 push cs
 call EnterUnreal
-; Real mode test
-mov ax,0900h
-mov dx,rm1
-int 21h
 
 if TEST_MULTI > 0 
 
@@ -642,8 +638,13 @@ thrtest FromThread6,thr6
 
 end if
 
+; Real mode test
+mov ax,0900h
+mov dx,rm1
+int 21h
 
 ; PM mode test
+
 mov ax,DATA32
 mov gs,ax
 cmp [gs:d32],1
@@ -681,6 +682,11 @@ macro vmxshow vmt,vmm
 vmxshow vmt1,vmm1
 vmxshow vmt2,vmm2
 vmxshow vmt3,vmm2
+
+
+mov ax,0900h
+mov dx,crlf
+int 21h
 
 ; A20 off if enabled
 
