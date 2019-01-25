@@ -4,6 +4,14 @@ HEAP 0
 include 'struct.asm'
 
 
+
+; stack
+segment STACK16
+USE16
+
+dw 128 dup(0)
+stre:
+
 ; data
 segment DATA16
 USE16
@@ -38,20 +46,26 @@ USE16
 back16:
 
 	; End
-	xchg bx,bx
+	cli
+	mov ax,STACK16
+	mov ss,ax
+	mov eax,stre
+	mov esp,eax
+	sti
 	mov ax,DATA16
 	mov ds,ax
 	mov es,ax
-	mov ax,0x00
+	mov ax,0x4C00
 	int 0x21
 
 
 start16:
 
-	; End, not yet working
-	mov ax,0x4C00
-	int 0x21
 
+	mov ax,STACK16
+	mov ss,ax
+	mov eax,stre
+	mov esp,eax
 	mov ax,DATA16
 	mov ds,ax
 	mov es,ax
@@ -66,6 +80,7 @@ start16:
 	mov ax,0x4B01
 	int 0x21
 	jc endx
+	BackExecutable:
 	mov ax,DATA16
 	mov ds,ax
 	cmp [run],1
@@ -89,6 +104,7 @@ start16:
 
 	endx:
 
+	
 	
 	; End
 	mov ax,0x4C00

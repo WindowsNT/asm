@@ -28,10 +28,11 @@ USE64
 
 start64:
 
+
 ; interrupts
 lidt [eax]
 linear rsp,ste,STACK64
-sti
+
 mov ax,0
 int 0xF0
 
@@ -46,6 +47,7 @@ vmlaunch
 hr:
 
 ; Back to real mode
+cli
 xor rcx,rcx
 mov cx,CODE16
 shl rcx,16
