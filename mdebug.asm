@@ -12,6 +12,9 @@ USE16
 dw 128 dup(0)
 stre:
 
+dw 128 dup(0)
+stx1e:
+
 ; data
 segment DATA16
 USE16
@@ -35,11 +38,14 @@ struc LoadX a,b,c,d,e,f,g
 
 bbb LoadX 0,0,0,0,0,0,0
 
+mut0 db 0
+
 
 ; main
 segment CODE16
 USE16
 
+include "mdebugcore.asm"
 include "reqdmmi.asm"
 
 
@@ -59,6 +65,11 @@ start16:
 
 	RequireDMMI
 
+	; enter unreal
+	mov ax,0x0900
+	int 0xF0
+
+
 
 	; Load executable
 	mov bx,bbb
@@ -77,6 +88,30 @@ start16:
 	mov [psp],bx
 
 
+	; mutexes
+	mov ax,DATA16
+	mov es,ax
+	mov ax,0x0500
+	mov di,mut0
+	int 0xF0
+
+	mov ax,DATA16
+	mov es,ax
+	mov ax,0x0502
+	mov di,mut0
+	int 0xF0
+
+	; start thread
+	mov ax,CODE16
+	mov es,ax
+	mov dx,Thr
+	mov ax,0x0100
+	mov bl,1
+	mov cx,STACK16
+	mov gs,cx
+	mov cx,stx1e
+	int 0xF0
+
 	; run
 	mov ax,DATA16
 	mov ds,ax
@@ -91,8 +126,14 @@ start16:
 	retf
 
 
-
 	endx2:
+
+	; wait mutex
+	mov ax,DATA16
+	mov es,ax
+	mov ax,0x0504
+	mov di,mut0
+	int 0xF0
 
 
 	endx:

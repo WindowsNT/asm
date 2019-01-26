@@ -411,6 +411,7 @@ int16:
 
 	jmp .ibegin
 	db 'dmmi'
+	db 10 dup(0x90)
 	.ibegin:
 	; AX 0, find interface
 	cmp ax,0

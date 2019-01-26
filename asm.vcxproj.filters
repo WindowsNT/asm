@@ -201,5 +201,8 @@
     <None Include="reqdmmi.asm">
       <Filter>DMMI Client</Filter>
     </None>
+    <None Include="mdebugcore.asm">
+      <Filter>MDebug</Filter>
+    </None>
   </ItemGroup>
 </Project>
