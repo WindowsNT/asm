@@ -634,7 +634,9 @@ thrtest FromThread3,thr3
 thrtest FromThread4,thr4
 thrtest FromThread5,thr5
 thrtest FromThread6,thr6
-
+mov ax,0x900
+mov dx,crlf
+int 0x21
 
 end if
 

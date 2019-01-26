@@ -26,6 +26,12 @@
     <Filter Include="VDebug">
       <UniqueIdentifier>{0d5a1d9a-c2fb-4445-a6d7-4676170147c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MDebug">
+      <UniqueIdentifier>{7f2ca36e-0cd5-4db7-ae28-3f94f4eb6f98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debuggee">
+      <UniqueIdentifier>{189d96b4-2842-4505-805a-815b3b66bbd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
@@ -183,11 +189,14 @@
     <None Include="vdebug.asm">
       <Filter>VDebug</Filter>
     </None>
-    <None Include="vdebug2.asm">
-      <Filter>VDebug</Filter>
-    </None>
     <None Include="vdebug64.asm">
       <Filter>VDebug</Filter>
+    </None>
+    <None Include="debuggee.asm">
+      <Filter>Debuggee</Filter>
+    </None>
+    <None Include="mdebug.asm">
+      <Filter>MDebug</Filter>
     </None>
   </ItemGroup>
 </Project>

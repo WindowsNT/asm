@@ -132,10 +132,18 @@ nx4:
 
 .n5:
 
+	; AX 0x800, disable VMX
+	cmp ax,0x800
+	jnz nnn800
+ 		call VMX_Disable
 
-	; AX 8, prepare vmx structures
-	cmp ah,8
-	jnz nnn8
+	IRETQ
+nnn800:
+
+
+	; AX 0x801, prepare vmx structures
+	cmp ax,0x801
+	jnz nnn801
 	 ; r8 host return
 	 ; r9 seg vm
 	 ; r10 ofs vm
@@ -146,14 +154,15 @@ nx4:
 		xor rdx,rdx
 		bts rdx,1
 		bts rdx,7
-		call VMX_Initialize_VMX_Controls
+		mov ecx,0x840069F2
+		call VMX_Initialize_VMX_Controls2
 		mov rcx,r8
 		call VMX_Initialize_Host
 		call VMX_Initialize_UnrestrictedGuest
  		call VMXInit2
 
 	IRETQ
-nnn8:
+nnn801:
 
 	; AX 9, switch to mode
 	cmp ah,9

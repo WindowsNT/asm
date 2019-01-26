@@ -92,4 +92,29 @@ struc IDT_STR64 o0_15,se0_15,zb,flags,o16_31,o32_63,zr
 		.zr      dd zr
         }
 
-		
+macro vmw16 code,value
+{
+	mov ebx,code
+	xor eax,eax
+	mov ax,value
+	vmwrite ebx,eax
+}
+
+macro vmw32 code,value
+{
+	mov ebx,code
+	mov eax,value
+	vmwrite ebx,eax
+}
+macro vmw64 code,value
+{
+	mov rbx,code
+	mov rax,value
+	vmwrite rbx,rax
+}
+
+
+macro break
+{
+xchg bx,bx
+}

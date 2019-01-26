@@ -2,26 +2,6 @@ USE64
 
 ; https://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-software-developer-vol-2b-manual.html
 ; Full 2B manual
-macro vmw16 code,value
-{
-	mov ebx,code
-	xor eax,eax
-	mov ax,value
-	vmwrite ebx,eax
-}
-
-macro vmw32 code,value
-{
-	mov ebx,code
-	mov eax,value
-	vmwrite ebx,eax
-}
-macro vmw64 code,value
-{
-	mov rbx,code
-	mov rax,value
-	vmwrite rbx,rax
-}
 
 
 ; ---------------- Existance test ----------------
@@ -101,9 +81,22 @@ VMX_Initialize_VMX_Controls:
 	; vmw32 0x4002,0x8401e9f2; Proc, Intel 3B Chapter 20.6.2
 	vmw32 0x4002,0x840069F2; Proc, Intel 3B Chapter 20.6.2, Leave CR3 access so we can enable long mode
 
+
+
 	vmw32 0x401E,edx
 	vmw32 0x400C,0x36FFF
 RET
+
+VMX_Initialize_VMX_Controls2:
+; edx 0x400
+; ecx Proc
+	vmw32 0x4012,0x11FF 
+	vmw32 0x4000,0x1F
+	vmw32 0x4002,ecx
+	vmw32 0x401E,edx
+	vmw32 0x400C,0x36FFF
+RET
+
 
 
 VMX_Initialize_Host:
