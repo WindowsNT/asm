@@ -192,6 +192,7 @@
     <None Include="page16.asm" />
     <None Include="page32.asm" />
     <None Include="Readme.md" />
+    <None Include="reqdmmi.asm" />
     <None Include="stack16.asm" />
     <None Include="stack32.asm" />
     <None Include="stack64.asm" />

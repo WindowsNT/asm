@@ -38,6 +38,8 @@ struc LoadX a,b,c,d,e,f,g
 bbb LoadX 0,0,0,0,0,0,0
 
 include 'vdebug64.asm'
+include "reqdmmi.asm"
+
 
 ; main
 segment CODE16
@@ -72,6 +74,8 @@ start16:
 	mov ax,0x0900
 	mov dx,m1
 	int 0x21
+
+	RequireDMMI
 
 
 	; Load executable

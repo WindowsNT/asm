@@ -40,6 +40,8 @@ bbb LoadX 0,0,0,0,0,0,0
 segment CODE16
 USE16
 
+include "reqdmmi.asm"
+
 
 start16:
 
@@ -54,6 +56,8 @@ start16:
 	mov ax,0x0900
 	mov dx,m1
 	int 0x21
+
+	RequireDMMI
 
 
 	; Load executable

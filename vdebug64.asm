@@ -44,6 +44,7 @@ mov ax,0
 int 0xF0
 
 ; Prepare the virtualization structures
+
 mov ax,0x801
 linear r8,hr,CODE64
 mov r9,V

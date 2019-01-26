@@ -180,7 +180,6 @@ vmcall
 SEGMENT MAIN16 USE16
 ORG 0h
 
-m0 db "DMMI server not installed. Run entry.exe with /r",0xd,0xa," $"
 m1 db "[real] ","$";
 m2 db "[protected] ","$";
 m3 db "[long] ","$";
@@ -189,6 +188,8 @@ crlf db 0dh,0ah,"$"
 
 mut1 db 0
 dhvalue db 0
+
+include "reqdmmi.asm"
 
 ; Real mode thread
 rt1:
@@ -221,29 +222,9 @@ if RESIDENT = 0
 	int 0x21
 end if
 
-; Check if there first
-mov ax,0x35F0
-int 0x21
-cmp dword [es:bx + 2],'dmmi'
-jnz .f
 
-mov ax,0
-int 0xF0
-cmp ax,0xFACE
-jz .y
+RequireDMMI
 
-.f:
-push cs
-pop ds
-mov ax,0x0900
-mov dx,m0
-int 0x21
-
-mov ax,0x4c00
-int 0x21
-
-
-.y:
 ; dl = num of cpus
 ; dh = virtualization mode
 mov [cs:dhvalue],dh

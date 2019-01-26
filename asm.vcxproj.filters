@@ -198,5 +198,8 @@
     <None Include="mdebug.asm">
       <Filter>MDebug</Filter>
     </None>
+    <None Include="reqdmmi.asm">
+      <Filter>DMMI Client</Filter>
+    </None>
   </ItemGroup>
 </Project>
