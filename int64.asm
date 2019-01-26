@@ -155,8 +155,7 @@ nnn800:
 		xor rdx,rdx
 		bts rdx,1
 		bts rdx,7
-		mov ecx,0x840069F2
-		call VMX_Initialize_VMX_Controls2
+		call VMX_Initialize_VMX_Controls
 		mov rcx,r8
 		call VMX_Initialize_Host
 		call VMX_Initialize_UnrestrictedGuest

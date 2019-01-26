@@ -113,6 +113,11 @@ macro vmw64 code,value
 	vmwrite rbx,rax
 }
 
+macro vmr32 r,code
+{
+	mov rbx,code
+	vmread r,rbx
+}
 
 macro break
 {

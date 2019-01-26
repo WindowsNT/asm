@@ -1,9 +1,9 @@
 segment V
 USE16
 
+firstcall db 0
+
 ve:
-
-
 	mov ax,DATA16
 	mov ds,ax
 	mov ax,[bbb.sp]
@@ -14,14 +14,7 @@ ve:
 	push ax
 	mov ax,[bbb.cs]
 	push ax
-
-	; Trap Flag
-;	pushf
-;	pop ax
-;	or ah, 1
-;	push ax
-;	popf
-
+	vmcall ; first call
 	retf
 
 
@@ -51,15 +44,38 @@ mov r9,V
 mov r10,ve
 int 0xF0
 
-; Also disallow INT 0x1 and INT 0x3 to handle breakpoints
-;mov eax,0x840069F2
-;bts eax,2
-;vmw32 0x4002,eax
-
+; Also disallow INT 0x1 for first break
+vmw32 0x4004,2
 vmlaunch
 
 hr:
 
+; check exit reason
+vmr32 rax,0x4402
+cmp al,18
+jz VmCallExit
+
+jmp DebugInterface
+
+VmCallExit:
+
+linear rax,firstcall,V
+cmp byte [rax],1
+je VmFinalCall
+mov byte [rax],1
+; rip +3
+vmr32 rax,0x681E
+add rax,3
+vmw64 0x681E,rax
+vmw32 0x4004,0
+; reset trap flag
+vmr32 rax,0x6820
+btr rax,8
+vmw64 0x6820,rax
+vmresume
+
+
+VmFinalCall:
 ; Disable VMX
 mov ax,0x800
 int 0xF0
@@ -72,3 +88,9 @@ shl rcx,16
 add ecx,back16
 mov ax,0x0900
 int 0xF0
+
+DebugInterface:
+
+
+
+vmresume

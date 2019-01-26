@@ -87,16 +87,6 @@ VMX_Initialize_VMX_Controls:
 	vmw32 0x400C,0x36FFF
 RET
 
-VMX_Initialize_VMX_Controls2:
-; edx 0x400
-; ecx Proc
-	vmw32 0x4012,0x11FF 
-	vmw32 0x4000,0x1F
-	vmw32 0x4002,ecx
-	vmw32 0x401E,edx
-	vmw32 0x400C,0x36FFF
-RET
-
 
 
 VMX_Initialize_Host:
