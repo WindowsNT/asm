@@ -775,7 +775,6 @@ TempBackLM:
 	push cs
 	call EnterUnreal
 
-	sti
 
 	; execute the interrupt
 	mov ax,STACK16S
@@ -810,7 +809,6 @@ TempBackLM:
 	skip3:
 
 	; and again long mode
-
 	thread64header
 	db 066h
 	db 0eah

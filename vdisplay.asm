@@ -215,6 +215,7 @@ ret
 
 WaitForInput:
 	call ShowPrompt
+
 	mov dx,mmj
 	mov si,CODE64
 	shl esi,16
@@ -257,7 +258,6 @@ WaitForInput:
 
 	.CmdGo:
 		; Clear Trap
-		break
 		vmw32 0x4004,0 ; allow exceptions
 		vmr rax,0x6820
 		btr rax,8
