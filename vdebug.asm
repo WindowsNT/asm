@@ -1,6 +1,7 @@
 FORMAT MZ
 HEAP 0
 
+include 'config.asm'
 include 'struct.asm'
 
 
@@ -18,7 +19,7 @@ USE16
 
 run db 0
 psp dw 0
-m1 db "Virtualization Debugger, (C) Chourdakis Michael",0x0D,0x0A,"$"
+m1 db "Virtualization Debugger, (C) Chourdakis Michael - Set VDEBUG=1 to config.asm.",0x0D,0x0A,"$"
 prg db "d:\debuggee.exe",0x0
 
 struc LoadX a,b,c,d,e,f,g
@@ -76,7 +77,6 @@ start16:
 	int 0x21
 
 	RequireDMMI
-
 
 	; Load executable
 	mov bx,bbb

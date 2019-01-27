@@ -55,6 +55,44 @@ macro popadxeax
 	pop ebx
 	}
 
+macro push64
+	{
+	push rax
+	push rbx
+	push rcx
+	push rdx
+	push rsi
+	push rdi
+	push rbp
+	push r8
+	push r9
+	push r10
+	push r11
+	push r12
+	push r13
+	push r14
+	push r15
+	}
+	
+macro pop64
+	{
+	pop r15
+	pop r14
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rbp
+	pop rdi
+	pop rsi
+	pop rdx
+	pop rcx
+	pop rbx
+	pop rax
+	}
+
 struc A_CPU a,b,c,d
         {
         .acpi   dd a
@@ -113,7 +151,7 @@ macro vmw64 code,value
 	vmwrite rbx,rax
 }
 
-macro vmr32 r,code
+macro vmr r,code
 {
 	mov rbx,code
 	vmread r,rbx

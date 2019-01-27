@@ -35,7 +35,9 @@ It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default i
 11. Entry /r which installs as TSR the DMMI services
 12. DMMI startup example taken from https://board.flatassembler.net/topic.php?t=7122
 13. DMMIC app runs which demonstrates DMMI, launching real mode, protected mode, long mode and virtualized protected mode threads
-
+14. DOS32A loads a linear executable created with FASM
+15. VDEBUG Virtualized Debugger (Not fully implemented yet)
+15. MDEBUG Multicore Debugger (Not fully implemented yet)
 
 ## DMMI
 I've called it DOS Multicore Mode Interface. It is a driver which helps you develop 32 and 64 bit multicore applications for DOS, using int 0xF0. 
@@ -65,4 +67,35 @@ Now, if you have more than one CPU, your DOS applications/games can now directly
 
 In order to avoid calling int 0xF0 directly from assembly and to make the driver compatible with higher level languages, an INT 0x21 redirection handler is installed. 
 If you call INT 0x21 from the main thread, INT 0x21 is executed directly. If you call INT 0x21 from protected or long mode thread, then INT 0xF0 function AX = 0x0421 is executed automatically.
+
+
+## Virtualization Debugger
+Debugging protected or long mode under DOS is next to impossible. I am now trying to create a simple DEBUG enhancement, called VDEBUG, which should be able to debug any DOS app in virtualization.
+
+This app should perform the following:
+
+* Load the debugee (int 0x21, function 0x4B01)
+* Enter long mode (int 0xf0, function 0x0902)
+* Prepare virtualization structures (int 0xf0, function 0x0801)
+* Launch an unrestricted guest VM
+* In the VM, set the trap flag so each opcode causes a VMEXIT.
+* Jump to the entry point of the debugee 
+* When target process calls int 0x21 function 0x4C to terminate, control returns to the command next to the int 0x21 function 0x4B01 call. Check there if under virtual machine. If so, do VMCALL to exit.
+* Go back to real mode and exit.
+* At the moment, the target process runs in a VM, but trap support is pending.
+
+## Multicore Debugger
+Debugging protected or long mode under DOS is next to impossible (again). I am now trying to create a simple DEBUG enhancement, called MDEBUG, which should be able to debug any DOS app from another CPU core.
+
+This app should perform the following:
+
+* Jump to another core
+* Load the debugee (int 0x21, function 0x4B01)
+* Set the trap flag
+* On exception, HLT the first processor then go to the MDEBUG processor
+* On resume, send resume IPI to the first processor
+* This project is not yet created, but I hope that it will be here soon!
+
+
+
 

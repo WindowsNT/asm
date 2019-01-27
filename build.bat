@@ -13,6 +13,7 @@ copy /y debuggee.exe .\CD\debuggee.exe
 copy /y entry.exe .\CD\entry.exe 
 copy /y dmmic.exe .\CD\dmmic.exe
 copy /y le.exe .\CD\le.exe
+copy /y runx.bat .\CD\runx.bat
 powershell -ExecutionPolicy RemoteSigned -File "iso.ps1"
 del .\CD\386swat.lod
 copy swat\386swat.lod .\CD\386swat.lod

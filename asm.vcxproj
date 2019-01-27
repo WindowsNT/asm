@@ -194,6 +194,7 @@
     <None Include="page32.asm" />
     <None Include="Readme.md" />
     <None Include="reqdmmi.asm" />
+    <None Include="runx.bat" />
     <None Include="stack16.asm" />
     <None Include="stack32.asm" />
     <None Include="stack64.asm" />
@@ -208,6 +209,7 @@
     <None Include="vdebug.asm" />
     <None Include="debuggee.asm" />
     <None Include="vdebug64.asm" />
+    <None Include="vdisplay.asm" />
     <None Include="vm.vmx" />
     <None Include="vmxhost64.asm" />
   </ItemGroup>

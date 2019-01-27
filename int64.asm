@@ -171,7 +171,7 @@ nnn801:
 		cmp al,0
 		jnz .nnn90
 
-				linear eax,ofsnnn0,CODE16
+				linear eax,segnnn0,CODE16
 				mov word [eax],cx
 				shr ecx,16
 				linear eax,ofsnnn0,CODE16

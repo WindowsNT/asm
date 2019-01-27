@@ -204,5 +204,11 @@
     <None Include="mdebugcore.asm">
       <Filter>MDebug</Filter>
     </None>
+    <None Include="vdisplay.asm">
+      <Filter>VDebug</Filter>
+    </None>
+    <None Include="runx.bat">
+      <Filter>Configuration</Filter>
+    </None>
   </ItemGroup>
 </Project>
