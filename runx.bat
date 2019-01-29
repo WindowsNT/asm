@@ -1,3 +1,4 @@
+
 @echo off
 D:
 
@@ -10,11 +11,11 @@ cd dpmi
 rem dpmione pro=dpmione.pro
 cd ..
 
-
 vdebug debuggee.exe
+REM dism
+
 mdebug debuggee.exe
 
-REM dism
 
 a:
 

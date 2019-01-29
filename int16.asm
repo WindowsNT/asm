@@ -700,14 +700,56 @@ n9:
 	cmp ax,0x1401
 	jnz n1401
 
-		; DS:DX the 100 byte byffer
-		; ES:BX put it there
-		mov dx,DATA16
+	break
+		; Input CX:DX output of what we had
+
+		cmp cx,0
+		jz .nxx
+		cmp dx,0
+		jz .nxx
+
+		push ds
+		push es
+		push si
+		push di
+
+		mov ax,cx
 		mov ds,ax
-		MOV dx,dismdata
-		mov dx,DATA16
+		mov si,dx
+		mov ax,DATA16
 		mov es,ax
-		MOV bx,dismdata2
+		mov di,dismdata2
+
+		.rlp:
+		mov al,[ds:si]
+		cmp al,0
+		jz .ee
+		mov [es:di],al
+		inc si
+		inc di
+		jmp .rlp
+
+		.ee:
+
+
+		pop di
+		pop si
+		pop es
+		pop ds
+
+
+		IRET
+
+		.nxx:
+		; Return DS:SI the 100 byte buffer
+		mov si,DATA16
+		mov ds,ax
+		MOV si,dismdata2
+
+	;	mov byte [ds:si],16
+;		mov byte [ds:si + 1],2
+;		mov byte [ds:si + 2],0x90
+;		mov byte [ds:si + 3],0x90
 		IRET
 
 n1401:

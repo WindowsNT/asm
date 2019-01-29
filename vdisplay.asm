@@ -43,9 +43,28 @@ mmj db 40,0
 db 50 dup (0)
 show dq 4096 dup (0)
 
+bbb2 LoadX 0,0,0,0,0,0,0
+
+rx db "dism.exe",0
+
 ShowDism:
 
 	push64
+
+	; rdi = where to store info
+	;mov ax,dismdata2
+	;linear rsi,dismdata2,DATA16
+	;mov [rsi],16
+	;mov [rsi + 1],2
+	;mov [rsi + 2],0x90
+	;mov [rsi + 3],0x90
+
+	; call dism.exe
+	mov bx,bbb
+	mov dx,prg
+	mov ax,0x4B00
+	;int 0x21
+
 
 	pop64
 
@@ -64,7 +83,7 @@ ShowRegs:
 	mov rcx,13
 	mov al,' '
 	rep stosb
-
+	
 	mov eax,'RBX ';
 	stosd
 	mov rcx,13
@@ -176,6 +195,8 @@ ShowRegs:
 	stosd
 	mov al,' '
 	stosb
+
+	call ShowDism
 ;	vmr rax,0x681E ; Guest RIP
 ;	mov rax,[rax]
 ;	call disp64 

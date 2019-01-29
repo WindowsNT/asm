@@ -161,3 +161,18 @@ macro break
 {
 xchg bx,bx
 }
+
+
+struc LoadX a,b,c,d,e,f,g
+    {
+    .f1 dw a
+    .f2 dd b
+    .f3 dd c
+	.f4 dd d
+	.sp dw g
+	.ss dw f
+	.cs dw e
+	.ip dw e
+    }
+
+

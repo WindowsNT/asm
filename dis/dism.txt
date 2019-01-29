@@ -1,0 +1,5 @@
+cd F:\TOOLS\ASM\full2\dis
+wmake -f F:\TOOLS\ASM\full2\dis\dism.mk -h -e
+wcc main.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+wlink name dism d all sys dos op m op maxe=25 op q op symf @dism.lk1
+Execution complete
