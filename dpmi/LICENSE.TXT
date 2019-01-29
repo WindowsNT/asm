@@ -1,0 +1,22 @@
+DPMIONE  -- A DPMI 1.0 Host -- Version 0.91
+(C) Copyright 1990-2004 Qualitas, Inc.	All Rights Reserved.
+
+
+Author & Copyright
+------------------
+
+This program was written by Bob Smith (bsmith@sudleyplace.com) and is
+(C) Copyright 1990-2004 Qualitas, Inc.	The most recent version may be
+found at http://www.sudleyplace.com/dpmione/.
+
+
+License
+-------
+
+This program may be used free for non-commercial use; commercial use
+requires a Volume Purchase Agreement from the author.  It may be
+freely distributed as long as no part of the program or its
+documentation is altered and the program and its documentation are
+kept together.
+
+

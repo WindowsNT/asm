@@ -1,0 +1,40 @@
+Version History for DPMIONE
+---------------------------
+
+0.91 -- 22 April 2004
+    * Fix bugs when loading as device driver.
+    * Provide partial DOS translation services for Virtual DMA
+      Services (VDS -- INT 4Bh).
+
+0.90 -- 9 February 2004
+    * Overcome bug in MS 16-bit linker (5.31) where their GP Fault
+      handler mistakenly assumes that the incoming LPM stack is
+      16-bit even though they are a 32-bit client.
+    * Implement FORCELPM16 in DPMI.PRO in case there are other apps
+      with the same bug.
+
+0.89 -- 8 July 2003
+    * Fix bug where if in VM, but no VCPI host name match, program
+      mistakenly tries to enter PM as if in RM.
+
+0.88 -- 4 June 2003
+    * Workaround bug in WinME where it has effectively disabled
+      INT 15h/AH=87h (Move Extended Memory BIOS function).
+    * Fix obscure bug related to marking a PDE as uncommitted.
+    * Implement SHAREDMEM=nnn in DPMI.PRO.
+
+0.87ÿ--ÿ26 May 2003
+    * Remove debugging code which, were it encountered, would cause
+      the system to reboot.
+
+0.86 -- 17 May 2003
+    * Fix bug in DPMI function 505h (Resize Linear Memory Block) when
+      used on Expand Down segments.
+    * Increase size of TSR space to accommodate larger resident size
+      of DPMI.LOD.
+    * Fix bug in stack alignment when LPM stack selector pushed.
+
+0.85 -- 14 May 2003
+    * Initial release to public as beta.
+
+

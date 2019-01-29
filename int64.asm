@@ -77,7 +77,7 @@ USE64
 	mov ss,ax
 	linear r8,From64To16Regs,DATA64
 	xor rsp,rsp
-	mov esp,dword [r8 + 20]
+	mov esp,dword [r8 + 20]   
 
 	qunlock64 mut_i21
 
@@ -104,7 +104,7 @@ nx4:
 		.n52:
 
 		; unlock mutex
-		cmp al,3
+		cmp al,3 
 		jnz .n53
 			cmp byte [rdi],0xFF
 			jz .okl

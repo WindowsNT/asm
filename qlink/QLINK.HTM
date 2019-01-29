@@ -1,0 +1,657 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+		 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <title>Qualitas Linker</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+   <link rel="stylesheet"
+		 href="http://www.sudleyplace.com/styles/common.css"
+		 type="text/css" />
+</head>
+
+<body>
+<!--#config timefmt="%d %B %Y %H:%M:%S" -->
+
+<h1 title="Last Changed <!--#echo var='LAST_MODIFIED' -->">
+QLINK Documentation File<br />
+Version 5.08<br />
+<small>23 March 2006</small>
+</h1>
+
+<span style="float:right">
+  <script type="text/javascript">
+	<!--
+	google_ad_client = "pub-5069729984191471";
+	google_ad_width = 120;
+	google_ad_height = 600;
+	google_ad_format = "120x600_as";
+	google_color_border = "FF4500";
+	google_color_bg = "FFEBCD";
+	google_color_link = "DE7008";
+	google_color_url = "E0AD12";
+	google_color_text = "8B4513";
+	//-->
+  </script>
+  <script type="text/javascript"
+		  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+  </script>
+</span>
+
+<h3><a name="Overview"></a>Overview</h3>
+
+<p>QLINK is a DOS linker and analysis tool designed to link together MS-DOS 
+  compatible .OBJ files.&nbsp; It can replace the MS-DOS LINK.EXE program 
+  when producing MS-DOS compatible .EXE and .COM files.</p>
+
+<h3><a name="Installation"></a>Installation</h3>
+
+<p>Make a directory (e.g., <tt>C:\QLINK</tt>), copy the zip file to that 
+  directory, and unzip the files:</p>
+
+<p><tt>MD C:\QLINK</tt><br />
+  <tt>CD C:\QLINK</tt><br />
+  <tt>COPY A:\QLINK.ZIP</tt><br />
+  <tt>PKUNZIP QLINK.ZIP</tt></p>
+
+<p>If you'll be running QLINK under Windows 3.1x (see below for Win95 instructions), 
+  copy the file <tt>WINDPMI.386</tt> to your Windows system directory.&nbsp; 
+  For example, if you installed Windows into the directory <tt>C:\WINDOWS</tt>, 
+  copy <tt>WINDPMI.386</tt> to <tt>C:\WINDOWS\SYSTEM</tt>.&nbsp; Then edit 
+  your Windows SYSTEM.INI file to insert a line such as the following in 
+  the <tt>[386ENH]</tt> section:</p>
+
+<p><tt>&nbsp;&nbsp;&nbsp; device=windpmi.386</tt></p>
+
+<p>You should first ensure that no other similar line already appears in 
+  your SYSTEM.INI file.&nbsp; For example, you might already have a line 
+  such as</p>
+
+<p><tt>&nbsp;&nbsp;&nbsp; device=c:\bc4\bin\windpmi.386</tt></p>
+
+<p>If this is the case, do not insert another call to the same driver; you 
+  need only one. This VxD does not work with Win9x.</p>
+
+<p>If you'll be running QLINK under Win9x, follow the above procedure using 
+  the file <tt>W95DPMI.386</tt> instead of <tt>WINDPMI.386</tt>.</p>
+
+<h3><a name="Benefits"></a>Benefits </h3>
+
+<ul>
+  <li>One pass linker (using <a class="linkleft" href="/dpmione/uncommit.htm">uncommitted 
+	memory</a> in DPMI 1.0)</li>
+  <li>Better performance (typically twice as fast as MS LINK, sometimes 
+	ten times faster)</li>
+  <li>Handles USE32 segments &gt; 64KB</li>
+  <li>Detailed error checking to the point that it becomes a highly valuable 
+	analysis tool</li>
+  <li>Detailed error information (e.g., source code line number info (if 
+	in .OBJ file) for fixup overflows)</li>
+  <li>Type checking between .OBJ files (if in .OBJ files).</li>
+</ul>
+
+<h3><a name="SysReq"></a>System Requirements</h3>
+
+<ul>
+  <li>MS-DOS 3.x or later</li>
+  <li>DPMI host which supports DPMI 1.0 calls -- use either 386MAX version 
+	7.0 or later, or Windows 3.1 with a (supplied) VxD from Borland (<tt>WINDPMI.386</tt>), 
+	or Win95 with a different VxD (<tt>W95DPMI.386</tt>), or
+	<a class="linkleft" href="/dpmione/index.htm">DPMIONE</a>.</li>
+</ul>
+
+<h3><a name="Usage"></a>How To Use</h3>
+
+<p>For the most part, just call QLINK instead of LINK or TLINK as appropriate.&nbsp; 
+  Borland users should note that a number of Borland specific Object Module 
+  Formats (OMFs) are not implemented as yet (I'm waiting for the documentation 
+  from Borland).&nbsp; Several MS link switches are not supported as yet 
+  (e.g., <tt>/PACKC</tt>).&nbsp; If there are switches you particularly 
+  need which are not supported, let me know.&nbsp; For an explanation of 
+  the old linker switches, see your linker manual.</p>
+
+<h3><a name="Tips"></a>Tips</h3>
+
+<p>To take advantage of the detailed error processing in QLINK, use the 
+  assembler switches which generate types and line numbers.&nbsp; For MASM 
+  and TASM these switches are <tt>/Zd</tt> and <tt>/Zi</tt>.</p>
+
+<h3><a name="SegOrd"></a>Segment Ordering</h3>
+
+<p>The order in which segments appear in the executable file depends on 
+  several factors.&nbsp; The first is whether or not the <tt>/DOSSEG</tt> 
+  switch appears explicitly on the command line or implicitly in a OMF record 
+  in one of the .OBJ files.</p>
+
+<p>If <tt>/DOSSEG</tt> is specified, the segment order is as follows:</p>
+
+<ul>
+  <li>All segments with a class name ending in <tt>'CODE'</tt></li>
+  <li>All other segments not in <tt>DGROUP</tt>, grouping together segments 
+	with the same class name</li>
+  <li><tt>DGROUP</tt> segments in the following order:
+	<ul>
+	  <li>Any segments of class <tt>'BEGDATA'</tt></li>
+	  <li>Any segment not of class <tt>'BEGDATA'</tt>, <tt>'BSS'</tt>, or 
+		<tt>'STACK'</tt></li>
+	  <li>Segments of class <tt>'BSS'</tt></li>
+	  <li>Segments of class <tt>'STACK'</tt></li>
+	</ul>
+  </li>
+</ul>
+
+<p>Otherwise, the segment order is as follows:</p>
+
+<ul>
+  <li>All unclassed segments</li>
+  <li>All classed segments by class (that is, segments in the same class 
+	appear adjacent to each other).</li>
+</ul>
+
+<h3>  <a name="Errors"></a>Error Messages</h3>
+
+<p>There are a number of switches specific to QLINK which are documented 
+  in the file QLINK.CFG.&nbsp; These switches control the processing of 
+  error messages from QLINK.&nbsp;&nbsp; All error messages begin with either</p>
+
+<p><tt>==> WARN:</tt></p>
+
+<p>or</p>
+
+<p><tt>==> FAIL:</tt></p>
+
+<p>Messages which begin with <tt>WARN</tt> are warnings and do not halt 
+  the linker.&nbsp; Messages which being with <tt>FAIL</tt> cause the linker 
+  to stop immediately and not continue processing the input files.</p>
+
+<p>If an error message is followed by a name such as <tt>FIXOVF</tt> or 
+  <tt>GRPEXT0</tt> in parentheses, then that error can be controlled by 
+  the switches <tt>/I:</tt><i>switch</i>, <tt>/W:</tt><i>switch</i>, and 
+  <tt>/F:</tt><i>switch</i>, where <i>switch</i> is the name in parentheses 
+  in the error message.</p>
+
+<p>If you wish to ignore this error (meaning the linker takes a default 
+  action and continues processing), use <tt>/I:</tt><i>switch</i>.&nbsp; 
+  To warn about an error (meaning an error message is displayed, the linker 
+  takes a default action, and continues processing), use <tt>/W:</tt><i>switch</i>.&nbsp; 
+  The default settings for all error messages are described in the file 
+  QLINK.CFG.</p>
+
+<p>This same file (QLINK.CFG) is consulted when QLINK begins execution.&nbsp; 
+  Any switches found there (including switches such as <tt>/MAP</tt>, <tt>/LINE</tt>, 
+  etc.) are processed before the command line is parsed.&nbsp; Switches 
+  only may be contained in QLINK.CFG, not names of .OBJ files, etc.&nbsp; 
+  Even earlier in the process, the environment variable <tt>QLINK=</tt> 
+  is consulted, and it too may contain only switches.</p>
+
+<p>Thus the order of processing of switches is first, those contained in 
+  the environment variable <tt>QLINK=</tt>, then those in the file QLINK.CFG 
+  (first in the current directory, and if not found there in the directory 
+  from which QLINK is loaded), and finally those found on the command line 
+  to QLINK.&nbsp; Switches processed later in the sequence override ones 
+  processed earlier.</p>
+
+<h3><a name="NameSub"></a>Name Substitutions</h3>
+
+<p>Occasionally, you want to link together .OBJ modules from different projects 
+  which use different naming conventions.&nbsp; For example, in one project 
+  code segments are in class <tt>CODE</tt> and in others they are in class 
+  <tt>PROG</tt>.&nbsp; Previously, you would have to edit the source code, 
+  make the changes, and re-compile.&nbsp; With the Name Substitution feature 
+  of QLINK, it's a snap.</p>
+
+<p>To substitute names on the fly within the .OBJ file, place the switch 
+  <tt>/NS</tt> before the reference to each .OBJ file whose names are to 
+  be substituted.&nbsp; For example, use <tt>/NS:PROG-CODE</tt> to tell 
+  QLINK that the name <tt>PROG</tt> is to be changed to <tt>CODE</tt>.</p>
+
+<p>Each substitution is effective for all .OBJ files which appear after 
+  it until that substitution (or all substitutions) are halted.&nbsp; Use 
+  the form <tt>/NS:</tt><i>name</i> to halt substitutions on <i>name</i>; 
+  use <tt>/NS</tt> with no arguments to halt all substitutions.</p>
+
+<p>Note that this means that the occurrences of <tt>/NS</tt> are sensitive 
+  to the position and order in which they appear.&nbsp; Be sure to place 
+  occurrences of <tt>/NS</tt> <b>before</b> the reference to the .OBJ file 
+  to which they apply.</p>
+
+<p>To swap two symbols in the same file, use (say) <tt>/NS:A-B:B-A</tt>.</p>
+
+<p>The substitution is made on all references to the name regardless of 
+  context.&nbsp; Thus if you have a file with a segment named <tt>PROG</tt> 
+  and a class named <tt>PROG</tt>, substituting <tt>CODE</tt> for <tt>PROG</tt> 
+  changes both references.</p>
+
+<p>The full syntax is</p>
+
+<p><tt><i>Nameset</i>:&nbsp;&nbsp; (<i>empty</i>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  ; Halt substitution on all names<br />
+  &nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | <i>name</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  ; Halt substitution on this name<br />
+  &nbsp;<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | <i>name</i> 
+  '-' <i>name</i></tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  ; Substitute the second name for the first name</p>
+
+<p><tt><i>Namedef</i>:&nbsp;&nbsp;&nbsp; <i>Nameset</i></tt> <br />
+  <tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | <i>Namedef</i> 
+  ':' <i>Nameset</i></tt></p>
+
+<p><tt><i>Switch</i>:&nbsp;&nbsp;&nbsp;&nbsp; '/NS:' <i>Namedef</i></tt></p>
+
+<p>The keyword <tt>/NS</tt> may appear in the QLINK environment variable, 
+  the QLINK.CFG configuration file, the automatic response file, and the 
+  QLINK command line.</p>
+
+<h3>Frequently Asked Questions</h3>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%" summary="">
+  <tr align="left" valign="top"> 
+	<td>Q:&nbsp;</td>
+	<td>When I link modules with the MS linker and QLINK, sometimes the 
+	  executable files are of very different sizes?</td>
+  </tr>
+  <tr align="left" valign="top">
+	<td>A:&nbsp;</td>
+	<td>This can occur if a .LIB is used to resolve external references.&nbsp; 
+	  Because there is no rule as to the order in which external refs are 
+	  processed, different ordering of these references mean that there 
+	  can be different segment boundary alignments which can change the 
+	  final executable file size.</td>
+  </tr>
+</table>
+
+<h3><a name="WishList"></a>Future Work</h3>
+
+<p>In no particular order of importance (nor of expectation of getting done), 
+  the following topics are on my list:</p>
+<ul>
+  <li>Support Borland-specific OMFs</li>
+  <li>Support MS-specific OMFs (for which I don't have any examples)</li>
+  <li>External procedure for symbol processing (instead of reading .MAP 
+	file)</li>
+  <li>Allow segment attribute changes per .OBJ file</li>
+  <li>Generate Windows compatible .EXEs</li>
+  <li>Generate Code view information</li>
+  <li>Generate Turbo Debugger information</li>
+  <li>Compress .EXE using LZH or some such technique (for Windows executables 
+	as well)</li>
+  <li>Finish type checking of structures</li>
+</ul>
+
+<p>Please feel free to add to this list.</p>
+
+<h3><a name="TechSupport"></a>Technical Support</h3>
+
+<p>Please contact the author via Internet e-mail at</p>
+
+<p>&nbsp;&nbsp;&nbsp;<script type="text/javascript"
+  src="/email.cgi?n=bsmith&amp;d=sudleyplace.com&amp;class=mailright"></script>
+  (Bob Smith)</p>
+
+<p>QLINK is &copy; Copyright 1994-2006 Qualitas, Inc.&nbsp; All rights reserved.</p>
+
+<h3><a name="Changes"></a>Change History</h3>
+
+<p>5.08&nbsp;&nbsp;&nbsp;&nbsp;23 March 2006</p>
+
+<ul>
+  <li>Fix bug in .LIB symbol compares for case-insensitive
+	libraries whose symbols contain uppercase letters (thanks
+	Bob Snuggs).</li>
+</ul>
+
+<p>5.07&nbsp;&nbsp;&nbsp;&nbsp;2 January 2004</p>
+
+<ul>
+  <li>Fix bug which prevents multiple .LIB files from being recognized (thanks 
+	Japheth).</li>
+</ul>
+
+<p>5.06&nbsp;&nbsp;&nbsp;&nbsp;24 December 2003</p>
+
+<ul>
+  <li>Catch invalid OMF record where an LIDATA record has a zero repeat 
+	count.</li>
+</ul>
+
+<p>5.05&nbsp;&nbsp;&nbsp;&nbsp;19 June 2003</p>
+
+<ul>
+  <li>Mark COMM variables as USE32 if the segment in which they are defined 
+	(c_common or FAR_BSS) is USE32.</li>
+  <li>Load .OBJ files into extended memory instead of low DOS in case there's 
+	not enough room.</li>
+  <li>Implement undocumented /KNOWEAS for compatibility with MS linker.</li>
+</ul>
+
+<p>5.04&nbsp;&nbsp;&nbsp;&nbsp;22 May 2003</p>
+
+<ul>
+  <li>Added more information to USEDIF error message to point to .OBJ file 
+	in which the segment was first defined.</li>
+  <li>Added references to DPMIONE as a DPMI 1.0 host under which QLINK 
+	runs.</li>
+</ul>
+
+<p>5.03&nbsp;&nbsp;&nbsp;&nbsp;21 July 2002</p>
+
+<ul>
+  <li>Modified the change in version 5.00 for fixup overflows to treat 
+	the Target Displacement as a signed number and then ignore overflows 
+	if the upper 24- (for byte fixups) or 16-bits (for word fixups) are 
+	all ones.</li>
+</ul>
+
+<p>5.02&nbsp;&nbsp;&nbsp;&nbsp;1 July 2002</p>
+
+<ul>
+  <li>Fix bug where a MODEND fixup generating any kind of error causes 
+	the routine which displays the .OBJ file name to fail (thanks to Vladomir 
+	Rodriquez for pointing this out).</li>
+</ul>
+
+<p>5.01&nbsp;&nbsp;&nbsp;&nbsp;26 June 2002</p>
+
+<ul>
+  <li>Fix bug where .MAP file occasionally not written out.</li>
+  <li>Display segment combine type in /MAP:FULL.</li>
+  <li>Fix bug in display of line #s for grouped segments which are not first 
+	in the group.</li>
+  <li>Append IGNOREd errors to .ERR file if /DEBUG:ERR in effect.</li>
+  <li>Added FIXOVF$ switch to ignore fixup overflows in '$$SYMBOLS' segments.</li>
+  <li>Fix bug when parsing command line and/or .ARF file if leading '+' 
+	in multiple entry (.OBJ or .LIB) fields.</li>
+</ul>
+
+<p>5.00&nbsp;&nbsp;&nbsp;&nbsp;26 June 2002</p>
+
+<ul>
+  <li>Change version # to 5 to workaround bug in EXEHDR.</li>
+  <li>Fix bug in display of FRMSEG$ message.</li>
+  <li>Display error message if not enough memory to enter PM through the 
+	DPMI host.</li>
+  <li>Fix bug when checking for fixup overflows where the displacement 
+	wasn't added in before the overflow check, thus missing some overflows 
+	(thanks to Vladomir Rodriquez for pointing this out).</li>
+</ul>
+
+<p>1.30&nbsp;&nbsp;&nbsp;&nbsp;22 June 2002</p>
+
+<ul>
+  <li>Added MTOBJ switch to fail on empty .OBJ files which can occur when 
+	a language translator creates an object file but halts for some reason 
+	before writing anything to it.</li>
+</ul>
+
+<p>1.29&nbsp;&nbsp;&nbsp;&nbsp;18 April 2002</p>
+
+<ul>
+  <li>Fix bug to change ignore/warn action on OMFUNK to ignore the record.</li>
+</ul>
+
+<p>1.28&nbsp;&nbsp;&nbsp;&nbsp;25 April 2000</p>
+
+<ul>
+  <li>Fix bug handling weak externs if the symbol is already public.</li>
+</ul>
+
+<p>1.27&nbsp;&nbsp;&nbsp;&nbsp;18 April 2000</p>
+
+<ul>
+  <li>Implement support for COMDAT records.</li>
+  <li>Avoid searching through duplicate library names.</li>
+  <li>Handle blank line in ARF file as field marker.</li>
+  <li>Allow library directories in libfiles part of the command line.</li>
+</ul>
+
+<p>1.26&nbsp;&nbsp;&nbsp; 10 April 2000</p>
+
+<ul>
+  <li>Extend checking for FRMSEG, FRMSEG0, and FRMSEG$ to the FT01 case.</li>
+  <li>Define RELTGT switch to catch the case where a self-relative fixup's 
+	Frame and Target segments are different in the FT00 case.</li>
+</ul>
+
+<p>1.25&nbsp;&nbsp;&nbsp; 7 April 2000</p>
+
+<ul>
+  <li>Extend checking for RELGRP errors in self-relative fixups to the 
+	FT10 and FT11 cases.</li>
+  <li>Extend checking for RELGRPX and RELSEGX errors in self-relative fixups 
+	to the FT20 and FT21 cases.</li>
+  <li>Extend checking for RELSEG errors in self-relative fixups to the 
+	FT01 case.</li>
+</ul>
+
+<p>1.24&nbsp;&nbsp;&nbsp; 4 April 2000</p>
+
+<ul>
+  <li>Extend Name Substitutions to PUBDEF and EXTDEF records (it previously 
+	applied to LNAMES &amp; LLNAMES records only).</li>
+  <li>Extend Name Substitutions to .LIB files.</li>
+</ul>
+
+<p>1.23&nbsp;&nbsp;&nbsp; 30 March 2000</p>
+
+<ul>
+  <li>Define FRMSEG$ switch to catch the case where a FRMSEG error occurs 
+	in a fixup segment named '$$SYMBOLS'.&nbsp; This reduces some of the 
+	noise when linking with debugging info.&nbsp; The default action is 
+	to ignore the error.</li>
+  <li>Fix bug when an external mixed-case symbol precedes the matching 
+	public declaration of the same symbol in a different case.</li>
+</ul>
+
+<p>1.22&nbsp;&nbsp;&nbsp; 30 March 2000</p>
+
+<ul>
+  <li>Implement /NS keyword to handle name substitutions.</li>
+  <li>Implement additional debugging display for fixups via /DEBUG:FIXUP.</li>
+</ul>
+
+<p>1.21&nbsp;&nbsp;&nbsp; 28 March 2000</p>
+
+<ul>
+  <li>&nbsp;Force /NOE as I can't figure out how it works.&nbsp; I thought 
+	I understood it, but now I'm convinced I do not.</li>
+</ul>
+
+<p>1.20&nbsp;&nbsp;&nbsp; 24 March 2000</p>
+
+<ul>
+  <li>Implement /FARCALL.</li>
+  <li>Fix bugs when recognizing special class, segment, and group&nbsp; 
+	names (wasn't case-insensitive and was off by one in length when comparing 
+	names).</li>
+</ul>
+
+<p>1.19&nbsp;&nbsp;&nbsp; 22 March 2000</p>
+
+<ul>
+  <li>Define FRMSEG0 switch to reduce the number of spurious FRMSEG&nbsp; 
+	messages in the case where the segment is the first one in the group.&nbsp; 
+	In this case, the fixup value is the same independent of whether the 
+	fixup is segment- or group-relative.&nbsp; The default action is to 
+	ignore FRMSEG0 errors.</li>
+</ul>
+
+<p>1.18&nbsp;&nbsp;&nbsp; 15 March 2000</p>
+
+<ul>
+  <li>&nbsp;Fix bug in self-relative fixups for several Frame vs. Target 
+	cases I never thought could occur until NASM came along.</li>
+</ul>
+
+<p>1.17&nbsp;&nbsp;&nbsp; 2 October 1999</p>
+
+<ul>
+  <li>Change default behavior of ALINDIF to align segments of the same 
+	type according to the actual alignment (which may differ from segment 
+	to segment) instead of enforcing a single alignment across all segments 
+	of the same type.&nbsp; This change mimics the MS-LINK behavior.&nbsp; 
+	Using segments of the same type with different alignment is still a 
+	mistake.</li>
+</ul>
+
+<p>1.16&nbsp;&nbsp;&nbsp; 8 September 1999</p>
+
+<ul>
+  <li>Fix bug when encountering multiple different segments with stack 
+	combine type (use the first one only).</li>
+</ul>
+
+<p>1.15&nbsp;&nbsp;&nbsp; 6 September 1999</p>
+
+<ul>
+  <li>Fix bug which didn't display an error if a .LIB file was not found.</li>
+  <li>Implement switches for BLKDEF, BLKEND, and TYPDEF records instead 
+	of lumping them into OMFIGN.&nbsp; As the default action is to ignore 
+	these records, you don't have to ignore all OMFIGN records just to ignore 
+	these.</li>
+</ul>
+
+<p>1.14&nbsp;&nbsp;&nbsp; 3 September 1999</p>
+
+<ul>
+  <li>Fix bug where default EXE and MAP filenames were not displayed when 
+	using an Automatic Response File.</li>
+</ul>
+
+<p>1.13&nbsp;&nbsp;&nbsp; 25 May 1999</p>
+
+<ul>
+  <li>Fix bug with not generating .MAP file when /MAP specified without 
+	an end-of-field marker.</li>
+</ul>
+
+<p>1.12&nbsp;&nbsp;&nbsp; 16 May 1999</p>
+
+<ul>
+  <li>Fix bug with <tt>/DOSSEG</tt> segment ordering.</li>
+</ul>
+
+<p>1.11&nbsp;&nbsp;&nbsp; 25 June 1998</p>
+
+<ul>
+  <li>Compare segment and class names case insensitively so as to mimic 
+	MS LINK behavior.</li>
+  <li>Fix bug in FIXUPP of Frame Segment, Target External where the wrong 
+	variable was used when checking for FRMSEG errors.</li>
+  <li>Round down Frame Base to para boundary before calculating fixups.</li>
+</ul>
+
+<p>1.10&nbsp;&nbsp;&nbsp; 27 April 1998</p>
+
+<ul>
+  <li>Mark THRINV as ignored.&nbsp; Apparently, MSVC 8 (and possibly earlier 
+	versions) set bit 2 in the method field of a THREAD subrecord in a FIXUPP 
+	record.</li>
+  <li>Fix bugs with aliased symbols.</li>
+  <li>Fix spurious error report with BAKPAT records.</li>
+</ul>
+
+<p>1.09&nbsp;&nbsp;&nbsp; 12 March 1998</p>
+
+<ul>
+  <li>Fix bug in parsing of .LIB file on the command line so that QLINK 
+	no longer asks for more .LIB files if one is specified.</li>
+  <li>Implement <tt>/OPTHEADER</tt> (<tt>/OP</tt>) to optimize the .EXE 
+	file header by rounding the header up to a paragraph boundary instead 
+	of a 512-byte boundary.</li>
+</ul>
+
+<p>1.08&nbsp;&nbsp;&nbsp; 12 November 1997</p>
+
+<ul>
+  <li>Wrote the VxD <tt>W95DPMI.386</tt> which provides the appropriate 
+	DPMI 1.0 functions for QLINK to run under Win95.&nbsp; In particular, 
+	this VxD supplies the needed calls to allocate uncommitted pages.</li>
+</ul>
+
+<p>1.07&nbsp;&nbsp;&nbsp; 8 July 1997</p>
+
+<ul>
+  <li>Add <tt>EXTMAT</tt> config option to display message if an external 
+	in a module is not referenced by that module.&nbsp; Presumably (but 
+	not always), these references can be deleted from the source file.</li>
+</ul>
+
+<p>1.06&nbsp;&nbsp;&nbsp; 25 June 1995</p>
+
+<ul>
+  <li>If <tt>/MAP</tt> but no explicit entry in map file field, create 
+	one anyway.</li>
+  <li>Fix bug in fixup of far call to extern in a later segment which doesn't 
+	start on a para boundary.</li>
+  <li>Fix bug where <tt>/NOE</tt> didn't work.</li>
+  <li>Fix bug where null para at start of <tt>_TEXT</tt> not handled.</li>
+</ul>
+
+<p>1.05&nbsp;&nbsp;&nbsp; 8 May 1995</p>
+
+<ul>
+  <li>Implement <tt>/ONERROR:NOEXE</tt>.</li>
+  <li>Parse and ignore <tt>/NOLOGO</tt>.</li>
+  <li>Parse and warn <tt>/PACKCODE:</tt><i>nnn</i>.</li>
+  <li>Use FSA to parse .ARF files.</li>
+  <li>Change <tt>THRINV</tt> from always Fail to Ignore, Warn, Fail.</li>
+  <li>Support <tt>BAKPAT</tt> records.</li>
+  <li>Support <tt>CEXTDEF</tt> records.</li>
+  <li>Support <tt>LLNAMES</tt> records.</li>
+  <li>Treat extra fields in ARF file as EOF.</li>
+  <li>Implement <tt>/NOIGNORECASE</tt>.</li>
+</ul>
+
+<p>1.04&nbsp;&nbsp;&nbsp; 25 March 1995</p>
+
+<ul>
+  <li>Allow addition with seg directive, e.g., <tt>DW (seg PGROUP)+10h</tt>.&nbsp; 
+	Note that MS-LINK doesn't handle this correctly.</li>
+  <li>Fix bug in handling of OMF <tt>FIXUPP</tt> records for Frame &amp; 
+	Target external for self-relative fixups.&nbsp; This format is used 
+	by MASM 6.10, but neither MASM 5.10b nor 6.11a.</li>
+</ul>
+
+<p>1.03&nbsp;&nbsp;&nbsp; 14 February 1995</p>
+
+<ul>
+  <li>Allow options occasionally enabled by some Integrated Development 
+	Environments which turn off unsupported features such as
+	<ul>
+	  <li><tt>/NOPACKCODE</tt></li>
+	  <li><tt>/NOPACKDATA</tt></li>
+	  <li><tt>/NOPACKFUNCTIONS</tt></li>
+	</ul>
+  </li>
+  <li>Also allow (and signal warning) for unsupported features
+	<ul>
+	  <li><tt>/FARCALLTRANSLATION</tt></li>
+	  <li><tt>/PACKCODE</tt></li>
+	  <li><tt>/PACKDATA</tt></li>
+	  <li><tt>/PACKFUNCTIONS</tt></li>
+	</ul>
+  </li>
+</ul>
+
+<p>1.02&nbsp;&nbsp;&nbsp; 18 November 1994</p>
+
+<ul>
+  <li>Fix bug if QLINK is run w/o DPMI host present.</li>
+  <li>Fix misspelling of <tt>/NOEXTDICTIONARY</tt>.</li>
+</ul>
+
+<p>1.01&nbsp;&nbsp;&nbsp; 26 October 1994</p>
+
+<ul>
+  <li>Fix bug if searching for library file.</li>
+  <li>Write out minimal sized .EXE file.</li>
+</ul>
+
+<p>1.00&nbsp;&nbsp;&nbsp; 2 October 1994</p>
+
+<ul>
+  <li>Initial release</li>
+</ul>
+
+<!--#include virtual="/ValidXHTML-CSS.html" -->
+<!--#include virtual="/footer.htm" -->
+</body></html>

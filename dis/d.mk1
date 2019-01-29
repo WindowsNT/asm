@@ -1,0 +1,52 @@
+!define BLANK ""
+F:\TOOLS\ASM\full2\dis\decode.obj : F:\TOOLS\ASM\full2\dis\decode.c .AUTODEP&
+END
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc decode.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\itab.obj : F:\TOOLS\ASM\full2\dis\itab.c .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc itab.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\syn-att.obj : F:\TOOLS\ASM\full2\dis\syn-att.c .AUTOD&
+EPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc syn-att.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\syn-intel.obj : F:\TOOLS\ASM\full2\dis\syn-intel.c .A&
+UTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc syn-intel.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\syn.obj : F:\TOOLS\ASM\full2\dis\syn.c .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc syn.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\udis86.obj : F:\TOOLS\ASM\full2\dis\udis86.c .AUTODEP&
+END
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc udis86.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\d.lib : F:\TOOLS\ASM\full2\dis\decode.obj F:\TOOLS\AS&
+M\full2\dis\itab.obj F:\TOOLS\ASM\full2\dis\syn-att.obj F:\TOOLS\ASM\full2\d&
+is\syn-intel.obj F:\TOOLS\ASM\full2\dis\syn.obj F:\TOOLS\ASM\full2\dis\udis8&
+6.obj .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ %create d.lb1
+!ifneq BLANK "decode.obj itab.obj syn-att.obj syn-intel.obj syn.obj udis86.o&
+bj"
+ @for %i in (decode.obj itab.obj syn-att.obj syn-intel.obj syn.obj udis86.ob&
+j) do @%append d.lb1 +'%i'
+!endif
+!ifneq BLANK ""
+ @for %i in () do @%append d.lb1 +'%i'
+!endif
+ *wlib -b -c -n -q -p=512 d.lib @d.lb1
+

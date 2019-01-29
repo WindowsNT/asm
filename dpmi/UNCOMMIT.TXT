@@ -1,0 +1,58 @@
+		How to Use Uncommitted Memory
+
+Overview
+--------
+
+One of the really nice features of DPMI 1.0 is its support of
+uncommitted memory, that is the ability to allocate address space
+without allocating memory to back it up at the same time.
+
+For example, say you need space for an object whose size you can't
+compute at the start, but has a reasonable upper limit of, say, 100
+megabytes.  Using uncommitted memory, you can allocate 100 MB of
+address space and then just start using it.
+
+When you first write to anywhere in the address space, the DPMI 1.0
+host signals a Visible Page Fault (VPF) which your program has hooked
+and is now given the opportunity to handle.  Your program's response
+to the VPF is to mark the 4KB block's page attributes as Read/Write
+and Committed, and then simply re-execute the instruction which
+triggered the VPF.  The DPMI host takes over from there, maps in a 4KB
+block of memory, and your program continues on as if nothing had
+happened.
+
+Subsequent accesses to different 4KB blocks of the uncommitted memory 
+trigger additional VPFs to which your program responds in the same 
+way.  This provides a very efficient mechanism with a small amount of 
+overhead once per 4KB block of the address space and commits only the 
+amount of memory actually needed.
+
+I used this technique in my linker, QLINK.  At the start of the 
+program, it doesn't know how big each segment might be, but it can 
+make a reasonable guess that none will be bigger than a few megabytes.	
+When data is written to each segment, QLINK's VPF handler marks the 
+faulting address as committed, and continues on.
+
+This feature allows QLINK to pass through each object file only once 
+instead of the usual two passes needed by other linkers.
+
+
+Details
+-------
+
+To use uncommitted memory, follow these steps:
+
+1.  Allocate address space via DPMI function 504h (Allocate Linear
+    Memory Block) with EDX = 0 to create Uncommitted Pages.
+
+2.  Hook the Page Fault handler via DPMI function 210h (Get Extended
+    Processor Exception Handler -- PM), interrupt 0Eh.
+
+3.  When the Page Fault handler hooked above is called, find the 
+    matching handle from step 1, and change the corresponding 4KB 
+    block's Page Attributes (via DPMI function 507h -- Set Page 
+    Attributes) to Read/Write and Committed.
+
+4.  Return to the caller to re-execute the instruction which triggered 
+    the VPF.
+

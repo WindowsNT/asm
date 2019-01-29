@@ -696,6 +696,21 @@ nr4:
 	IRET
 n9:
 
+	; AX 0x1401 Helper for DISM to take dissassembly
+	cmp ax,0x1401
+	jnz n1401
+
+		; DS:DX the 100 byte byffer
+		; ES:BX put it there
+		mov dx,DATA16
+		mov ds,ax
+		MOV dx,dismdata
+		mov dx,DATA16
+		mov es,ax
+		MOV bx,dismdata2
+		IRET
+
+n1401:
 
 IRET
 
@@ -777,7 +792,7 @@ TempBackLM:
 
 
 	; execute the interrupt
-	mov ax,STACK16S
+	mov ax,STACK16S 
 	mov ss,ax
 	xor esp,esp
 	mov esp,stack16dmmi2_end

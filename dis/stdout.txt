@@ -1,0 +1,12 @@
+DOSBox version 0.74-2
+Copyright 2002-2018 DOSBox Team, published under GNU GPL.
+---
+SDL_Init: Starting up with SDL windib video driver.
+          Try to update your video card and directx drivers!
+CONFIG:Loading primary settings from config file G:\progs\dosbox\woa86FA.tmp
+"vga" is not a valid value for variable: machine.
+It might now be reset it to default value: svga_s3
+Memory sizes above 31 MB are NOT recommended.
+Stick with the default values unless you are absolutely certain.
+MIDI:win32 selected Microsoft GS Wavetable Synth
+MIDI:Opened device:win32

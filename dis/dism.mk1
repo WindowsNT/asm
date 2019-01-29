@@ -1,0 +1,54 @@
+!define BLANK ""
+F:\TOOLS\ASM\full2\dis\decode.obj : F:\TOOLS\ASM\full2\dis\decode.c .AUTODEP&
+END
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc decode.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\itab.obj : F:\TOOLS\ASM\full2\dis\itab.c .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc itab.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\main.obj : F:\TOOLS\ASM\full2\dis\main.c .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc main.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\syn-att.obj : F:\TOOLS\ASM\full2\dis\syn-att.c .AUTOD&
+EPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc syn-att.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\syn-intel.obj : F:\TOOLS\ASM\full2\dis\syn-intel.c .A&
+UTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc syn-intel.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\syn.obj : F:\TOOLS\ASM\full2\dis\syn.c .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc syn.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\udis86.obj : F:\TOOLS\ASM\full2\dis\udis86.c .AUTODEP&
+END
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ *wcc udis86.c -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+
+F:\TOOLS\ASM\full2\dis\dism.exe : F:\TOOLS\ASM\full2\dis\decode.obj F:\TOOLS&
+\ASM\full2\dis\itab.obj F:\TOOLS\ASM\full2\dis\main.obj F:\TOOLS\ASM\full2\d&
+is\syn-att.obj F:\TOOLS\ASM\full2\dis\syn-intel.obj F:\TOOLS\ASM\full2\dis\s&
+yn.obj F:\TOOLS\ASM\full2\dis\udis86.obj F:\TOOLS\ASM\full2\dis\decode.h F:\&
+TOOLS\ASM\full2\dis\extern.h F:\TOOLS\ASM\full2\dis\itab.h F:\TOOLS\ASM\full&
+2\dis\syn.h F:\TOOLS\ASM\full2\dis\types.h F:\TOOLS\ASM\full2\dis\udint.h .A&
+UTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\dis
+ @%write dism.lk1 FIL decode.obj,itab.obj,main.obj,syn-att.obj,syn-intel.obj&
+,syn.obj,udis86.obj
+ @%append dism.lk1 
+ *wlink name dism d all sys dos op m op maxe=25 op q op symf @dism.lk1
+

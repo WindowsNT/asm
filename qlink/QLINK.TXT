@@ -1,0 +1,511 @@
+QLINK Documentation File
+
+Overview
+--------
+
+QLINK is a DOS linker and analysis tool designed to link together
+MS-DOS compatible .OBJ files.  It can replace the MS-DOS LINK.EXE
+program when producing MS-DOS compatible .EXE and .COM files.
+
+
+Installation
+------------
+
+Make a directory (e.g., C:\QLINK), copy the zip file to that
+directory, and unzip the files:
+
+MD C:\QLINK
+CD C:\QLINK
+COPY A:\QLINK.ZIP
+PKUNZIP QLINK.ZIP
+
+If you'll be running QLINK under Windows 3.1x (see below for Win95
+instructions), copy the file WINDPMI.386 to your Windows system
+directory.  For example, if you installed Windows into the directory
+C:\WINDOWS, copy WINDPMI.386 to C:\WINDOWS\SYSTEM.  Then edit your
+Windows SYSTEM.INI file to insert a line such as the following in the
+[386ENH] section:
+
+    device=windpmi.386
+
+You should first ensure that no other similar line already appears in
+your SYSTEM.INI file.  For example, you might already have a line such
+as
+
+    device=c:\bc4\bin\windpmi.386
+
+If this is the case, do not insert another call to the same driver;
+you need only one.  This VxD does not work with Win9x.
+
+If you'll be running QLINK under Win9x, follow the above procedure
+using the file W95DPMI.386 instead of WINDPMI.386.
+
+
+
+Benefits
+--------
+
+* One pass linker (using uncommitted memory in DPMI 1.0)
+
+* Better performance (typically twice as fast as MS LINK, sometimes
+  ten times faster)
+
+* Handles USE32 segments > 64KB
+
+* Detailed error checking to the point that it becomes a highly
+  valuable analysis tool
+
+* Detailed error information (e.g., source code line number info (if
+  in .OBJ file) for fixup overflows)
+
+* Type checking between .OBJ files (if in .OBJ files)
+
+
+System Requirements
+-------------------
+
+* MS-DOS 3.x or later
+
+* DPMI host which supports DPMI 1.0 calls -- use either 386MAX version
+  7.0 or later, or Windows 3.1x with a (supplied) VxD from Borland
+  (WINDPMI.386), or DPMIONE (see http://www.sudleyplace.com/dpmione/).
+
+
+How To Use
+----------
+
+For the most part, just call QLINK instead of LINK or TLINK as
+appropriate.  Borland users should note that a number of
+Borland-specific Object Module Formats (OMFs) are not implemented as
+yet (I'm waiting for the documentation from Borland).  Several MS link
+switches are not supported as yet (e.g., /PACKC).  If there are
+switches you particularly need which are not supported, let me know.
+For an explanation of the old linker switches, see your linker manual.
+
+
+Tips
+----
+
+To take advantage of the detailed error processing in QLINK, use the
+assembler switches which generate types and line numbers.  For MASM
+and TASM these switches are /Zd and /Zi.
+
+
+Segment Ordering
+----------------
+
+The order in which segments appear in the executable file depends on
+several factors.  The first is whether or not the /DOSSEG switch
+appears explicitly on the command line or implicitly in a OMF record
+in one of the .OBJ files.
+
+If /DOSSEG is specified, the segment order is as follows:
+
+* All segments with a class name ending in 'CODE'
+* All other segments not in DGROUP
+* DGROUP segments in the following order:
+  * Any segments of class 'BEGDATA'
+  * Any segment not of class 'BEGDATA', 'BSS', or 'STACK'
+  * Segments of class 'BSS'
+  * Segments of class 'STACK'
+
+Otherwise, the segment order is as follows:
+
+* All unclassed segments
+* All classed segments by class (that is, segments in the same class
+  appear adjacent to each other).
+
+
+Error Messages
+--------------
+
+There are a number of switches specific to QLINK which are documented
+in the file QLINK.CFG.	These switches control the processing of error
+messages from QLINK.  All error messages begin with either
+
+ออ> WARN:
+
+or
+
+ออ> FAIL:
+
+Messages which begin with WARN are warnings and do not halt the
+linker.  Messages which being with FAIL cause the linker to stop
+immediately and not continue processsing the input files.
+
+If an error message is followed by a name such as FIXOVF or GRPEXT0 in
+parentheses, then that error can be controlled by the switches
+/I:switch, /W:switch, and /F:switch, where 'switch' is the name in
+parentheses in the error message.
+
+If you wish to ignore this error (meaning the linker takes a default
+action and continues processing), use /I:switch.  To warn about an
+error (meaning an error message is displayed, the linker takes a
+default action, and continues processing), use /W:switch.  The default
+settings for all error messages are described in the file QLINK.CFG.
+
+This same file (QLINK.CFG) is consulted when QLINK begins execution.
+Any switches found there (including switches such as /MAP, /LINE,
+etc.) are processed before the command line is parsed.	Switches only
+may be contained in QLINK.CFG, not names of .OBJ files, etc.  Even
+earlier in the process, the environment variable QLINK= is consulted,
+and it too may contain only switches.
+
+Thus the order of processing of switches is first, those contained in
+the environment variable QLINK=, then those in the file QLINK.CFG
+(first in the current directory, and if not found there in the
+directory from which QLINK is loaded), and finally those found on the
+command line to QLINK.	Switches processed later in the sequence
+override ones processed ealier.
+
+
+Name Substitutions
+------------------
+
+Occasionally, you want to link together .OBJ modules from different
+projects which use different naming conventions.  For example, in one
+project code segments are in class 'CODE' and in others they are in
+class 'PROG'.  Previously, you would have to edit the source code,
+make the changes, and re-compile.  With the Name Substitution feature
+of QLINK, it's a snap.
+
+To substitute names on the fly within the .OBJ file, place the switch
+/NS before the reference to each .OBJ file whose names are to be
+substituted.  For example, use /NS:PROG-CODE to tell QLINK that the
+name 'PROG' is to be changed to 'CODE'.
+
+Each substitution is effective for all .OBJ files which appear after
+it until that substitution (or all substitutions) are halted.  Use the
+form /NS:name to halt substitutions on 'name'; use /NS with no
+arguments to halt all substitutions.
+
+Note that this means that the occurrences of /NS are sensitive to the
+position and order in which they appear.  Be sure to place occurrences
+of /NS before the reference to the .OBJ file to which they apply.
+
+To swap two symbols in the same file, use (say) /NS:A-B:B-A.
+
+The substitution is made on all references to the name regardless of
+context.  Thus if you have a file with a segment named PROG and a
+class named PROG, substituting CODE for PROG changes both references.
+
+The full syntax is
+
+Nameset:    (empty)	    ; Halt substitution on all names
+	  | name	    ; Halt substitution on this name
+	  | name '-' name   ; Substitute the second name for the
+			    ; first name
+
+Namedef:    Nameset
+	  | Namedef ':' Nameset
+
+Switch:     '/NS:' Namedef
+
+The keyword /NS may appear in the QLINK environment variable, the
+QLINK.CFG configuration file, the automatic response file, and the
+QLINK command line.
+
+
+Frequently Asked Questions
+--------------------------
+
+Q:  When I link modules with the MS linker and QLINK, sometimes the
+    executable files are of very different sizes?
+A:  This can occur if a .LIB is used to resolve external references.
+    Because there is no rule as to the order in which external refs
+    are processed, different ordering of these references mean that
+    there can be different segment boundary alignments which can
+    change the final executable file size.
+
+
+Future Work
+-----------
+
+In no particular order of importance (nor of expectation of getting
+done), the following topics are on my list:
+
+* Support Borland-specific OMFs
+
+* Support MS-specific OMFs (for which I don't have any examples)
+
+* External procedure for symbol processing (instead of reading .MAP
+  file)
+
+* Allow segment attribute changes per .OBJ file
+
+* Generate Windows-compatible .EXEs
+
+* Generate Codeview information
+
+* Generate Turbo Debugger information
+
+* Compress .EXE using LZH or some such technique (for Windows
+  executables as well)
+
+* Finish type checking of structures
+
+Please feel free to add to this list.
+
+
+Technical Support
+-----------------
+
+Please contact the author via Internet e-mail at
+
+    bsmith@sudleyplace.com (Bob Smith)
+
+
+QLINK is (C) Copyright 1994-2006 Qualitas, Inc.  All rights reserved.
+
+
+Change History
+--------------
+
+5.08	23 March 2006
+	* Fix bug in .LIB symbol compares for case-insensitive
+	  libraries whose symbols contain uppercase letters (thanks
+	  Bob Snuggs).
+
+5.07	2 January 2004
+	* Fix bug which prevents multiple .LIB files from being
+	  recognized (thanks Japheth).
+
+5.06	24 December 2003
+	* Catch invalid OMF record where an LIDATA record has a zero
+	  repeat count.
+
+5.05	19 June 2003
+	* Mark COMM variables as USE32 if the segment in which they
+	  are defined (c_common or FAR_BSS) is USE32.
+	* Load .OBJ files into extended memory instead of low DOS
+	  in case there's not enough room.
+	* Implement undocumented /KNOWEAS for compatibility with MS
+	  linker.
+
+5.04	22 May 2003
+	* Added more information to USEDIF error message to point to
+	  .OBJ file in which the segment was first defined.
+	* Added references to DPMIONE as a DPMI 1.0 host under which
+	  QLINK runs.
+
+5.03	21 July 2002
+	* Modified the change in version 5.00 for fixup overflows to
+	  treat the Target Displacement as a signed number and then
+	  ignore overflows if the upper 24- (for byte fixups) or
+	  16-bits (for word fixups) are all ones.
+
+5.02	1 July 2002
+	* Fix bug where a MODEND fixup generating any kind of error
+	  causes the routine which displays the .OBJ file name to fail
+	  (thanks to Vladomir Rodriquez for pointing this out).
+
+5.01	26 June 2002
+	* Fix bug where .MAP file occasionally not written out.
+	* Display segment combine type in /MAP:FULL.
+	* Fix bug in display of line #s for grouped segments which are
+	  not first in the group.
+	* Append IGNOREd errors to .ERR file if /DEBUG:ERR in effect.
+	* Added FIXOVF$ switch to ignore fixup overflows in '$$SYMBOLS'
+	  segments.
+	* Fix bug when parsing command line and/or .ARF file if
+	  leading '+' in multiple entry (.OBJ or .LIB) fields.
+
+5.00	26 June 2002
+	* Change version # to 5 to workaround bug in EXEHDR.
+	* Fix bug in display of FRMSEG$ message.
+	* Display error message if not enough memory to enter PM
+	  through the DPMI host.
+	* Fix bug when checking for fixup overflows where the displacement
+	  wasn't added in before the overflow check, thus missing some
+	  overflows (thanks to Vladomir Rodriquez for pointing this out).
+
+1.30	22 June 2002
+	* Added MTOBJ switch to fail on empty .OBJ files which can occur
+	  when a language translator creates an object file but halts for
+	  some reason before writing anything to it.
+
+1.29	18 April 2002
+	* Fix bug to change ignore/warn action on OMFUNK to ignore the
+	  record.
+
+1.28	25 April 2000
+	* Fix bug handling weak externs if the symbol is already public.
+
+1.27	18 April 2000
+	* Implement support for COMDAT records.
+	* Avoid searching through duplicate library names.
+	* Handle blank line in ARF file as field marker.
+	* Allow library directories in libfiles part of the command line.
+
+1.26	10 April 2000
+	* Extend checking for FRMSEG, FRMSEG0, and FRMSEG$ to the FT01
+	  case.
+	* Define RELTGT switch to catch the case where a self-relative
+	  fixup's Frame and Target segments are different in the FT00
+	  case.
+
+1.25	7 April 2000
+	* Extend checking for RELGRP errors in self-relative fixups to the
+	  FT10 and FT11 cases.
+	* Extend checking for RELGRPX and RELSEGX errors in self-relative
+	  fixups to the FT20 and FT21 cases.
+	* Extend checking for RELSEG errors in self-relative fixups to the
+	  FT01 case.
+
+1.24	4 April 2000
+	* Extend Name Substitutions to PUBDEF and EXTDEF records (it
+	  previously applied to LNAMES & LLNAMES records only).
+	* Extend Name Substitutions to .LIB files.
+
+1.23	30 March 2000
+	* Define FRMSEG$ switch to catch the case where a FRMSEG error
+	  occurs in a fixup segment named '$$SYMBOLS'.  This reduces some
+	  of the noise when linking with debugging info.  The default
+	  action is to ignore the error.
+	* Fix bug when an external mixed-case symbol precedes the matching
+	  public declaration of the same symbol in a different case.
+
+1.22	30 March 2000
+	* Implement /NS keyword to handle name substitutions.
+	* Implement additional debugging display for fixups via
+	  /DEBUG:FIXUP.
+
+1.21	28 March 2000
+	* Force /NOE as I can't figure out how it works.  I thought I
+	  understood it, but now I'm convinced I do not.
+
+1.20	24 March 2000
+	* Implement /FARCALL.
+	* Fix bugs when recognizing special class, segment, and group
+	  names (wasn't case-insensitive and was off by one in length
+	  when comparing names).
+
+1.19	22 March 2000
+	* Define FRMSEG0 switch to reduce the number of spurious FRMSEG
+	  messages in the case where the segment is the first one in the
+	  group.  In this case, the fixup value is the same independent
+	  of whether the fixup is segment- or group-relative.  The default
+	  action is to ignore FRMSEG0 errors.
+
+1.18	15 March 2000
+	* Fix bug in self-relative fixups for several Frame vs. Target
+	  cases I never thought could occur until NASM came along.
+
+1.17	2 October 1999
+	* Change default behavior of ALINDIF to align segments of the
+	  same type according to the actual alignment (which may
+	  differ from segment to segment) instead of enforcing a
+	  single alignment across all segments of the same type.  This
+	  change mimics the MS-LINK behavior.  Using segments of the
+	  same type with different alignment is still a mistake.
+
+1.16	8 September 1999
+	* Fix bug when encountering multiple different segments with
+	  stack combine type (use the first one only).
+
+1.15	6 September 1999
+	* Fix bug which didn't display an error if a .LIB file was not
+	  found.
+	* Implement switches for BLKDEF, BLKEND, and TYPDEF records
+	  instead of lumping them into OMFIGN.	As the default action
+	  is to ignore these records, you don't have to ignore all
+	  OMFIGN records just to ignore these.
+
+1.14	3 September 1999
+	* Fix bug where default EXE and MAP filenames were not
+	  displayed when using an Automatic Response File.
+
+1.13	25 May 1999
+	* Fix bug with not generating .MAP file when /MAP specified
+	  without an end-of-field marker.
+
+1.12	16 May 1999
+	* Fix bug with DOSSEG segmnent ordering.
+
+1.11	25 June 1998
+	* Compare segment and class names case insensitively so as to
+	  mimic MS LINK behavior.
+	* Fix bug in FIXUPP of Frame Segment, Target External where the
+	  wrong variable was used when checking for FRMSEG errors.
+	* Round down Frame Base to para boundary before calculating
+	  fixups.
+
+1.10	27 April 1998
+	* Mark THRINV as ignored.  Apparently, MSVC 8 (and possibly
+	  earlier versions) set bit 2 in the method field of a THREAD
+	  subrecord in a FIXUPP record.
+	* Fix bugs with aliased symbols.
+	* Fix spurious error report with BAKPAT records.
+
+1.09	12 March 1998
+	* Fix bug in parsing of .LIB file on the command line so that
+	  QLINK no longer asks for more .LIB files if one is specified.
+	* Implement /OPTHEADER (/OP) to optimize the .EXE file header by
+	  rounding the header up to a paragraph boundary instead of a
+	  512-byte boundary.
+
+1.08	12 November 1997
+	* Wrote the VxD W95DPMI.386 which provides the appropriate
+	  DPMI 1.0 functions needed for QLINK to run under Win95.
+
+1.07	8 July 1997
+	* Add EXTMAT config option to display message if an external in a
+	  module is not referenced by that module.	Presumably (but not
+	  always), these references can be deleted from the source file.
+
+1.06	25 June 1995
+	* If /MAP but no explicit entry in mapfile field, create one
+	  anyway.
+	* Fix bug in fixup of far call to extern in a later segment
+	  which doesn't start on a para boundary.
+	* Fix bug where /NOE didn't work.
+	* Fix bug where null para at start of _TEXT not handled.
+
+1.05	8 May 1995
+	* Implement /ONERROR:NOEXE.
+	* Parse and ignore /NOLOGO.
+	* Parse and warn /PACKCODE:nnn.
+	* Use FSA to parse .ARF files.
+	* Change THRINV from always Fail to Ignore, Warn, Fail.
+	* Support BAKPAT records.
+	* Support CEXTDEF records.
+	* Support LLNAMES records.
+	* Treat extra fields in ARF file as EOF.
+	* Implement /NOIGNORECASE.
+
+1.04	25 March 1995
+	* Allow addition with seg directive, e.g.,
+	  DW (seg PGROUP)+10h.	Note that MS-LINK doesn't handle this
+	  correctly.
+	* Fix bug in handling of OMF FIXUPP records for Frame &
+	  Target external for self-relative fixups.  This format is
+	  used by MASM 6.10, but neither MASM 5.10b nor 6.11a.
+
+1.03	14 February 1995
+	* Allow options occasionally enabled by some Integrated
+	  Development Environments which turn off unsupported
+	  features such as
+
+	  /NOPACKCODE
+	  /NOPACKDATA
+	  /NOPACKFUNCTIONS
+
+	* Also allow (and signal warning) for unsupported features
+
+	  /FARCALLTRANSLATION
+	  /PACKCODE
+	  /PACKDATA
+	  /PACKFUNCTIONS
+
+1.02	18 November 1994
+	* Fix bug if QLINK is run w/o DPMI host present.
+	* Fix misspelling of /NOEXTDICTIONARY.
+
+1.01	26 October 1994
+	* Fix bug if searching for library file.
+	* Write out minimal sized .EXE file.
+
+1.00	2 October 1994
+	* Initial release.
+
+

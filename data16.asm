@@ -167,3 +167,6 @@ support1gb db "[1GB Paging] ","$"
 supportvm db "[VM] ",0x0d,0x0a,"$"
 ;supportvmu db "VM Unrestricted Supported",0x0d,0x0a,"$"
 
+; --- DISM
+dismdata db 100 dup (0) ; 1 type byte, 2 length, 3+data
+dismdata2 db 100 dup (0) ; Result

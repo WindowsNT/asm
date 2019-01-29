@@ -4,7 +4,7 @@ int32_21:
 
 	mov bp,ax
 	mov ax,0x0421
-
+	  
 int32:
 
 

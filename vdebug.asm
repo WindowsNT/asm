@@ -2,13 +2,13 @@ FORMAT MZ
 HEAP 0
 
 include 'config.asm'
-include 'struct.asm'
-
+include 'struct.asm' 
+   
 
 
 ; stack
 segment STACK16
-USE16
+USE16 
 
 dw 128 dup(0)
 stre:

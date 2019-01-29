@@ -33,7 +33,7 @@ disp4:
 	ret
 
 	.hdisp4:
-	sub al,0xA
+	sub al,0xA  
 	add al,0x41
 	stosb
 ret
@@ -42,6 +42,14 @@ mmhelp db 'Commands: ',0xd,0xa,' (?) - help',0xd,0xa,' (g) - go',0xd,0xa,' (r) -
 mmj db 40,0
 db 50 dup (0)
 show dq 4096 dup (0)
+
+ShowDism:
+
+	push64
+
+	pop64
+
+ret
 
 ShowRegs:
 
