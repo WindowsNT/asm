@@ -23,7 +23,7 @@ m1 db "Virtualization Debugger, (C) Chourdakis Michael - Set VDEBUG=1 to config.
 prg db "d:\debuggee.exe",0x0
 
 
-
+dismpos dd 0
 bbb LoadX 0,0,0,0,0,0,0
 
 include 'vdebug64.asm'
@@ -65,6 +65,16 @@ start16:
 	int 0x21
 
 	RequireDMMI
+
+	; dism pos
+	mov ax,0x1401
+	xor ecx,ecx
+	xor edx,edx
+	int 0xF0
+	mov word [es:dismpos],si
+	mov word [es:dismpos + 2],ds
+	mov ax,DATA16
+	mov ds,ax
 
 	; Load executable
 	mov bx,bbb

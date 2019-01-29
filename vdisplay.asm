@@ -44,29 +44,79 @@ db 50 dup (0)
 show dq 4096 dup (0)
 
 bbb2 LoadX 0,0,0,0,0,0,0
+rx db "d:\dism.exe",0
 
-rx db "dism.exe",0
+guestlinear:
+
+	vmr rax,0x681E ; Guest RIP
+	vmr rbx,0x802 ; Guest CS
+	shl rbx,4
+	add rbx,rax
+	mov rax,rbx
+ret
 
 ShowDism:
 
-	push64
+	push rdi
 
 	; rdi = where to store info
 	;mov ax,dismdata2
-	;linear rsi,dismdata2,DATA16
-	;mov [rsi],16
-	;mov [rsi + 1],2
-	;mov [rsi + 2],0x90
-	;mov [rsi + 3],0x90
+	;break
+	linear rsi,dismpos,DATA16
+	xor ecx,ecx
+	xor edx,edx
+	mov dx,[rsi]
+	mov cx,[rsi + 2]
+	xor rdi,rdi
+	mov di,cx
+	shl edi,4
+	add edi,edx
+
+	push rdi
+
+	; get current
+
+	call guestlinear
+
+	mov rcx,15
+	mov byte [rdi],16
+	mov byte [rdi + 1],15
+	add rdi,2
+	.jlpp:
+	mov bl,[rax]
+	mov [rdi],bl
+	inc rax
+	inc rdi
+	dec rcx
+	jrcxz .jlppf
+	jmp .jlpp
+	.jlppf:
+
+
 
 	; call dism.exe
-	mov bx,bbb
-	mov dx,prg
-	mov ax,0x4B00
-	;int 0x21
+	mov bx,bbb2
+	mov dx,rx
+	mov bp,0x4B00
+	mov si,CODE64
+	shl esi,16
+	mov edi,esi
+	mov ax,0x421
+	int 0xF0
 
+	pop rdi
+	
 
-	pop64
+	mov rsi,rdi
+	pop rdi
+	.jlp:
+	mov al,[rsi]
+	cmp al,0
+	jz .end
+	stosb
+	inc rsi
+	jmp .jlp
+	.end:
 
 ret
 
@@ -191,15 +241,18 @@ ShowRegs:
 	mov al,' '
 	stosb
 
-	mov eax,'NEXT';
-	stosd
+	call guestlinear
+	call disp64 
 	mov al,' '
 	stosb
 
+	
+	mov al,' '
+	stosb
+
+
 	call ShowDism
-;	vmr rax,0x681E ; Guest RIP
-;	mov rax,[rax]
-;	call disp64 
+
 
 	
 

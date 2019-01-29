@@ -696,13 +696,15 @@ nr4:
 	IRET
 n9:
 
+
+
+
 	; AX 0x1401 Helper for DISM to take dissassembly
 	cmp ax,0x1401
 	jnz n1401
 
-	break
 		; Input CX:DX output of what we had
-
+		;break
 		cmp cx,0
 		jz .nxx
 		cmp dx,0
@@ -722,9 +724,9 @@ n9:
 
 		.rlp:
 		mov al,[ds:si]
+		mov [es:di],al
 		cmp al,0
 		jz .ee
-		mov [es:di],al
 		inc si
 		inc di
 		jmp .rlp
@@ -743,7 +745,7 @@ n9:
 		.nxx:
 		; Return DS:SI the 100 byte buffer
 		mov si,DATA16
-		mov ds,ax
+		mov ds,si
 		MOV si,dismdata2
 
 	;	mov byte [ds:si],16
