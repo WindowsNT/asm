@@ -64,6 +64,14 @@ start16:
 	mov dx,m1
 	int 0x21
 
+	mov eax,1
+	cpuid
+	bt ecx,5
+	jc VMX_Supported
+	mov ax,0x4C00
+	int 0x21
+	VMX_Supported:
+
 	RequireDMMI
 
 	; dism pos

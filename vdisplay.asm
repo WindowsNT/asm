@@ -38,7 +38,7 @@ disp4:
 	stosb
 ret
 
-mmhelp db 'Commands: ',0xd,0xa,' (?) - help',0xd,0xa,' (g) - go',0xd,0xa,' (r) - registers',0xd,0xa,' (t) - trace',0xd,0xa,          "$"
+mmhelp db 'Commands: ',0xd,0xa,' (? or h) - help',0xd,0xa,' (g) - go',0xd,0xa,' (r) - registers',0xd,0xa,' (t) - trace',0xd,0xa,          "$"
 mmj db 40,0
 db 50 dup (0)
 show dq 4096 dup (0)
@@ -163,7 +163,7 @@ ShowDism:
 
 ret
 
-ShowRegs:
+ShowRegs64:
 
 	push64
 	linear r15,vregs,STACK64
@@ -317,6 +317,153 @@ ShowRegs:
 
 ret
 
+
+ShowRegs:
+
+	push64
+	linear r15,vregs,STACK64
+	linear rdi,show,CODE64
+	cld
+
+	;rax - rdx
+	mov eax,'EAX ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+	
+	mov eax,'EBX ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'ECX ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'EDX ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'ESI ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'EDI ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'EBP ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'ESP ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov ax,0x0D0A
+	stosw
+
+	mov rax,[r15 + 0x00]
+	call disp32
+	mov al,' '
+	stosb
+
+	mov rax,[r15 + 0x08]
+	call disp32
+	mov al,' '
+	stosb
+
+	mov rax,[r15 + 0x10]
+	call disp32
+	mov al,' '
+	stosb
+
+	mov rax,[r15 + 0x18]
+	call disp32
+	mov al,' '
+	stosb
+
+	mov rax,[r15 + 0x20]
+	call disp32
+	mov al,' '
+	stosb
+
+	mov rax,[r15 + 0x28]
+	call disp32
+	mov al,' '
+	stosb
+
+	mov rax,[r15 + 0x30]
+	call disp32
+	mov al,' '
+	stosb
+
+
+	vmr rax,0x681C ; Guest RSP
+	call disp32 
+	mov al,' '
+	stosb
+
+
+
+	
+	mov ax,0x0D0A
+	stosw
+
+
+	; RIP
+	mov rax,'CS:EIP: ';
+	stosq
+	vmr rax,0x802 ; Guest CS
+	call disp16 
+	mov al,':'
+	stosb
+	vmr rax,0x681E ; Guest RIP
+	call disp32
+	mov al,' '
+	stosb
+
+	call guestlinear
+	call disp32 
+	mov al,' '
+	stosb
+
+	mov al,' '
+	stosb
+
+	call ShowDism
+
+	mov ax,0x0D0A
+	stosw
+
+	mov al,'$'
+	stosb
+	mov dx,show
+	mov si,CODE64
+	shl esi,16
+	mov ebp,0x900
+	mov ax,0x421
+	int 0xF0
+
+	pop64
+
+ret
+
+
 ShowPrompt:
 	push64
 	linear rdi,show,CODE64
@@ -354,6 +501,9 @@ WaitForInput:
 
 	; Single Byte Commands
 	cmp byte [rdx + 2],'?'
+	jz .CmdHelp
+
+	cmp byte [rdx + 2],'h'
 	jz .CmdHelp
 
 	cmp byte [rdx + 2],'r'
