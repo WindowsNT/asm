@@ -46,7 +46,25 @@ show dq 4096 dup (0)
 bbb2 LoadX 0,0,0,0,0,0,0
 rx db "d:\dism.exe",0
 
+guestmode:
+	vmr rbx,0x6800 ; Guest CR0
+	bt rbx,1
+	jz .noreal
+
+	mov ax,0
+	ret
+	
+	
+	.noreal:
+
+	
+
+ret
+
+
 guestlinear:
+
+	call guestmode
 
 	vmr rax,0x681E ; Guest RIP
 	vmr rbx,0x802 ; Guest CS
@@ -73,13 +91,26 @@ ShowDism:
 	add edi,edx
 
 	push rdi
-
-	; get current
-
 	call guestlinear
 
-	mov rcx,15
 	mov byte [rdi],16
+	
+	; Check Mode actually
+	; VMCALL
+	linear rcx,exitreason,STACK64
+	push rax
+	mov al,[rcx]
+	cmp al,18
+	pop rax
+	jnz .novmcall
+
+	pop rdi
+	pop rdi
+	ret; nothing 
+
+	.novmcall:
+
+	mov rcx,15
 	mov byte [rdi + 1],15
 	add rdi,2
 	.jlpp:
@@ -117,6 +148,18 @@ ShowDism:
 	inc rsi
 	jmp .jlp
 	.end:
+
+
+	; And mode
+	call guestmode
+	cmp ah,0
+	jnz .noreal
+	mov eax,'(RM)';
+	stosd
+	jmp .afterm
+	.noreal:
+	.afterm:
+
 
 ret
 
@@ -359,6 +402,7 @@ ret
 
 
 ShowDisplay:
+
 
 call ShowRegs
 call WaitForInput
