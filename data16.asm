@@ -28,20 +28,14 @@ Support1GBPaging db 0
 VMXSupported db 0 
 VMXUnrestrictedSupported db 0
 
-if STATIC_PAGE32 = 0
 Paging32InXMS dd 0
 Paging32InXMSH dw 0
-end if
 
-if STATIC_PAGE64 = 0
 Paging64InXMS dd 0
 Paging64InXMSH dw 0
-end if
 
-if STATIC_PAGEVM = 0
 PagingVMInXMS dd 0
 PagingVMInXMSH dw 0
-end if
 
 ; --------------------------------------- VMX tests---------------------------------------
 vmt1 db 0 ; existence

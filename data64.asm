@@ -28,22 +28,3 @@ From64To16Regs db 64 dup (0)
 SEGMENT ABSD64 USE64
 
 
-if STATIC_PAGE64 = 1
-; --------------------------------------- 64 bit Page Directory ---------------------------------------
-SEGMENT PAGE64 USE64
-ORG 0
-
-Page64Null dq 3000 dup (0)
-end if 
-
-if STATIC_PAGEVM = 1
-; 
-; --------------------------------------- VMX 64 bit EPT ---------------------------------------
-SEGMENT VMXPAGE64 USE64
-ORG 0
-
-Ept64Null dq 8192 dup (0);
-
-end if
-
-

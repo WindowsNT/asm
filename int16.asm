@@ -30,7 +30,6 @@ Thread16C:
 	hlt
 	hlt
 
-if RESIDENT_OWN_PM_STACK > 0
 
 Thread32P:	
 	mov     ax,page32_idx          
@@ -39,17 +38,6 @@ Thread32P:
 	db 0x66
 	db 0xBC
 	c32st dd 0 
-
-
-else
-
-	c32st dd 0 
-Thread32P:	
-	mov     ax,stack32_idx          
-	mov     ss,ax                   
-	mov     esp,stack32dmmi_end  
-
-end if
 
 	mov ax,code16_idx
 	mov ds,ax
@@ -65,7 +53,6 @@ end if
 
 USE64
 
-if RESIDENT_OWN_LM_STACK > 0
 Thread64P:	
 	; mov rsp,xxxxxxxx
 	;mov rsp,0x0000000012345678
@@ -73,11 +60,6 @@ Thread64P:
 	db 0xC7
 	db 0xC4
 	c64st dd 0 
-else
-    c64st dd 0
-Thread64P:
-	linear rsp,stack64dmmi_end,STACK64
-end if 
 
 	linear rax,idt_LM_start
 	lidt [rax]
@@ -99,7 +81,6 @@ cv64vmode db 0
 cv64vmode2 dw 0 
 
 
-if RESIDENT_OWN_LM_STACK > 0
 Thread64PV:	
 	; mov rsp,xxxxxxxx
 	;mov rsp,0x0000000012345678
@@ -107,11 +88,6 @@ Thread64PV:
 	db 0xC7
 	db 0xC4
 	cv64st dd 0 
-else
-    cv64st dd 0
-Thread64PV:
-	linear rsp,stack64dmmi_end,STACK64
-end if 
 
 	linear rax,idt_LM_start
 	lidt [rax]

@@ -141,21 +141,15 @@ end if
 ; --------------------------------------- Protected Mode Find Page Entry  ---------------------------------------
 xor ecx,ecx
 
-if STATIC_PAGE32 = 0
 ; Alloc 32 Pages high, preserve low ram
 mov edx,1024*100
 call allochigh
 mov [Paging32InXMSH],cx
 mov [Paging32InXMS],edi
-end if
 
 LoopPMR:
 xor eax,eax
-if STATIC_PAGE32 = 1
-	linear eax,Page32Null,PAGE32
-else
-	mov eax,[Paging32InXMS]
-end if
+mov eax,[Paging32InXMS]
 
 add eax,ecx
 mov ebx,eax
@@ -172,23 +166,17 @@ mov [PhysicalPagingOffset32],eax
 ; --------------------------------------- Long Mode Find Page Entry  ---------------------------------------
 if TEST_LONG > 0 
 
-if STATIC_PAGE64 = 0
 ; Alloc 64 Pages high, preserve low ram
 mov edx,1024*100
 call allochigh
 mov [Paging64InXMSH],cx
 mov [Paging64InXMS],edi
-end if
 
 
 xor ecx,ecx
 LoopPMR2:
 xor eax,eax
-if STATIC_PAGE64 = 1
-	linear eax,Page64Null,PAGE64
-else
-	mov eax,[Paging64InXMS]
-end if 
+mov eax,[Paging64InXMS]
 add eax,ecx
 mov ebx,eax
 shr eax,12
@@ -231,23 +219,17 @@ mov [VMXUnrestrictedSupported],1
 VMX_NoUR:
 VMX_NotSupported:
 
-if STATIC_PAGEVM = 0
 ; Alloc VMX Pages high, preserve low ram
 mov edx,1024*100
 call allochigh
 mov [PagingVMInXMSH],cx
 mov [PagingVMInXMS],edi
-end if
 
 xor ecx,ecx
 LoopPMR5:
 xor eax,eax
 
-if STATIC_PAGEVM = 1
-	linear eax,Ept64Null,VMXPAGE64
-else
-	mov eax,[PagingVMInXMS]
-end if 
+mov eax,[PagingVMInXMS]
 add eax,ecx
 mov ebx,eax
 shr eax,12
@@ -465,23 +447,17 @@ lidt    [di]
 sti
 ; = END NO DEBUG HERE =
 
-if STATIC_PAGE32 = 0
 ; Free Paging 32 bit reserved in XMS
 mov dx,[Paging32InXMSH]
 call freehigh
-end if
 
-if STATIC_PAGE64 = 0
 ; Free Paging 64 bit reserved in XMS
 mov dx,[Paging64InXMSH]
 call freehigh
-end if
 
-if STATIC_PAGEVM = 0
 ; Free Paging VM bit reserved in XMS
 mov dx,[PagingVMInXMSH]
 call freehigh
-end if
 
 ; --------------------------------------- Quick Unreal ---------------------------------------
 push cs

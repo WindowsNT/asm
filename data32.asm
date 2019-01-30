@@ -14,11 +14,3 @@ d32 dd 0
 From32To16Regs db 64 dup (0)
 
 
-if STATIC_PAGE32 = 1
-; --------------------------------------- 32 bit Page Segment ---------------------------------------
-SEGMENT PAGE32 USE32
-ORG 0
-
-Page32Null dd 2050 DUP (0)
-end if 
-
