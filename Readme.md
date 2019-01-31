@@ -21,7 +21,7 @@ in the repository.
 Build and run, it will automatically start bochs/vmware/virtualbox with the included FreeDOS image. 
 It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default it is automatically run (autoexec.bat)
 
-## 3rd Party Apps included
+## 3rd Part Apps included
 1. DOS32A - http://dos32a.narechk.net/index_en.html
 2. 386SWAT - http://www.sudleyplace.com/swat/
 3. UDIS86 - http://udis86.sourceforge.net/ , including an open watcom C project that is used by VDEBUG and MDEBUG

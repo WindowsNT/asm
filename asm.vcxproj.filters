@@ -210,13 +210,10 @@
     <None Include="runx.bat">
       <Filter>Configuration</Filter>
     </None>
-    <None Include="dpmic.asm">
-      <Filter>DPMI Client</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="dis\main.c">
-      <Filter>16 bit code</Filter>
-    </Text>
+    <ClCompile Include="dis\main.c">
+      <Filter>VDebug</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

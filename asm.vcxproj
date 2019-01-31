@@ -172,7 +172,6 @@
     <None Include="data64.asm" />
     <None Include="directlong.asm" />
     <None Include="dmmic.asm" />
-    <None Include="dpmic.asm" />
     <None Include="gdt.asm" />
     <None Include="guest16.asm" />
     <None Include="guest32.asm" />
