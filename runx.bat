@@ -12,9 +12,7 @@ rem dpmione pro=dpmione.pro
 cd ..
 
 vdebug debuggee.exe
-REM dism
-
-mdebug debuggee.exe
+rem mdebug debuggee.exe
 
 
 a:
