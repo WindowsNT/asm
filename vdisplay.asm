@@ -47,18 +47,13 @@ bbb2 LoadX 0,0,0,0,0,0,0
 rx db "d:\dism.exe",0
 
 guestmode:
-	vmr rbx,0x6800 ; Guest CR0
-	bt rbx,1
+	vmr rax,0x6800 ; Guest CR0
+	bt rax,1
 	jz .noreal
-
-	mov ax,0
-	ret
-	
-	
+		mov ax,0
+		ret
 	.noreal:
-
-	
-
+		mov ax,0x0100
 ret
 
 
@@ -93,7 +88,19 @@ ShowDism:
 	push rdi
 	call guestlinear
 
+	; mode, 16 bit for now
+	; The following is bad, we must check CS selector
+	; but test for now
+	push rax
+	call guestmode
+	cmp al,01
+	jnz .nmx1
+	mov byte [rdi],32
+	jmp .ax1
+	.nmx1:
 	mov byte [rdi],16
+	.ax1:
+	pop rax
 	
 	; Check Mode actually
 	; VMCALL
@@ -106,6 +113,9 @@ ShowDism:
 
 	pop rdi
 	pop rdi
+	mov rax,'vmcall';
+	stosq
+
 	ret; nothing 
 
 	.novmcall:
@@ -150,17 +160,71 @@ ShowDism:
 	.end:
 
 
-	; And mode
+ret
+
+ShowCRs:
+
+	;rax - rdx
+	mov eax,'CR0 ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+	
+	mov eax,'CR3 ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov eax,'CR4 ';
+	stosd
+	mov rcx,5
+	mov al,' '
+	rep stosb
+
+	mov ax,0x0D0A
+	stosw
+
+	vmr rax,0x6800 
+	call disp32 
+	mov al,' '
+	stosb
+
+	vmr rax,0x6802
+	call disp32 
+	mov al,' '
+	stosb
+
+	vmr rax,0x6804 
+	call disp32 
+	mov al,' '
+	stosb
+
+	mov ax,0x0D0A
+	stosw
+
+
+
+ret
+
+DisplayGuestMode:
 	call guestmode
 	cmp ah,0
 	jnz .noreal
-	mov eax,'(RM)';
-	stosd
+	mov rax,'(RM)    ';
+	stosq
 	jmp .afterm
 	.noreal:
+
+	cmp ah,1
+	jnz .noprot
+	mov rax,'(PM)    ';
+	stosq
+	jmp .afterm
+	.noprot:
+
 	.afterm:
-
-
 ret
 
 ShowRegs64:
@@ -169,6 +233,8 @@ ShowRegs64:
 	linear r15,vregs,STACK64
 	linear rdi,show,CODE64
 	cld
+
+	call ShowCRs
 
 	;rax - rdx
 	mov eax,'RAX ';
@@ -272,8 +338,11 @@ ShowRegs64:
 	mov ax,0x0D0A
 	stosw
 
+	; Mode
+	call DisplayGuestMode
+
 	; RIP
-	mov rax,'CS:RIP: ';
+	mov rax,'CS:RIP  ';
 	stosq
 	vmr rax,0x802 ; Guest CS
 	call disp16 
@@ -284,6 +353,8 @@ ShowRegs64:
 	mov al,' '
 	stosb
 
+	mov rax,'LINEAR  ';
+	stosq
 	call guestlinear
 	call disp64 
 	mov al,' '
@@ -324,6 +395,8 @@ ShowRegs:
 	linear r15,vregs,STACK64
 	linear rdi,show,CODE64
 	cld
+
+	call ShowCRs
 
 	;rax - rdx
 	mov eax,'EAX ';
@@ -425,8 +498,11 @@ ShowRegs:
 	stosw
 
 
+	; Mode
+	call DisplayGuestMode
+
 	; RIP
-	mov rax,'CS:EIP: ';
+	mov rax,'CS:EIP  ';
 	stosq
 	vmr rax,0x802 ; Guest CS
 	call disp16 
@@ -437,6 +513,8 @@ ShowRegs:
 	mov al,' '
 	stosb
 
+	mov rax,'LINEAR  ';
+	stosq
 	call guestlinear
 	call disp32 
 	mov al,' '
@@ -533,7 +611,7 @@ WaitForInput:
 
 	.CmdGo:
 		; Clear Trap
-		vmw32 0x4004,0 ; allow exceptions
+		vmw32 0x4004,0x40 ; trap exception 0x06
 		vmr rax,0x6820
 		btr rax,8
 		vmw64 0x6820,rax
@@ -541,7 +619,7 @@ WaitForInput:
 
 	.CmdTrace:
 		; Set Trap
-		vmw32 0x4004,2 ; block intx1
+		vmw32 0x4004,0x42 ; trap exception 0x06 and 0x01
 		vmr rax,0x6820
 		bts rax,8
 		vmw64 0x6820,rax
