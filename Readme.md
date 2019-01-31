@@ -21,6 +21,14 @@ in the repository.
 Build and run, it will automatically start bochs/vmware/virtualbox with the included FreeDOS image. 
 It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default it is automatically run (autoexec.bat)
 
+## 3rd Part Apps included
+1. DOS32A - http://dos32a.narechk.net/index_en.html
+2. 386SWAT - http://www.sudleyplace.com/swat/
+3. UDIS86 - http://udis86.sourceforge.net/ , including an open watcom C project that is used by VDEBUG and MDEBUG
+4. DPMIONE - http://www.sudleyplace.com/dpmione/
+5. QLINK - http://www.sudleyplace.com/qlink/
+
+
 ## Tests performed
 1. Real mode test
 2. Protected mode test with or without paging
@@ -72,7 +80,7 @@ If you call INT 0x21 from the main thread, INT 0x21 is executed directly. If you
 ## Virtualization Debugger
 Debugging protected or long mode under DOS is next to impossible. I am now trying to create a simple DEBUG enhancement, called VDEBUG, which should be able to debug any DOS app in virtualization.
 
-This app should perform the following:
+Compile it with config.asm VDEBUG = 1. This app does the following:
 
 * Load the debugee (int 0x21, function 0x4B01)
 * Enter long mode (int 0xf0, function 0x0902)
@@ -82,19 +90,27 @@ This app should perform the following:
 * Jump to the entry point of the debugee 
 * When target process calls int 0x21 function 0x4C to terminate, control returns to the command next to the int 0x21 function 0x4B01 call. Check there if under virtual machine. If so, do VMCALL to exit.
 * Go back to real mode and exit.
-* At the moment, the target process runs in a VM, but trap support is pending.
+* At the moment, the implemented functions are:
+	* r - (registers) - shows Control, General, and Dissassembly using UDIS86
+	* g - (go) - runs all program to the end
+	* t - (trace) - traces commands 
+	* h - (help) - shows help
+
 
 ## Multicore Debugger
 Debugging protected or long mode under DOS is next to impossible (again). I am now trying to create a simple DEBUG enhancement, called MDEBUG, which should be able to debug any DOS app from another CPU core.
 
-This app should perform the following:
+Compile it with config.asm MDEBUG = 1. This app should perform the following:
 
 * Jump to another core
 * Load the debugee (int 0x21, function 0x4B01)
 * Set the trap flag
 * On exception, HLT the first processor then go to the MDEBUG processor
 * On resume, send resume IPI to the first processor
-* This project is not yet created, but I hope that it will be here soon!
+
+This project is not yet created, but I hope that it will be here soon!
+
+
 
 
 
