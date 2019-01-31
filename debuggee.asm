@@ -51,7 +51,7 @@ start16:
 	nop
 
 	; Enter Unreal
-	call EnterUnreal
+	;call EnterUnreal
 	
 	mov ax,0x4C00
 	int 0x21
