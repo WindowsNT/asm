@@ -611,7 +611,7 @@ WaitForInput:
 
 	.CmdGo:
 		; Clear Trap
-		vmw32 0x4004,0x40 ; trap exception 0x06
+		vmw32 0x4004,0x0 ; trap exception 0x06
 		vmr rax,0x6820
 		btr rax,8
 		vmw64 0x6820,rax
@@ -619,7 +619,7 @@ WaitForInput:
 
 	.CmdTrace:
 		; Set Trap
-		vmw32 0x4004,0x42 ; trap exception 0x06 and 0x01
+		vmw32 0x4004,0x2 ; trap exception 0x06 and 0x01
 		vmr rax,0x6820
 		bts rax,8
 		vmw64 0x6820,rax

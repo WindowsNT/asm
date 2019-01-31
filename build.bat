@@ -1,5 +1,6 @@
 del d.iso
 fasm entry.asm
+fasm dpmic.asm
 fasm dmmic.asm
 fasm vdebug.asm
 fasm mdebug.asm
@@ -12,6 +13,7 @@ copy /y mdebug.exe .\CD\mdebug.exe
 copy /y debuggee.exe .\CD\debuggee.exe 
 copy /y entry.exe .\CD\entry.exe 
 copy /y dmmic.exe .\CD\dmmic.exe
+copy /y dpmic.exe .\CD\dpmic.exe
 copy /y le.exe .\CD\le.exe
 copy /y runx.bat .\CD\runx.bat
 powershell -ExecutionPolicy RemoteSigned -File "iso.ps1"
