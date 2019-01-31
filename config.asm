@@ -8,6 +8,6 @@ TEST_VMX = 1
 RESIDENT = 1
 
 
-VDEBUG = 1
+VDEBUG = 0
 MDEBUG = 0
 
