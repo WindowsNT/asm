@@ -20,7 +20,6 @@ int 0x21
 start16:
 
 	; A raw (not DOS32A) DPMI client
-	xchg bx,bx
 				
 	mov	ax,1687h		; get address of DPMI host's
 	int	2fh
@@ -38,10 +37,12 @@ start16:
 	mov	es,ax			; let ES=segment of data area
 
 .l1:
+xchg bx,bx
 	mov	ax,0			; bit 0=0 indicates 16-bit app
 	call [modesw]			; switch to protected mode
+	xchg bx,bx
 	jc error			; jump if mode switch failed
-					; else we're in prot. mode now
+						; else we're in prot. mode now
 	nop
 
 	mov ax,0x4C00
