@@ -680,6 +680,7 @@ n9:
 	jnz n1401
 
 		; Input CX:DX output of what we had
+		; BX # of bytes dissassembled
 		;break
 		cmp cx,0
 		jz .nxx
@@ -697,6 +698,9 @@ n9:
 		mov ax,DATA16
 		mov es,ax
 		mov di,dismdata2
+
+
+		mov [es:dismdatac],ebx
 
 		.rlp:
 		mov al,[ds:si]
@@ -722,7 +726,13 @@ n9:
 		; Return DS:SI the 100 byte buffer
 		mov si,DATA16
 		mov ds,si
+
+		xor esi,esi
+		mov si,dismdatac
+		shl esi,16
 		MOV si,dismdata2
+
+		
 
 	;	mov byte [ds:si],16
 ;		mov byte [ds:si + 1],2

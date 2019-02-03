@@ -38,7 +38,7 @@ disp4:
 	stosb
 ret
 
-mmhelp db 'Commands: ',0xd,0xa,' (? or h) - help',0xd,0xa,' (g) - go',0xd,0xa,' (r) - registers',0xd,0xa,' (t) - trace',0xd,0xa,          "$"
+mmhelp db 'Commands: ',0xd,0xa,' (? or h) - help',0xd,0xa,' (g) - go',0xd,0xa,' (r) - registers',0xd,0xa,' (t) - trace',0xd,0xa,  ' (q) - quit',0xd,0xa,         "$"
 mmj db 40,0
 db 50 dup (0)
 show dq 4096 dup (0)
@@ -68,13 +68,15 @@ guestlinear:
 	mov rax,rbx
 ret
 
+bytecount dd 0
+
 ShowDism:
 
 	push rdi
 
 	; rdi = where to store info
 	;mov ax,dismdata2
-	;break
+	
 	linear rsi,dismpos,DATA16
 	xor ecx,ecx
 	xor edx,edx
@@ -84,6 +86,8 @@ ShowDism:
 	mov di,cx
 	shl edi,4
 	add edi,edx
+
+	; EDI = output
 
 	push rdi
 	call guestlinear
@@ -120,6 +124,7 @@ ShowDism:
 
 	.novmcall:
 
+	push rax
 	mov rcx,15
 	mov byte [rdi + 1],15
 	add rdi,2
@@ -144,12 +149,16 @@ ShowDism:
 	mov edi,esi
 	mov ax,0x421
 	int 0xF0
+	pop rax
 
 	pop rdi
-	
+	mov rsi,rdi ; RSI now points to dissm bytes
+	pop rdi		; RDI now to output buffer
 
-	mov rsi,rdi
-	pop rdi
+
+
+
+	push rax
 	.jlp:
 	mov al,[rsi]
 	cmp al,0
@@ -158,6 +167,42 @@ ShowDism:
 	inc rsi
 	jmp .jlp
 	.end:
+	pop rax
+
+	; also the # of bytes
+	push rdi
+	linear rsi,dismposcount,DATA16
+	xor ecx,ecx
+	xor edx,edx
+	mov dx,[rsi]
+	mov cx,[rsi + 2]
+	xor rdi,rdi
+	mov di,cx
+	shl edi,4
+	add edi,edx
+	mov esi,[edi]
+	pop rdi
+
+	; ESI = Count of bytes to transfer
+	mov byte [rdi],' '
+	mov byte [rdi+1],'('
+	add rdi,2
+
+	.jb1:
+	cmp esi,0
+	jz .jb2
+	dec esi
+	push rax
+	mov al,[rax]
+	call disp8
+	pop rax
+	inc rax
+	jmp .jb1
+	.jb2:
+
+	mov byte [rdi],')'
+	add rdi,1
+
 
 
 ret
@@ -208,19 +253,82 @@ ShowCRs:
 
 ret
 
+
+ShowSegs:
+
+	;DS 
+	mov eax,'DS ';
+	stosd
+	mov al,' '
+	stosb
+	
+	mov eax,'ES ';
+	stosd
+	mov al,' '
+	stosb
+
+	mov eax,'FS ';
+	stosd
+	mov al,' '
+	stosb
+
+	mov eax,'GS ';
+	stosd
+	mov al,' '
+	stosb
+
+	mov eax,'SS ';
+	stosd
+	mov al,' '
+	stosb
+
+	mov ax,0x0D0A
+	stosw
+
+	vmr rax,0x806
+	call disp16 
+	mov al,' '
+	stosb
+
+	vmr rax,0x800
+	call disp16 
+	mov al,' '
+	stosb
+
+	vmr rax,0x808
+	call disp16 
+	mov al,' '
+	stosb
+
+	vmr rax,0x80A
+	call disp16 
+	mov al,' '
+	stosb
+
+	vmr rax,0x804
+	call disp16 
+	mov al,' '
+	stosb
+
+	mov ax,0x0D0A
+	stosw
+
+
+
+ret
 DisplayGuestMode:
 	call guestmode
 	cmp ah,0
 	jnz .noreal
-	mov rax,'(RM)    ';
-	stosq
+	mov eax,'RM ';
+	stosd
 	jmp .afterm
 	.noreal:
 
 	cmp ah,1
 	jnz .noprot
-	mov rax,'(PM)    ';
-	stosq
+	mov eax,'PM ';
+	stosd
 	jmp .afterm
 	.noprot:
 
@@ -235,6 +343,7 @@ ShowRegs64:
 	cld
 
 	call ShowCRs
+	call ShowSegs
 
 	;rax - rdx
 	mov eax,'RAX ';
@@ -389,6 +498,8 @@ ShowRegs64:
 ret
 
 
+
+
 ShowRegs:
 
 	push64
@@ -397,6 +508,7 @@ ShowRegs:
 	cld
 
 	call ShowCRs
+	call ShowSegs
 
 	;rax - rdx
 	mov eax,'EAX ';
@@ -593,6 +705,10 @@ WaitForInput:
 	cmp byte [rdx + 2],'t'
 	jz .CmdTrace
 
+	cmp byte [rdx + 2],'q'
+	jz .CmdQuit
+
+
 	jmp WaitForInput
 
 
@@ -624,6 +740,11 @@ WaitForInput:
 		bts rax,8
 		vmw64 0x6820,rax
 		jmp .InputEnd
+
+
+	.CmdQuit:
+		; Abort all
+		jmp VmFinalCall
 
 	.InputEnd:
 ret

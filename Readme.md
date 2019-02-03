@@ -91,10 +91,11 @@ Compile it with config.asm VDEBUG = 1. This app does the following:
 * When target process calls int 0x21 function 0x4C to terminate, control returns to the command next to the int 0x21 function 0x4B01 call. Check there if under virtual machine. If so, do VMCALL to exit.
 * Go back to real mode and exit.
 * At the moment, the implemented functions are:
-	* r - (registers) - shows Control, General, and Dissassembly using UDIS86
-	* g - (go) - runs all program to the end
+	* r - (registers) - shows Control, General, Segment regs, Dissassembly and bytes using UDIS86
+	* g - (go) - runs program
 	* t - (trace) - traces commands 
 	* h - (help) - shows help
+	* q - (quit) - quits
 
 
 ## Multicore Debugger
