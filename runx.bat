@@ -15,6 +15,7 @@ rem cd ..
 
 vdebug debuggee.exe
 mdebug debuggee.exe
+switcher
 
 
 a:

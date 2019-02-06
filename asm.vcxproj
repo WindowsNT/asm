@@ -203,6 +203,7 @@
     <None Include="startvbox.bat" />
     <None Include="startvmware.bat" />
     <None Include="struct.asm" />
+    <None Include="swmain.asm" />
     <None Include="thread16.asm" />
     <None Include="thread32.asm" />
     <None Include="thread64.asm" />

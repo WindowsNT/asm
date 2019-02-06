@@ -41,11 +41,12 @@ It will create a CD-ROM as D: and you can run it from d:\entry.exe, by default i
 9. VMX is there
 10. Spawn a Virtual Machine in Unrestricted guest mode. Paged Protected Mode guest also there.
 11. Entry /r which installs as TSR the DMMI services
-12. DMMI startup example taken from https://board.flatassembler.net/topic.php?t=7122
+12. DPMI startup example taken from https://board.flatassembler.net/topic.php?t=7122
 13. DMMIC app runs which demonstrates DMMI, launching real mode, protected mode, long mode and virtualized protected mode threads
 14. DOS32A loads a linear executable created with FASM
 15. VDEBUG Virtualized Debugger (Not fully implemented yet)
 15. MDEBUG Multicore Debugger (Not fully implemented yet)
+16. SWITCHER multitasker (Not fully implemented yet)
 
 ## DMMI
 I've called it DOS Multicore Mode Interface. It is a driver which helps you develop 32 and 64 bit multicore applications for DOS, using int 0xF0. 
@@ -110,6 +111,10 @@ Compile it with config.asm MDEBUG = 1. This app should perform the following:
 * On resume, send resume IPI to the first processor
 
 This project is not yet created, but I hope that it will be here soon!
+
+## Switcher
+Switcher is a DMMI client that is able to do multitasking in DOS using multiple cores and virtualization.
+More to follow soon!
 
 
 

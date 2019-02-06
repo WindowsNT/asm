@@ -32,6 +32,9 @@
     <Filter Include="Debuggee">
       <UniqueIdentifier>{189d96b4-2842-4505-805a-815b3b66bbd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Switcher">
+      <UniqueIdentifier>{3d37bfd1-8ba1-4f5b-b5f5-5a30a1334465}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="entry.asm">
@@ -212,6 +215,9 @@
     </None>
     <None Include="dpmic.asm">
       <Filter>DPMI Client</Filter>
+    </None>
+    <None Include="swmain.asm">
+      <Filter>Switcher</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

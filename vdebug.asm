@@ -76,6 +76,12 @@ start16:
 	mov ax,0x0900
 	mov dx,m1
 	int 0x21
+
+if VDEBUG = 0
+	mov ax,0x4C00
+	int 0x21
+end if 
+
 	mov ah,0x62
 	int 0x21
 	mov [mypsp],bx

@@ -4,6 +4,7 @@ fasm dpmic.asm
 fasm dmmic.asm
 fasm vdebug.asm
 fasm mdebug.asm
+fasm swmain.asm switcher.exe
 fasm debuggee.asm
 fasm leheader.asm le.exe
 REM upx --best entry.exe
@@ -14,6 +15,7 @@ copy /y debuggee.exe .\CD\debuggee.exe
 copy /y entry.exe .\CD\entry.exe 
 copy /y dmmic.exe .\CD\dmmic.exe
 copy /y dpmic.exe .\CD\dpmic.exe
+copy /y switcher.exe .\CD\switcher.exe
 copy /y le.exe .\CD\le.exe
 copy /y runx.bat .\CD\runx.bat
 powershell -ExecutionPolicy RemoteSigned -File "iso.ps1"
