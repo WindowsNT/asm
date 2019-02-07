@@ -216,7 +216,13 @@
     <None Include="dpmic.asm">
       <Filter>DPMI Client</Filter>
     </None>
-    <None Include="swmain.asm">
+    <None Include="switcher\switcher.mk1">
+      <Filter>Switcher</Filter>
+    </None>
+    <None Include="switcher\switcher.wpj">
+      <Filter>Switcher</Filter>
+    </None>
+    <None Include="switcher\main.cpp">
       <Filter>Switcher</Filter>
     </None>
   </ItemGroup>

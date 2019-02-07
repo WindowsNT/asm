@@ -4,9 +4,16 @@ fasm dpmic.asm
 fasm dmmic.asm
 fasm vdebug.asm
 fasm mdebug.asm
-fasm swmain.asm switcher.exe
 fasm debuggee.asm
 fasm leheader.asm le.exe
+
+REM Wmake
+REM Replace G:\WATCOM with your OpenWatcom Path
+cd switcher
+g:\watcom\binnt\wpp main.cpp -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml
+g:\WATCOM\binnt\wlink libpath g:\watcom\lib286 libpath g:\watcom\lib286\dos name switcher d all op m op maxe=25 op q op symf file main.obj format dos 
+cd ..
+
 REM upx --best entry.exe
 mkdir CD
 copy /y vdebug.exe .\CD\
@@ -15,7 +22,7 @@ copy /y debuggee.exe .\CD\debuggee.exe
 copy /y entry.exe .\CD\entry.exe 
 copy /y dmmic.exe .\CD\dmmic.exe
 copy /y dpmic.exe .\CD\dpmic.exe
-copy /y switcher.exe .\CD\switcher.exe
+copy /y .\switcher\switcher.exe .\CD\switcher.exe
 copy /y le.exe .\CD\le.exe
 copy /y runx.bat .\CD\runx.bat
 powershell -ExecutionPolicy RemoteSigned -File "iso.ps1"

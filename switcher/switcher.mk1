@@ -1,0 +1,17 @@
+!define BLANK ""
+F:\TOOLS\ASM\full2\switcher\main.obj : F:\TOOLS\ASM\full2\switcher\main.cpp &
+.AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\switcher
+ *wpp main.cpp -i="G:\WATCOM/h" -w4 -e25 -zq -od -d2 -bt=dos -fo=.obj -ml -x&
+s -xr
+
+F:\TOOLS\ASM\full2\switcher\switcher.exe : F:\TOOLS\ASM\full2\switcher\main.&
+obj .AUTODEPEND
+ @F:
+ cd F:\TOOLS\ASM\full2\switcher
+ @%write switcher.lk1 FIL main.obj
+ @%append switcher.lk1 
+ *wlink name switcher d all sys dos op m op maxe=25 op q op symf @switcher.l&
+k1
+

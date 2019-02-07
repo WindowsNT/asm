@@ -135,10 +135,10 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">build.bat</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">build.bat</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">build.bat</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">entry.exe;dmmic.exe;le.exe</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">entry.exe</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">entry.exe</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">entry.exe</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">entry.exe;dmmic.exe;le.exe;debuggee.exe;vdebug.exe;mdebug.exe</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">entry.exe;dmmic.exe;le.exe;debuggee.exe;vdebug.exe;mdebug.exe</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">entry.exe;dmmic.exe;le.exe;debuggee.exe;vdebug.exe;mdebug.exe</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='VirtualBox|x64'">entry.exe;dmmic.exe;le.exe;debuggee.exe;vdebug.exe;mdebug.exe</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='DOS|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='VMWare|x64'">false</LinkObjects>
@@ -203,7 +203,8 @@
     <None Include="startvbox.bat" />
     <None Include="startvmware.bat" />
     <None Include="struct.asm" />
-    <None Include="swmain.asm" />
+    <None Include="switcher\switcher.mk1" />
+    <None Include="switcher\switcher.wpj" />
     <None Include="thread16.asm" />
     <None Include="thread32.asm" />
     <None Include="thread64.asm" />
@@ -228,6 +229,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='BochsNoDebug|x64'">false</ExcludedFromBuild>
       <FileType>CppCode</FileType>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="switcher\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
