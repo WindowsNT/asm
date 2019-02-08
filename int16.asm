@@ -110,7 +110,7 @@ Thread64PV:
 	linear rax,vvr1,CODE16
 	push rax; for returning
 	db 0x68; push
-	cv64_vmxinit dd 0 
+	cv64_vmxinitstructures dd 0 
 	ret
 	vvr1:
 

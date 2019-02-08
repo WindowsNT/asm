@@ -32,7 +32,7 @@ VMX_DisableA20:
 ret
 
 ; ---------------- Init the structures ----------------
-VMX_Init:
+VMX_Init_Structures:
 
 	 ; Read MSR
 	 xor eax,eax
@@ -60,9 +60,6 @@ VMX_Init:
 	 mov dword [ecx],eax
 	 add eax,4096
 	 linear ecx,VMXStructureData2,VMXDATA64
-	 mov dword [ecx],eax
-	 add eax,4096
-	 linear ecx,VMXStructureData3,VMXDATA64
 	 mov dword [ecx],eax
 
 RET
@@ -613,7 +610,7 @@ RET
 	mov byte [rbx],1
 
 	; Init structures
-	call VMX_Init
+	call VMX_Init_Structures
 
 	; Enable
 	call VMX_Enable

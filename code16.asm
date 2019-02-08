@@ -279,8 +279,8 @@ mov [Thread64Ptr1V],eax
 
 mov ax,CODE16
 mov ds,ax
-linear eax,VMX_Init,CODE64
-mov [cv64_vmxinit],eax
+linear eax,VMX_Init_Structures,CODE64
+mov [cv64_vmxinitstructures],eax
 linear eax,VMX_Enable,CODE64
 mov [cv64_vmxenable],eax
 linear eax,VMX_Disable,CODE64

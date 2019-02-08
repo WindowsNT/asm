@@ -148,7 +148,7 @@ nnn800:
 	 ; r9 seg vm
 	 ; r10 ofs vm
 	
-		call VMX_Init
+		call VMX_Init_Structures
 		call VMX_Enable
 		call VMXInit
 		call VMX_InitializeEPT
