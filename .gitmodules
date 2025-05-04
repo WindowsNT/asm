@@ -1,0 +1,3 @@
+[submodule "Int50"]
+	path = Int50
+	url = https://github.com/WindowsNT/Int50
