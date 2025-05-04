@@ -8,6 +8,15 @@ macro linear reg,trg,seg = DATA16
 	add reg,trg
 	}
 
+macro atlinear reg,trg,seg
+	{
+	mov reg,seg
+	shl reg,4
+	add reg,trg
+	mov reg,[reg]
+	}
+
+
 macro dh_virtualization
 {
 		local .nuvmx

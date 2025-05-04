@@ -556,8 +556,7 @@ RET
 VMXInit:
 	
 	; Load the revision
-	linear rdi,VMXRevision,VMXDATA64
-	mov ebx,[rdi];
+	atlinear rbx,VMXRevision,VMXDATA64
 
 	; Initialize the region
 	linear rdi,VMXStructureData2,VMXDATA64

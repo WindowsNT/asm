@@ -15,7 +15,7 @@ extern char far *get_ptr_1(char far* x,int b);
 
 
 extern int HasDMMI();
-#pragma aux HasDMMI = "mov ax,0000h" "int 0f0h"  value     [ax]   modify    [ax];
+#pragma aux HasDMMI = "mov ax,0" "int 0f0h"  value [ax] modify [ax];
 
 
 
@@ -41,15 +41,23 @@ int main(int,char**)
 			break;
 		}
 
-		if (c == "help")
+		if (c == "help" || c == "?")
 		{
-			cout << "Commands available: help, exit, quit" << endl;
+			cout << "Commands available: help, exit" << endl;
 			continue;
 		}
 
-		if (c == "load")
+		if (c == "run")
 		{
-
+			// load path
+			size_t pos = 0;
+			std::string token;
+			string delimiter = " ";
+			while ((pos = c.find(delimiter)) != std::string::npos) 
+			{
+				token = c.substr(0, pos);
+				c.erase(0, pos + delimiter.length());
+			}
 		}
 	}
 
